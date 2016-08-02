@@ -1,13 +1,15 @@
 import React, { PropTypes, Component } from 'react'
+import TreeNode from './TreeNode'
 
 class TreeViewer extends Component {
   
   render() {
 
-    console.log(this.props.data.name)
+    var offset = 0
     return (
-
-      <div>hello tree</div>
+      <TreeNode
+        offset={offset}
+        data={this.props.data} />
     )
   }
 
