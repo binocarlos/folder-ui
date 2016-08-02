@@ -1,0 +1,53 @@
+{
+  "name": "folder-ui",
+  "version": "1.0.0",
+  "description": "ui components for a folder editor",
+  "main": "index.js",
+  "scripts": {
+    "clean": "mkdir -p example/dist && rm -rf example/dist/*",
+    "indexpage": "cp example/*.{html,css} example/dist",
+    "assets": "npm run indexpage",
+    "watch": "WEBPACK_ARGS=--watch npm run webpack",
+    "prewebpack": "npm run clean && npm run assets",
+    "webpack": "webpack $WEBPACK_ARGS",
+    "compile": "babel -d lib/ src/",
+    "prepublish": "npm run compile",
+    "build": "NODE_ENV=development npm run webpack",
+    "release": "NODE_ENV=production npm run webpack",
+    "pretest": "npm run compile",
+    "test": "mocha --compilers js:babel-core/register --recursive --require ./test/setup.js test",
+    "test:watch": "npm test -- --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/binocarlos/folder-ui.git"
+  },
+  "keywords": [
+    "tree",
+    "redux",
+    "material"
+  ],
+  "author": "Kai Davenport",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/binocarlos/folder-ui/issues"
+  },
+  "homepage": "https://github.com/binocarlos/folder-ui",
+  "dependencies": {
+    "material-ui": "^0.15.1",
+    "react": "^15.2.1"  
+  },
+  "devDependencies": {
+    "babel-cli": "^6.10.1",
+    "babel-core": "^6.4.5",
+    "babel-loader": "^6.2.1",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-react": "^6.3.13",
+    "babel-preset-stage-1": "^6.3.13",
+    "redux": "^3.5.2",
+    "react-dom": "^15.1.0",
+    "react-redux": "^4.4.5",
+    "react-tap-event-plugin": "^1.0.0",
+    "webpack": "^1.12.12"
+  }
+}

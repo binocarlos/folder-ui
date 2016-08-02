@@ -1,0 +1,30 @@
+version: '2'
+services:
+  mongo:
+    image: mongo
+    container_name: passport_mongo
+    volumes:
+      - /tmp/passport-mongo:/data/db
+  router:
+    build:
+      context: ./router
+    container_name: passport_router
+    volumes:
+      - ./example/dist:/www
+    ports:
+      - "80:80"
+    links:
+      - auth:auth
+    environment:
+      AUTH_SERVICE_HOST: auth
+      AUTH_SERVICE_PORT: 80
+  auth:
+    image: binocarlos/passport-service
+    container_name: passport_auth
+    depends_on:
+      - mongo
+    links:
+      - mongo:mongo
+    environment:
+      - MONGO_SERVICE_HOST=mongo
+      - HOSTNAME=localhost
