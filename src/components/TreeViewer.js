@@ -4,11 +4,10 @@ import TreeNode from './TreeNode'
 class TreeViewer extends Component {
   
   render() {
-
-    var offset = 0
     return (
       <TreeNode
-        offset={offset}
+        isroot={true}
+        offset_style={this.props.offset_style}
         data={this.props.data} />
     )
   }

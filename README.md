@@ -28,6 +28,7 @@ Renders a tree menu for navigating around folders.
  * data - an object with a `children` property
  * expand_state - an object that describes the expanded status of each item
  * update_expand_state - a function that is run to update the treestate
+ * offset_style - a style object to control the offset for each layer (default - padding-left:20px)
 
 The data property is an object - the required fields for each item:
 
