@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 
-import { expandstateupdate } from './actions'
+import { update_expandstate } from './actions'
 import TreeViewer from '../src/components/TreeViewer'
 
 export class TreeContainer extends Component {
@@ -15,14 +15,15 @@ export class TreeContainer extends Component {
 
 function mapStateToProps(state, ownProps) {
   return {
-    expand_state:state.tree.expandstate
+    expandstate:state.tree.expandstate,
+    data:state.tree.data
   }
 }
 
 function mapDispatchToProps(dispatch, ownProps) {
   return {
-    update_expand_state:function(data){
-      dispatch(expandstateupdate(data))
+    update_expandstate:function(data){
+      dispatch(update_expandstate(data))
     }
   }
 }

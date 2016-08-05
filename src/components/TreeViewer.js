@@ -8,6 +8,8 @@ class TreeViewer extends Component {
       <TreeNode
         isroot={true}
         offset_style={this.props.offset_style}
+        expandstate={this.props.expandstate}
+        update_expandstate={this.props.update_expandstate}
         data={this.props.data} />
     )
   }

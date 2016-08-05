@@ -1,8 +1,8 @@
-export const EXPAND_STATE_UPDATE = 'EXPAND_STATE_UPDATE'
+export const UPDATE_EXPANDSTATE = 'UPDATE_EXPANDSTATE'
 
-export function expandstateupdate(data) {
+export function update_expandstate(data) {
   return {
-    type: EXPAND_STATE_UPDATE,
+    type: UPDATE_EXPANDSTATE,
     data
   }
 }
