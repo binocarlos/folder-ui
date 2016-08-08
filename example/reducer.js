@@ -1,4 +1,4 @@
-import { UPDATE_EXPANDSTATE } from './actions'
+import { UPDATE_TREE_META } from './actions'
 
 const DEFAULT_TREE_DATA = {
   id:'123',
@@ -23,14 +23,14 @@ const DEFAULT_TREE_DATA = {
 
 const DEFAULT_STATE = {
   data:DEFAULT_TREE_DATA,
-  expandstate:{}
+  meta:{}
 }
 
 export default function treereducer(state = DEFAULT_STATE, action = {}) {
   switch (action.type) {
-    case UPDATE_EXPANDSTATE:
+    case UPDATE_TREE_META:
       return Object.assign({}, state, {
-        expandstate:action.data
+        meta:action.meta
       })
     default:
       return state
