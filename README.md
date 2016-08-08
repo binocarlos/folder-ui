@@ -11,9 +11,7 @@ Install the module to your project:
 $ npm install folder-ui --save
 ```
 
-## Components
-
-#### FolderEditor
+## FolderEditor
 
 2 column editor with tree / folder view
 
@@ -21,14 +19,14 @@ the user can add/edit and delete items to the current folder
 
 The properties for the FolderEditor are split between the TreeViewer, FolderViewer and ItemEditor.
 
-#### TreeViewer
+## TreeViewer
 
 Renders a tree menu for navigating around folders.
 
  * data - an object with a `children` property
- * expand_state - an object that describes the expanded status of each item
- * update_expand_state - a function that is run to update the treestate
- * offset_style - a style object to control the offset for each layer (default - padding-left:20px)
+ * get_icon - a function that returns a React element to be used as the icon
+
+#### `data`
 
 The data property is an object - the required fields for each item:
 
@@ -48,9 +46,32 @@ The data property is an object - the required fields for each item:
 }
 ```
 
-#### FolderViewer
+You can have any other properties in a data node - you might need to map your source data to include the `id`, `name` and `children` fields.
 
-#### ItemEditor
+#### `get_icon(data)`
+
+An optional function used to return an icon element for a node.
+
+You can use the [material-ui svg icons](http://www.material-ui.com/#/components/svg-icon).  The sections & names of the icons are listed neatly on [this page](https://design.google.com/icons/) - lowercase - replace spaces with dashes (e.g. file -> folder shared = file/folder-shared)
+
+```javascript
+import FolderShared from 'material-ui/svg-icons/file/folder-shared';
+import Folder from 'material-ui/svg-icons/file/folder';
+function get_icon(data){
+  if(data.type=='shared_folder'){
+    return <FolderShared />
+  }
+  else{
+    return <Folder />
+  }
+}
+```
+
+If no function is given - it will default to the `file/folder` icon.
+
+## FolderViewer
+
+## ItemEditor
 
 ## license
 
