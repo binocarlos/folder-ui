@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 
-import { update_tree_meta } from './actions'
+import { tree_select_node } from './actions'
 import TreeViewer from '../src/components/TreeViewer'
 
 export class TreeContainer extends Component {
@@ -14,16 +14,15 @@ export class TreeContainer extends Component {
 }
 
 function mapStateToProps(state, ownProps) {
-  return {
-    meta:state.tree.meta,
+  return {  
     data:state.tree.data
   }
 }
 
 function mapDispatchToProps(dispatch, ownProps) {
   return {
-    update_meta:function(meta){
-      dispatch(update_tree_meta(meta))
+    select_node:function(data){
+      dispatch(tree_select_node(data))
     }
   }
 }

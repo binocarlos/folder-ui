@@ -1,8 +1,8 @@
-export const UPDATE_TREE_META = 'UPDATE_TREE_META'
+export const TREE_SELECT_NODE = 'TREE_SELECT_NODE'
 
-export function update_tree_meta(meta) {
+export function tree_select_node(data) {
   return {
-    type: UPDATE_TREE_META,
-    meta
+    type: TREE_SELECT_NODE,
+    data
   }
 }

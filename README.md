@@ -23,23 +23,21 @@ The properties for the FolderEditor are split between the TreeViewer, FolderView
 
 Renders a tree menu for navigating around folders.
 
- * data - an object with a `children` property
+ * title - the title of the tree (optional)
+ * data - an array of top level objects each with a `children` property
  * get_icon - a function that returns a React element to be used as the icon
 
 #### `data`
 
-The data property is an object - the required fields for each item:
+The data property is an array of top level objects each with the following fields:
 
- * id - the id of the item
- * name - the string to display for it's title
+ * name - a string to display
  * children - an array of child items
 
 ```javscript
 {
-  id:'123',
   name:'My Folder',
   children:[{
-    id:'456',
     name:'Sub folder a',
     children:[]
   }]
@@ -55,8 +53,8 @@ An optional function used to return an icon element for a node.
 You can use the [material-ui svg icons](http://www.material-ui.com/#/components/svg-icon).  The sections & names of the icons are listed neatly on [this page](https://design.google.com/icons/) - lowercase - replace spaces with dashes (e.g. file -> folder shared = file/folder-shared)
 
 ```javascript
-import FolderShared from 'material-ui/svg-icons/file/folder-shared';
-import Folder from 'material-ui/svg-icons/file/folder';
+import FolderShared from 'material-ui/svg-icons/file/folder-shared'
+import Folder from 'material-ui/svg-icons/file/folder'
 function get_icon(data){
   if(data.type=='shared_folder'){
     return <FolderShared />

@@ -25,7 +25,8 @@ injectTapEventPlugin()
 ReactDOM.render(  
   <Provider store={store}>
     <MuiThemeProvider>
-      <TreeContainer />
+      <TreeContainer 
+        title="My Tree" />
     </MuiThemeProvider>
   </Provider>,
   document.getElementById('mount')
