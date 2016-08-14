@@ -7,17 +7,13 @@ import { applyMiddleware, compose, createStore, combineReducers } from 'redux'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 
 import AppBar from 'material-ui/AppBar'
+
+import AppNavWrapper from 'kettle-ui/lib/AppNavWrapper'
 import { Container, Row, Col } from 'kettle-ui/lib/Grid'
-import Sidebar from 'react-sidebar'
-import Drawer from 'material-ui/Drawer'
-import Paper from 'material-ui/Paper'
 
 import TreeContainer from './TreeContainer'
-import treereducer from './reducer'
-
-const reducer = combineReducers({
-  tree: treereducer
-})
+import ContentContainer from './ContentContainer'
+import reducer from './reducer'
 
 const finalCreateStore = compose(
   applyMiddleware(),
@@ -28,42 +24,27 @@ const store = finalCreateStore(reducer)
 
 injectTapEventPlugin()
 
-const styles = {
-  container:{
-    marginTop:'100px'
-  },
-  drawer:{
-    marginTop:'64px'
-  }
-}
-
 ReactDOM.render(  
   <Provider store={store}>
     <MuiThemeProvider>
-      <div>
-        <Sidebar 
-          sidebar={
+     <AppNavWrapper
+        appbar={
+          <AppBar
+            showMenuIconButton={false}
+            title="Home"
+            zDepth={2} />
+        }
+        width={250}
+        paperprops={{
+          zDepth:1,
+          rounded:false
+        }}
+        navbar={
           <TreeContainer 
-            title="My Tree" />
-          }
-          docked={true}
-          transitions={false}
-          open={true}>
-          <div>
-            <AppBar
-              showMenuIconButton={false}
-              title="Home"
-              zDepth={3}
-            />
-            <Row>
-              <Col sm={4}></Col>
-              <Col sm={8}>
-                content
-              </Col>
-            </Row>
-          </div>
-        </Sidebar>
-      </div>
+            title="My Folders" />
+        }>
+        <ContentContainer />
+      </AppNavWrapper>
     </MuiThemeProvider>
   </Provider>,
   document.getElementById('mount')

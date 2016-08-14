@@ -35,8 +35,7 @@
   "homepage": "https://github.com/binocarlos/folder-ui",
   "dependencies": {
     "material-ui": "^0.15.3",
-    "react": "^15.2.1",
-    "react-sidebar": "^2.2.1"
+    "react": "^15.2.1"
   },
   "devDependencies": {
     "babel-cli": "^6.10.1",

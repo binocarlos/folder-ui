@@ -2,32 +2,37 @@ import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 
 import { tree_select_node } from './actions'
-import TreeViewer from '../src/TreeViewer'
+import TableViewer from '../src/TableViewer'
 
-export class TreeContainer extends Component {
+const FIELDS = [{
+  title:'name',
+  render:data => data.name
+}]
+
+export class TableContainer extends Component {
+
   render() {
-    return (    
-      <TreeViewer {...this.props} />
+    return (   
+      <TableViewer {...this.props} />
     )
   }
 }
 
 function mapStateToProps(state, ownProps) {
-  return {  
-    treedata:state.tree,
-    selected:state.treeselected
+  return {
+    fields:FIELDS,  
+    data:state.table,
+    hideHeader:true
   }
 }
 
 function mapDispatchToProps(dispatch, ownProps) {
   return {
-    selectNode:function(data){
-      dispatch(tree_select_node(data))
-    }
+    
   }
 }
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(TreeContainer)
+)(TableContainer)

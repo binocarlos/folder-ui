@@ -11,40 +11,63 @@ Install the module to your project:
 $ npm install folder-ui --save
 ```
 
-## FolderEditor
-
-2 column editor with tree / folder view
-
-the user can add/edit and delete items to the current folder
-
-The properties for the FolderEditor are split between the TreeViewer, FolderViewer and ItemEditor.
-
 ## TreeViewer
 
 Renders a tree menu for navigating around folders.
 
  * title - the title of the tree (optional)
- * data - an array of top level objects each with a `children` property
- * get_icon - a function that returns a React element to be used as the icon
+ * treedata - an array of top level objects each with a `children` property
+ * getIcon(node) - a function that returns a React element to be used as the icon
+ * selectNode - a function to run when an item is selected
+ * selected - the data object currently selected
+ * styles - override styles for elements:
+   * selected - the currently selected item
+   * header - the tree header
 
-#### `data`
+#### `treedata`
 
-The data property is an array of top level objects each with the following fields:
+The data property is an object with the following fields:
 
- * name - a string to display
- * children - an array of child items
+ * data - an object of id -> object
+ * children - an object of id -> array of child ids
+ * rootids - an array of ids of the top level nodes
+
+This is to make it easier to work immutably with redux.
+
+You can use the `processTreeData` function in `tools.js` to convert the original data format into the one above (e.g. when you load data from a REST API) .
 
 ```javscript
-{
+import { processTreeData } from 'folder-ui/lib/tools'
+
+var treedata = processTreeData([{
   name:'My Folder',
   children:[{
     name:'Sub folder a',
     children:[]
   }]
+}])
+
+console.dir(treedata)
+
+/*
+
+{
+  data:{...},
+  children:{...}
 }
+  
+*/
 ```
 
+The original data property is an array of top level objects each with the following fields:
+
+ * name - a string to display
+ * children - an array of child items
+ * open - control the initial open state of the item
+
 You can have any other properties in a data node - you might need to map your source data to include the `id`, `name` and `children` fields.
+
+To make it easier to work with redux - the data cannot be in 
 
 #### `get_icon(data)`
 
@@ -67,9 +90,100 @@ function get_icon(data){
 
 If no function is given - it will default to the `file/folder` icon.
 
-## FolderViewer
+#### `select_node(item)`
 
-## ItemEditor
+Pass this function and it will be run each time an item in the tree has been clicked.
+
+Use this to trigger data being loaded when the tree is clicked.
+
+#### `selected`
+
+Pass the currently selected object in - it will be compared using `===`.
+
+## TableViewer
+
+A component that will display a Table for an array of items.
+
+ * data - an array of objects
+ * fields - an array of objects representing column definitions
+   * title - the title for the field
+   * render(data) - a function that returns a React element used to render the value
+ * height - table height
+ * selectable - boolean that controls if you can select items in the list (true)
+ * multiSelectable - boolean that controls multi-select (false)
+ * hideHeader - don't show the column titles
+
+## tools
+
+#### `processTreeData`
+
+Turn original tree format:
+
+```javascript
+[{
+  id:1,
+  title:'node',
+  children:[{
+    id:2,
+    title:'c1'
+  },{
+    id:3,
+    title:'c2'
+  }]
+}]
+```
+
+Into:
+
+```javascript
+{
+  data:{
+    1:{id:1,title:'node'},
+    2:{id:2,title:'c1'},
+    3:{id:3,title:'c2'},
+  },
+  children:{
+    1:[2,3],
+    2:[],
+    3:[]
+  }
+}
+```
+
+#### `getChildren`
+
+Given a tree data structure and an id - return an array of child objects.
+
+```javascript
+import { getChildren } from 'folder-ui/lib/tools'
+
+var tree = {
+  data:{
+    1:{id:1,title:'node'},
+    2:{id:2,title:'c1'},
+    3:{id:3,title:'c2'},
+  },
+  children:{
+    1:[2,3],
+    2:[],
+    3:[]
+  }
+}
+
+var children = getChildren(tree, 1)
+
+console.dir(children)
+
+/*
+
+[{
+  id:2,title:'c1'
+},{
+  id:3,title:'c2'
+}]
+  
+*/
+```
 
 ## license
 
