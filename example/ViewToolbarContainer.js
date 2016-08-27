@@ -21,13 +21,6 @@ function mapStateToProps(state, ownProps) {
       },{
         title:'Item'
       }
-    ],
-    viewitems:[
-      {
-        title:'Children'
-      },{
-        title:'Details'
-      }
     ]
   }
 }
@@ -38,17 +31,9 @@ function mapDispatchToProps(dispatch, ownProps) {
       console.log('add')
       console.log(JSON.stringify(data, null, 4))
     },
-    onopen:function(data){
-      console.log('open')
-      console.log(JSON.stringify(data, null, 4))
-    },
-    ondelete:function(data){
-      console.log('delete')
-      console.log(JSON.stringify(data, null, 4))
-    },
-    onedit:function(data){
-      console.log('edit')
-      console.log(JSON.stringify(data, null, 4))
+    onbutton:function(name, selected){
+      console.log('button: ' + name)
+      console.log(JSON.stringify(selected, null, 4))
     }
   }
 }

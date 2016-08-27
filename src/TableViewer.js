@@ -10,6 +10,12 @@ import {
 
 class TableViewer extends Component {
 
+  onRowSelection(selected) {
+    this.props.onRowSelection(selected.map(i => {
+      return this.props.data[i]
+    }))
+  }
+
   render() {
     const fields = this.props.fields || []
     const data = this.props.data || []
@@ -26,7 +32,7 @@ class TableViewer extends Component {
         height={this.props.height}
         selectable={this.props.selectable}
         multiSelectable={this.props.multiSelectable}
-        onRowSelection={this.props.onRowSelection}
+        onRowSelection={this.onRowSelection.bind(this)}
       >
       {this.props.showHeader ? (
         <TableHeader

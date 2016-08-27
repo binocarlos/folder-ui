@@ -113,7 +113,7 @@ A component that will display a Table for an array of items.
  * multiSelectable - boolean that controls multi-select (false)
  * showCheckboxes - boolean whether to show select checkboxes (false)
  * showHeader - show the column titles (true)
- * onRowSelection - run when rows are selected
+ * onRowSelection - run when rows are selected - passed an array of selected indexes
 
 ## ViewToolbar
 

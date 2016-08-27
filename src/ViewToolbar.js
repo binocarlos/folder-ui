@@ -16,6 +16,7 @@ const STYLES = {
 }
 
 export default class ViewToolbar extends Component {
+
   render() {
 
     var displayMap = {
@@ -67,7 +68,9 @@ export default class ViewToolbar extends Component {
                 {
                   (this.props.additems || []).map((additem,i) => {
                     return (
-                      <MenuItem key={i} primaryText={additem.title} />
+                      <MenuItem key={i} primaryText={additem.title} onTouchTap={() => {
+                        this.props.onadd(additem)
+                      }}/>
                     )
                   })
                 }
@@ -80,21 +83,30 @@ export default class ViewToolbar extends Component {
             displayMap.open ? (
               <RaisedButton 
                 label='Open'
-                style={STYLES.button} />
+                style={STYLES.button} 
+                onTouchTap={() => {
+                  this.props.onbutton('open', this.props.selected)
+                }} />
             ) : null
           }
           {
             displayMap.edit ? (
               <RaisedButton 
                 label='Edit'
-                style={STYLES.button} />
+                style={STYLES.button} 
+                onTouchTap={() => {
+                  this.props.onbutton('edit', this.props.selected)
+                }} />
             ) : null
           }
           {
             displayMap.delete ? (
               <RaisedButton 
                 label='Delete'
-                style={STYLES.button} />
+                style={STYLES.button} 
+                onTouchTap={() => {
+                  this.props.onbutton('delete', this.props.selected)
+                }} />
             ) : null
           }
           <ToolbarSeparator />
@@ -103,21 +115,30 @@ export default class ViewToolbar extends Component {
             displayMap.cut ? (
               <RaisedButton 
                 label='Cut'
-                style={STYLES.button} />
+                style={STYLES.button} 
+                onTouchTap={() => {
+                  this.props.onbutton('cut', this.props.selected)
+                }} />
             ) : null
           }
           {
             displayMap.copy ? (
               <RaisedButton 
                 label='Copy'
-                style={STYLES.button} />
+                style={STYLES.button} 
+                onTouchTap={() => {
+                  this.props.onbutton('copy', this.props.selected)
+                }} />
             ) : null
           }
           {
             displayMap.paste ? (
               <RaisedButton 
                 label='Paste'
-                style={STYLES.button} />
+                style={STYLES.button} 
+                onTouchTap={() => {
+                  this.props.onbutton('paste', this.props.selected)
+                }} />
             ) : null
           }
           {

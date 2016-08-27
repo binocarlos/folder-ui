@@ -160,7 +160,7 @@ export default function treereducer(state = DEFAULT_STATE, action = {}) {
         }
       })
     case TABLE_SELECT_NODES:
-      var selected = action.data.map(i => state.table[i])
+      var selected = action.data
       var viewtitle = ''
       if(selected.length<=0){
         viewtitle = state.treeselected.name
