@@ -9,6 +9,7 @@ import {
 } from 'material-ui/Table'
 
 class TableViewer extends Component {
+
   render() {
     const fields = this.props.fields || []
     const data = this.props.data || []
@@ -25,11 +26,12 @@ class TableViewer extends Component {
         height={this.props.height}
         selectable={this.props.selectable}
         multiSelectable={this.props.multiSelectable}
+        onRowSelection={this.props.onRowSelection}
       >
-      {this.props.hideHeader ? null : (
+      {this.props.showHeader ? (
         <TableHeader
           displaySelectAll={false}
-          adjustForCheckbox={false}
+          adjustForCheckbox={this.props.showCheckboxes}
           enableSelectAll={false}
         >
           <TableRow>
@@ -38,10 +40,10 @@ class TableViewer extends Component {
             ))}
           </TableRow>
         </TableHeader>
-      )}
+      ) : null}
         <TableBody
-          displayRowCheckbox={false}
-          deselectOnClickaway={true}
+          displayRowCheckbox={this.props.showCheckboxes}
+          deselectOnClickaway={false}
         >
           {data.map( (row, index) => (
             <TableRow key={index}>
@@ -49,7 +51,7 @@ class TableViewer extends Component {
                 const render = renderfns[index]
                 const content = render(row)
                 return (
-                  <TableHeaderColumn key={index}>{content}</TableHeaderColumn>
+                  <TableRowColumn key={index}>{content}</TableRowColumn>
                 )
               })}
             </TableRow>
@@ -58,6 +60,13 @@ class TableViewer extends Component {
       </Table>
     )
   }
+}
+
+TableViewer.defaultProps = {
+  showCheckboxes: false,
+  multiSelectable: false,
+  selectable: true,
+  showHeader: true
 }
 
 export default TableViewer

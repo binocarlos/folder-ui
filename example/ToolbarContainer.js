@@ -1,17 +1,26 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
+import ItemToolbar from '../src/ItemToolbar'
 
-export class FormContainer extends Component {
+export class ToolbarContainer extends Component {
+
   render() {
-    return (
-      <div>form</div>
+    return (   
+      <ItemToolbar {...this.props} />
     )
   }
 }
 
 function mapStateToProps(state, ownProps) {
   return {
-    
+    selected:state.tableselected,
+    additems:[
+      {
+        title:'Folder'
+      },{
+        title:'Item'
+      }
+    ]
   }
 }
 
@@ -24,4 +33,4 @@ function mapDispatchToProps(dispatch, ownProps) {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(FormContainer)
+)(ToolbarContainer)

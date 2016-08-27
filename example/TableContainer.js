@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 
-import { tree_select_node } from './actions'
+import { table_select_nodes } from './actions'
 import TableViewer from '../src/TableViewer'
 
 const FIELDS = [{
@@ -21,14 +21,15 @@ export class TableContainer extends Component {
 function mapStateToProps(state, ownProps) {
   return {
     fields:FIELDS,  
-    data:state.table,
-    hideHeader:true
+    data:state.table
   }
 }
 
 function mapDispatchToProps(dispatch, ownProps) {
   return {
-    
+    onRowSelection:function(data){
+      dispatch(table_select_nodes(data))
+    }
   }
 }
 

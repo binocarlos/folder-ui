@@ -9,10 +9,14 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import AppBar from 'material-ui/AppBar'
 
 import AppNavWrapper from 'kettle-ui/lib/AppNavWrapper'
+import ToolbarWrapper from 'kettle-ui/lib/ToolbarWrapper'
+
 import { Container, Row, Col } from 'kettle-ui/lib/Grid'
 
 import TreeContainer from './TreeContainer'
-import ContentContainer from './ContentContainer'
+import TableContainer from './TableContainer'
+import ToolbarContainer from './ToolbarContainer'
+
 import reducer from './reducer'
 
 const finalCreateStore = compose(
@@ -43,7 +47,15 @@ ReactDOM.render(
           <TreeContainer 
             title="My Folders" />
         }>
-        <ContentContainer />
+        <ToolbarWrapper
+          toolbar={
+            <ToolbarContainer />
+          }>
+          <TableContainer 
+            showHeader={false}
+            multiSelectable={true}
+            showCheckboxes={true} />
+        </ToolbarWrapper>
       </AppNavWrapper>
     </MuiThemeProvider>
   </Provider>,

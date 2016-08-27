@@ -111,7 +111,35 @@ A component that will display a Table for an array of items.
  * height - table height
  * selectable - boolean that controls if you can select items in the list (true)
  * multiSelectable - boolean that controls multi-select (false)
- * hideHeader - don't show the column titles
+ * showCheckboxes - boolean whether to show select checkboxes (false)
+ * showHeader - show the column titles (true)
+ * onRowSelection - run when rows are selected
+
+## ItemToolbar
+
+A toolbar used for adding/editing a folder or other item.
+
+There are basic rules that apply to what buttons are displayed:
+
+ * when nothing is selected
+   * add
+ * when a single thing is selected
+   * open
+   * edit
+   * delete
+ * when multiple things are selected
+   * delete
+
+ * selected - an array of objects that are selected
+ * additems - an array of objects describing what is in the add menu
+   * data - passed to the onadd function
+   * title - text to display
+   * icon - React element to display as the icon
+ * children - extra buttons to put onto the toolbar
+ * onadd(data) - run when an item from the add menu is clicked
+ * onopen(object) - run when an item is opened
+ * ondelete(array) - run when items are deleted
+ * onedit(object) - run when an item is edited
 
 ## tools
 

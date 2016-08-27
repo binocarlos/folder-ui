@@ -1,4 +1,7 @@
-import { TREE_SELECT_NODE } from './actions'
+import { 
+  TREE_SELECT_NODE,
+  TABLE_SELECT_NODES
+} from './actions'
 import update from 'react/lib/update'
 import { processTreeData, getChildren } from '../src/tools'
 
@@ -115,6 +118,7 @@ const DEFAULT_STATE = {
   tree:processTreeData(ROOT_DATA),
   table:DEFAULT_DATA,
   treeselected:ROOT_DATA[0],
+  tableselected:[],
   page:'table'
 }
 
@@ -146,6 +150,12 @@ export default function treereducer(state = DEFAULT_STATE, action = {}) {
         },
         tree:{
           $set: newTree
+        }
+      })
+    case TABLE_SELECT_NODES:
+      return update(state, {
+        tableselected:{
+          $set: action.data
         }
       })
     default:
