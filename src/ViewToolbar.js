@@ -2,70 +2,20 @@ import React, { Component, PropTypes } from 'react'
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar'
 import Menu from 'material-ui/Menu'
 import MenuItem from 'material-ui/MenuItem'
-import DropDownMenu from 'material-ui/DropDownMenu'
 import RaisedButton from 'material-ui/RaisedButton'
-import FlatButton from 'material-ui/FlatButton'
 import ButtonDropDown from 'kettle-ui/lib/ButtonDropDown'
 
-const BUTTON_PROPS = {
-  all:{
-    style:{
-      margin:'10px'
-    }
-  },
-  leftContainer:{
-    marginLeft:'30px'
-  },
-  rightContainer:{
-    marginRight:'50px'
+const STYLES = {
+  button:{  
+    margin:'10px'
   },
   leftSeperator:{
-    width:'30px',
+    width:'25px',
     display:'inline-block'
-  },
-  add:{
-    label:"Add",
-    style:{
-      
-    }
-  },
-  view:{
-    label:"View",
-    style:{
-      
-    }
-  },
-  edit:{
-    label:"Edit",
-    style:{
-      
-    }
-  },
-  open:{
-    label:"Open",
-    style:{
-      
-    }
-  },
-  delete:{
-    label:"Delete",
-    style:{
-      
-    }
   }
 }
 
-function getButtonProps(name){
-  var buttonStyle = BUTTON_PROPS[name].style
-  var allStyle = BUTTON_PROPS.all.style
-  var mergedStyle = Object.assign({}, allStyle, buttonStyle)
-  var buttonProps = BUTTON_PROPS[name]
-  return Object.assign({}, buttonProps, {
-    style:mergedStyle
-  })
-}
-
-export default class ItemToolbar extends Component {
+export default class ViewToolbar extends Component {
   render() {
 
     var displayMap = {
@@ -78,10 +28,15 @@ export default class ItemToolbar extends Component {
           !this.props.disable.view,
       open:this.props.selected.length==1 &&
            !this.props.disable.open,
-      edit:this.props.selected.length==1 &&
-           !this.props.disable.edit,
+      edit:!this.props.disable.edit,
       delete:this.props.selected.length>0 &&
-           !this.props.disable.delete
+           !this.props.disable.delete,
+      cut:this.props.selected.length>0 &&
+           !this.props.disable.cut,
+      copy:this.props.selected.length>0 &&
+           !this.props.disable.copy,
+      paste:this.props.selected.length==0 &&
+           !this.props.disable.paste
     }
 
     return (
@@ -98,13 +53,16 @@ export default class ItemToolbar extends Component {
             ) : null
           }
 
-          <div style={BUTTON_PROPS.leftSeperator}></div>
+          <div style={STYLES.leftSeperator}></div>
           
           {
             displayMap.add ? (
               <ButtonDropDown
                 buttonclass={RaisedButton}
-                buttonprops={getButtonProps('add')}>
+                buttonprops={{
+                  label:'Add',
+                  style:STYLES.button
+                }}>
                 <Menu>
                 {
                   (this.props.additems || []).map((additem,i) => {
@@ -120,17 +78,46 @@ export default class ItemToolbar extends Component {
 
           {
             displayMap.open ? (
-              <RaisedButton {...getButtonProps('open')} />
+              <RaisedButton 
+                label='Open'
+                style={STYLES.button} />
             ) : null
           }
           {
             displayMap.edit ? (
-              <RaisedButton {...getButtonProps('edit')} />
+              <RaisedButton 
+                label='Edit'
+                style={STYLES.button} />
             ) : null
           }
           {
             displayMap.delete ? (
-              <RaisedButton {...getButtonProps('delete')} />
+              <RaisedButton 
+                label='Delete'
+                style={STYLES.button} />
+            ) : null
+          }
+          <ToolbarSeparator />
+          <div style={STYLES.leftSeperator}></div>
+          {
+            displayMap.cut ? (
+              <RaisedButton 
+                label='Cut'
+                style={STYLES.button} />
+            ) : null
+          }
+          {
+            displayMap.copy ? (
+              <RaisedButton 
+                label='Copy'
+                style={STYLES.button} />
+            ) : null
+          }
+          {
+            displayMap.paste ? (
+              <RaisedButton 
+                label='Paste'
+                style={STYLES.button} />
             ) : null
           }
           {
@@ -152,7 +139,7 @@ export default class ItemToolbar extends Component {
   }
 }
 
-ItemToolbar.propTypes = {
+ViewToolbar.propTypes = {
   title: PropTypes.string,
   selected: PropTypes.array,
   additems: PropTypes.array,
@@ -165,7 +152,7 @@ ItemToolbar.propTypes = {
   disable: PropTypes.object
 }
 
-ItemToolbar.defaultProps = {
+ViewToolbar.defaultProps = {
   selected: [],
   additems: [],
   viewitems: [],

@@ -15,7 +15,7 @@ import { Container, Row, Col } from 'kettle-ui/lib/Grid'
 
 import TreeContainer from './TreeContainer'
 import TableContainer from './TableContainer'
-import ToolbarContainer from './ToolbarContainer'
+import ViewToolbarContainer from './ViewToolbarContainer'
 
 import reducer from './reducer'
 
@@ -48,8 +48,9 @@ ReactDOM.render(
             title="My Folders" />
         }>
         <ToolbarWrapper
+          offsetWidth={250}
           toolbar={
-            <ToolbarContainer />
+            <ViewToolbarContainer />
           }>
           <TableContainer 
             showHeader={false}

@@ -115,31 +115,48 @@ A component that will display a Table for an array of items.
  * showHeader - show the column titles (true)
  * onRowSelection - run when rows are selected
 
-## ItemToolbar
+## ViewToolbar
 
-A toolbar used for adding/editing a folder or other item.
+A toolbar used for viewing the contents of a folder.
 
 There are basic rules that apply to what buttons are displayed:
 
- * when nothing is selected
+ * when nothing is selected (selected.length==0)
+   * title = parent.name
    * add
- * when a single thing is selected
+   * edit
+   * paste
+ * when a single thing is selected (selected.length==1)
+   * title = selected[0].name
    * open
    * edit
    * delete
- * when multiple things are selected
+   * cut
+   * copy
+ * when multiple things are selected (selected.length>1)
+   * title = 'Multiple items'
    * delete
+   * cut
+   * copy
 
+ * title - the toolbar title
  * selected - an array of objects that are selected
  * additems - an array of objects describing what is in the add menu
    * data - passed to the onadd function
    * title - text to display
    * icon - React element to display as the icon
- * children - extra buttons to put onto the toolbar
+ * disable - object with properties to control which buttons not to show
+   * add
+   * open
+   * edit
+   * delete
+   * cut
+   * copy
+   * paste
+ * children - React element to include after the left hand buttons
+ * rightchildren - React element to include after the right hand buttons
  * onadd(data) - run when an item from the add menu is clicked
- * onopen(object) - run when an item is opened
- * ondelete(array) - run when items are deleted
- * onedit(object) - run when an item is edited
+ * onbutton(buttonName, selected) - run when a button is clicked, passed the currently selected array
 
 ## tools
 

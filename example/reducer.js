@@ -119,6 +119,7 @@ const DEFAULT_STATE = {
   table:DEFAULT_DATA,
   treeselected:ROOT_DATA[0],
   tableselected:[],
+  viewtitle:ROOT_DATA[0].name,
   page:'table'
 }
 
@@ -150,12 +151,32 @@ export default function treereducer(state = DEFAULT_STATE, action = {}) {
         },
         tree:{
           $set: newTree
+        },
+        viewtitle:{
+          $set: newNode.name
+        },
+        tableselected:{
+          $set: []
         }
       })
     case TABLE_SELECT_NODES:
+      var selected = action.data.map(i => state.table[i])
+      var viewtitle = ''
+      if(selected.length<=0){
+        viewtitle = state.treeselected.name
+      }
+      else if(selected.length==1){
+        viewtitle = selected[0].name
+      }
+      else{
+        viewtitle = selected.length + ' item' + (selected.length==1 ? '' : 's')
+      }
       return update(state, {
         tableselected:{
-          $set: action.data
+          $set: selected
+        },
+        viewtitle:{
+          $set: viewtitle
         }
       })
     default:
