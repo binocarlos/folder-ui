@@ -15,7 +15,7 @@ export class FormToolbarContainer extends Component {
 function mapStateToProps(state, ownProps) {
   var item = state.folderui.editing || {}
   return {
-    title:item.name,
+    title:item.data.name,
     selected:item
   }
 }

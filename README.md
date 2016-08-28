@@ -108,6 +108,7 @@ Pass the currently selected id.
 A component that will display a Table for an array of items.
 
  * data - an array of objects
+ * selected - an array of selected object ids
  * fields - an array of objects representing column definitions
    * title - the title for the field
    * render(data) - a function that returns a React element used to render the value
@@ -116,7 +117,16 @@ A component that will display a Table for an array of items.
  * multiSelectable - boolean that controls multi-select (false)
  * showCheckboxes - boolean whether to show select checkboxes (false)
  * showHeader - show the column titles (true)
- * onRowSelection - run when rows are selected - passed an array of selected ids
+ * onRowSelection - run when rows are selected - passed an array of selected indexes
+
+## FormViewer
+
+A component that will display a [biro](https://github.com/binocarlos/biro) Form for the current item
+
+ * data - the data for the current item
+ * meta - the biro meta for the current item
+ * schema - the schema for the current item
+ * onSave - run when data is changed
 
 ## BaseToolbar
 
@@ -193,7 +203,7 @@ Properties:
  * rightchildren - React element to include after the right hand buttons
  * onadd(data) - run when an item from the add menu is clicked
  * onrightmenu(data) - run when an item from the right hand menu is clicked
- * onbutton(buttonName) - run when a button is clicked, passed the name of the button
+ * onbutton(buttonName, selected) - run when a button is clicked, passed the name of the button and an array of selected objects
 
 ## FormToolbar
 
@@ -216,7 +226,7 @@ Props:
    * save
    * cancel
  * buttonFilter(name, props) - additional function to remove a button for a particular selection
- * onbutton(buttonName, selected) - run when a button is clicked, passed the currently selected array
+ * onbutton(buttonName, selected) - run when a button is clicked, passed the currently selected object
  * onrightmenu(data) - run when an item from the right hand menu is clicked
 
 ## tools
@@ -253,6 +263,35 @@ Into:
     2:[],
     3:[]
   }
+}
+```
+
+#### `processTableData`
+
+Turn an array of objects into tabledata format:
+
+```javascript
+[{
+  id:1,
+  title:'node1'
+},{
+  id:2,
+  title:'node2'
+}]
+```
+
+Into:
+
+```javascript
+{
+  data:{
+    1:{id:1,title:'node1'},
+    2:{id:2,title:'node2'}
+  },
+  list:[
+    1,
+    2
+  ]
 }
 ```
 

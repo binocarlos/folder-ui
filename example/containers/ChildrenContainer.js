@@ -12,16 +12,20 @@ const FIELDS = [{
 export class ChildrenContainer extends Component {
 
   render() {
-    return (   
+    return (
       <ChildrenViewer {...this.props} />
     )
   }
 }
 
 function mapStateToProps(state, ownProps) {
+  console.log(JSON.stringify(state, null, 4))
   return {
-    fields:FIELDS,  
-    data:state.folderui.table
+    fields:FIELDS,
+    oranges:state.folderui.tableselected2,
+    data:state.folderui.table,
+    apple:'sdsd'/*
+    selectedids:state.folderui.tableselected*/
   }
 }
 

@@ -10,14 +10,15 @@ import {
 
 class ChildrenViewer extends Component {
 
-  onRowSelection(selected) {
-    this.props.onRowSelection(selected.map(i => {
-      return this.props.data[i].id
-    }))
-  }
-
   render() {
-    
+/*
+    var selectedMap = {}
+    var selectedArr = this.props.selectedids || []
+
+    selectedArr.forEach(sid => {
+      selectedMap[sid] = true
+    })*/
+
     const fields = this.props.fields || []
     const data = this.props.data || []
     const renderfns = fields.map(field => {
@@ -33,7 +34,7 @@ class ChildrenViewer extends Component {
         height={this.props.height}
         selectable={this.props.selectable}
         multiSelectable={this.props.multiSelectable}
-        onRowSelection={this.onRowSelection.bind(this)}
+        onRowSelection={this.props.onRowSelection}
       >
       {this.props.showHeader ? (
         <TableHeader
@@ -73,7 +74,8 @@ ChildrenViewer.defaultProps = {
   showCheckboxes: false,
   multiSelectable: false,
   selectable: true,
-  showHeader: true
+  showHeader: true,
+  selectedids: []
 }
 
 export default ChildrenViewer

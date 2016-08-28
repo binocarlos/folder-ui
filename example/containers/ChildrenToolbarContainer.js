@@ -13,9 +13,23 @@ export class ChildrenToolbarContainer extends Component {
 }
 
 function mapStateToProps(state, ownProps) {
+
+  var fs = state.folderui
+
+  var title = ''
+  if(fs.tableselected.length==0){
+    title = fs.treeselected.name
+  }
+  else if(fs.tableselected.length==1){
+    title = 'One Item'//fs.tableselected[0].name
+  }
+  else{
+    title = 'Multiple items'
+  }
+
   return {
-    title:state.folderui.viewtitle,
-    selected:state.folderui.tableselected,
+    title:title,
+    selected:fs.tableselected,
     additems:[
       {
         title:'Folder'
