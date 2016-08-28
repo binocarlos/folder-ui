@@ -1,6 +1,9 @@
 import { 
-  TREE_SELECT_NODE,
-  TABLE_SELECT_NODES
+  FOLDERUI_TREE_SELECT_NODE,
+  FOLDERUI_TABLE_SELECT_NODES,
+  FOLDERUI_EDIT_ITEM,
+  FOLDERUI_EDIT_ITEM_CANCEL,
+  FOLDERUI_EDIT_ITEM_SAVE
 } from './actions'
 import update from 'react/lib/update'
 import { processTreeData, getChildren } from '../src/tools'
@@ -115,17 +118,22 @@ const ROOT_DATA = [{
 }]
 
 const DEFAULT_STATE = {
+  // * data - id -> {}
+  // * children - id -> [id]
+  // * rootids - [id]
   tree:processTreeData(ROOT_DATA),
   table:DEFAULT_DATA,
   treeselected:ROOT_DATA[0],
   tableselected:[],
+  // the item we are currently editing
+  editing:null,
   viewtitle:ROOT_DATA[0].name,
   contentmode:'children'
 }
 
 export default function treereducer(state = DEFAULT_STATE, action = {}) {
   switch (action.type) {
-    case TREE_SELECT_NODE:
+    case FOLDERUI_TREE_SELECT_NODE:
       var newNode = update(action.data, {
         open:{
           $set: true
@@ -159,8 +167,10 @@ export default function treereducer(state = DEFAULT_STATE, action = {}) {
           $set: []
         }
       })
-    case TABLE_SELECT_NODES:
-      var selected = action.data
+    case FOLDERUI_TABLE_SELECT_NODES:
+      var selected = action.data.map(id => {
+        return state.tree.data[id]
+      })
       var viewtitle = ''
       if(selected.length<=0){
         viewtitle = state.treeselected.name
@@ -177,6 +187,24 @@ export default function treereducer(state = DEFAULT_STATE, action = {}) {
         },
         viewtitle:{
           $set: viewtitle
+        }
+      })
+    case FOLDERUI_EDIT_ITEM:
+      return update(state, {
+        editing:{
+          $set: action.item
+        }
+      })
+    case FOLDERUI_EDIT_ITEM_CANCEL:
+      return update(state, {
+        editing:{
+          $set: null
+        }
+      })
+    case FOLDERUI_EDIT_ITEM_SAVE:
+      return update(state, {
+        editing:{
+          $set: null
         }
       })
     default:

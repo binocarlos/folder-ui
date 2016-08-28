@@ -51,12 +51,13 @@ export default class BaseToolbar extends Component {
     )
   }
 
-  getButton(label, handler) {
+  getButton(label, handler, extraProps = {}) {
     return (
       <RaisedButton 
         label={label}
         style={STYLES.button} 
-        onTouchTap={handler} />
+        onTouchTap={handler}
+        {...extraProps} />
     )
   }
 

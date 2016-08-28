@@ -12,7 +12,7 @@ class ChildrenViewer extends Component {
 
   onRowSelection(selected) {
     this.props.onRowSelection(selected.map(i => {
-      return this.props.data[i]
+      return this.props.data[i].id
     }))
   }
 

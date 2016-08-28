@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
+import { edit_item } from '../actions'
 import ChildrenToolbar from '../../src/ChildrenToolbar'
 
 export class ChildrenToolbarContainer extends Component {
@@ -43,8 +44,12 @@ function mapDispatchToProps(dispatch, ownProps) {
       console.log(JSON.stringify(data, null, 4))
     },
     onbutton:function(name, selected){
-      console.log('button: ' + name)
-      console.log(JSON.stringify(selected, null, 4))
+      switch (name) {
+        case 'edit':
+          return dispatch(edit_item(selected[0]))
+        default:
+          return
+      }
     }
   }
 }

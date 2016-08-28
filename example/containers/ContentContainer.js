@@ -29,7 +29,7 @@ export class ContentContainer extends Component {
 
 function mapStateToProps(state, ownProps) {
   return {
-    mode:state.folderui.contentmode
+    mode:state.folderui.editing ? 'form' : 'children'
   }
 }
 

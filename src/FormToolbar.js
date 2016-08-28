@@ -27,8 +27,7 @@ export default class FormToolbar extends BaseToolbar {
           buttonFilter('rightmenu', this.props),
       save:!this.props.disable.save &&
           buttonFilter('save', this.props),
-      cancel:this.props.rightitems.length>0 &&
-          !this.props.disable.rightmenu &&
+      cancel:!this.props.disable.rightmenu &&
           buttonFilter('rightmenu', this.props)
     }
 
@@ -49,19 +48,22 @@ export default class FormToolbar extends BaseToolbar {
           <div style={STYLES.leftSeperator}></div>
           
           {
-            displayMap.open ? (
-              this.getButton('Save', () => {
-                this.props.onbutton('save')
+            displayMap.cancel ? (
+              this.getButton('Cancel', () => {
+                this.props.onbutton('cancel', this.props.selected)
               })
             ) : null
           }
           {
-            displayMap.edit ? (
-              this.getButton('Cancel', () => {
-                this.props.onbutton('cancel')
+            displayMap.save ? (
+              this.getButton('Save', () => {
+                this.props.onbutton('save', this.props.selected)
+              }, {
+                primary:true
               })
             ) : null
           }
+          
           {
             this.props.children
           }

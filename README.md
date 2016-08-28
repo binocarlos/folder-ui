@@ -61,6 +61,7 @@ console.dir(treedata)
 
 The original data property is an array of top level objects each with the following fields:
 
+ * id - some kind of identifier
  * name - a string to display
  * children - an array of child items
  * open - control the initial open state of the item
@@ -90,15 +91,17 @@ function get_icon(data){
 
 If no function is given - it will default to the `file/folder` icon.
 
-#### `select_node(item)`
+#### `select_node(id)`
 
 Pass this function and it will be run each time an item in the tree has been clicked.
+
+It will be passed the id of the selected item.
 
 Use this to trigger data being loaded when the tree is clicked.
 
 #### `selected`
 
-Pass the currently selected object in - it will be compared using `===`.
+Pass the currently selected id.
 
 ## ChildrenViewer
 
@@ -113,7 +116,7 @@ A component that will display a Table for an array of items.
  * multiSelectable - boolean that controls multi-select (false)
  * showCheckboxes - boolean whether to show select checkboxes (false)
  * showHeader - show the column titles (true)
- * onRowSelection - run when rows are selected - passed an array of selected indexes
+ * onRowSelection - run when rows are selected - passed an array of selected ids
 
 ## BaseToolbar
 
@@ -133,11 +136,13 @@ the handler is the function to run when an item is selected and it is passed the
 
 generate a ButtonDropdown with the given items - items and handler are passed to `getMenuItems`
 
-##### `getButton(items, handler)`
+##### `getButton(items, handler, extraProps)`
 
 generate a normal button - handler is run when the button is clicked
 
 You can pass a schema to the toolbar and it will render the correct components.
+
+extraProps are passed to the underlying button.
 
 ## ChildrenToolbar
 
@@ -188,7 +193,7 @@ Properties:
  * rightchildren - React element to include after the right hand buttons
  * onadd(data) - run when an item from the add menu is clicked
  * onrightmenu(data) - run when an item from the right hand menu is clicked
- * onbutton(buttonName, selected) - run when a button is clicked, passed the currently selected array
+ * onbutton(buttonName) - run when a button is clicked, passed the name of the button
 
 ## FormToolbar
 
