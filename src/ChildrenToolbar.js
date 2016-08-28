@@ -12,29 +12,41 @@ const STYLES = {
   }
 }
  
-export default class ViewToolbar extends BaseToolbar {
+class ChildrenToolbar extends BaseToolbar {
 
   render() {
+
+    var buttonFilter = this.props.buttonFilter || function(name, props){
+      return true
+    }
 
     var displayMap = {
       title:this.props.title,
       add:this.props.selected.length<=0 &&
           this.props.additems.length>0 &&
-          !this.props.disable.add,
+          !this.props.disable.add &&
+          buttonFilter('add', this.props),
       rightmenu:this.props.rightitems.length>0 &&
-          !this.props.disable.rightmenu,
+          !this.props.disable.rightmenu &&
+          buttonFilter('rightmenu', this.props),
       open:this.props.selected.length==1 &&
-          !this.props.disable.open,
+          !this.props.disable.open &&
+          buttonFilter('open', this.props),
       edit:this.props.selected.length==1 &&
-          !this.props.disable.edit,
+          !this.props.disable.edit &&
+          buttonFilter('edit', this.props),
       delete:this.props.selected.length>0 &&
-           !this.props.disable.delete,
+           !this.props.disable.delete &&
+          buttonFilter('delete', this.props),
       cut:this.props.selected.length>0 &&
-           !this.props.disable.cut,
+           !this.props.disable.cut &&
+          buttonFilter('cut', this.props),
       copy:this.props.selected.length>0 &&
-           !this.props.disable.copy,
+           !this.props.disable.copy &&
+          buttonFilter('copy', this.props),
       paste:this.props.selected.length==0 &&
-           !this.props.disable.paste
+           !this.props.disable.paste &&
+          buttonFilter('paste', this.props)
     }
 
     return (
@@ -131,22 +143,22 @@ export default class ViewToolbar extends BaseToolbar {
   }
 }
 
-ViewToolbar.propTypes = {
+ChildrenToolbar.propTypes = {
   title: PropTypes.string,
   selected: PropTypes.array,
   additems: PropTypes.array,
-  viewitems: PropTypes.array,
+  rightitems: PropTypes.array,
+  onbutton: PropTypes.func,
   onadd: PropTypes.func,
-  onview: PropTypes.func,
-  onopen: PropTypes.func,
-  ondelete: PropTypes.func,
-  onedit: PropTypes.func,
+  onrightmenu: PropTypes.func,
   disable: PropTypes.object
 }
 
-ViewToolbar.defaultProps = {
+ChildrenToolbar.defaultProps = {
   selected: [],
   additems: [],
-  viewitems: [],
+  rightitems: [],
   disable: {}
 }
+
+export default ChildrenToolbar

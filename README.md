@@ -100,7 +100,7 @@ Use this to trigger data being loaded when the tree is clicked.
 
 Pass the currently selected object in - it will be compared using `===`.
 
-## TableViewer
+## ChildrenViewer
 
 A component that will display a Table for an array of items.
 
@@ -139,7 +139,7 @@ generate a normal button - handler is run when the button is clicked
 
 You can pass a schema to the toolbar and it will render the correct components.
 
-## ViewToolbar
+## ChildrenToolbar
 
 A toolbar used for viewing the contents of a folder.
 
@@ -163,6 +163,8 @@ There are basic rules that apply to what buttons are displayed:
    * cut
    * copy
 
+Properties:
+
  * title - the toolbar title
  * selected - an array of objects that are selected
  * additems - an array of objects describing what is in the add menu
@@ -181,11 +183,36 @@ There are basic rules that apply to what buttons are displayed:
    * cut
    * copy
    * paste
+ * buttonFilter(name, props) - additional function to remove a button for a particular selection
  * children - React element to include after the left hand buttons
  * rightchildren - React element to include after the right hand buttons
  * onadd(data) - run when an item from the add menu is clicked
  * onrightmenu(data) - run when an item from the right hand menu is clicked
  * onbutton(buttonName, selected) - run when a button is clicked, passed the currently selected array
+
+## FormToolbar
+
+A toolbar used for editing a single item.
+
+Buttons:
+
+ * save
+ * cancel
+ 
+Props: 
+
+ * title - the toolbar title
+ * selected - the object that is currently being edited
+ * rightitems - an array of objects that appears in the right hand drop down
+   * data - passed to the onadd function
+   * title - text to display
+   * icon - React element to display as the icon
+ * disable - object with properties to control which buttons not to show
+   * save
+   * cancel
+ * buttonFilter(name, props) - additional function to remove a button for a particular selection
+ * onbutton(buttonName, selected) - run when a button is clicked, passed the currently selected array
+ * onrightmenu(data) - run when an item from the right hand menu is clicked
 
 ## tools
 

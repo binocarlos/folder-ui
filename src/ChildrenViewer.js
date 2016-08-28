@@ -8,7 +8,7 @@ import {
   TableRowColumn
 } from 'material-ui/Table'
 
-class TableViewer extends Component {
+class ChildrenViewer extends Component {
 
   onRowSelection(selected) {
     this.props.onRowSelection(selected.map(i => {
@@ -17,6 +17,7 @@ class TableViewer extends Component {
   }
 
   render() {
+    
     const fields = this.props.fields || []
     const data = this.props.data || []
     const renderfns = fields.map(field => {
@@ -68,11 +69,11 @@ class TableViewer extends Component {
   }
 }
 
-TableViewer.defaultProps = {
+ChildrenViewer.defaultProps = {
   showCheckboxes: false,
   multiSelectable: false,
   selectable: true,
   showHeader: true
 }
 
-export default TableViewer
+export default ChildrenViewer

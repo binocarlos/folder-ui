@@ -1,20 +1,20 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
-import ViewToolbar from '../src/ViewToolbar'
+import ChildrenToolbar from '../../src/ChildrenToolbar'
 
-export class ToolbarContainer extends Component {
+export class ChildrenToolbarContainer extends Component {
 
   render() {
     return (   
-      <ViewToolbar {...this.props} />
+      <ChildrenToolbar {...this.props} />
     )
   }
 }
 
 function mapStateToProps(state, ownProps) {
   return {
-    title:state.viewtitle,
-    selected:state.tableselected,
+    title:state.folderui.viewtitle,
+    selected:state.folderui.tableselected,
     additems:[
       {
         title:'Folder'
@@ -52,4 +52,4 @@ function mapDispatchToProps(dispatch, ownProps) {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(ToolbarContainer)
+)(ChildrenToolbarContainer)

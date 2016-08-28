@@ -1,19 +1,19 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 
-import { table_select_nodes } from './actions'
-import TableViewer from '../src/TableViewer'
+import { table_select_nodes } from '../actions'
+import ChildrenViewer from '../../src/ChildrenViewer'
 
 const FIELDS = [{
   title:'name',
   render:data => data.name
 }]
 
-export class TableContainer extends Component {
+export class ChildrenContainer extends Component {
 
   render() {
     return (   
-      <TableViewer {...this.props} />
+      <ChildrenViewer {...this.props} />
     )
   }
 }
@@ -21,7 +21,7 @@ export class TableContainer extends Component {
 function mapStateToProps(state, ownProps) {
   return {
     fields:FIELDS,  
-    data:state.table
+    data:state.folderui.table
   }
 }
 
@@ -36,4 +36,4 @@ function mapDispatchToProps(dispatch, ownProps) {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(TableContainer)
+)(ChildrenContainer)

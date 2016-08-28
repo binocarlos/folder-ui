@@ -7,22 +7,23 @@ import { applyMiddleware, compose, createStore, combineReducers } from 'redux'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 
 import AppBar from 'material-ui/AppBar'
-
 import AppNavWrapper from 'kettle-ui/lib/AppNavWrapper'
-import ToolbarWrapper from 'kettle-ui/lib/ToolbarWrapper'
 
 import { Container, Row, Col } from 'kettle-ui/lib/Grid'
 
-import TreeContainer from './TreeContainer'
-import TableContainer from './TableContainer'
-import ViewToolbarContainer from './ViewToolbarContainer'
+import TreeContainer from './containers/TreeContainer'
+import ContentContainer from './containers/ContentContainer'
 
-import reducer from './reducer'
+import folderreducer from './reducer'
 
 const finalCreateStore = compose(
   applyMiddleware(),
   window.devToolsExtension ? window.devToolsExtension() : f => f
 )(createStore)
+
+const reducer = combineReducers({
+  folderui: folderreducer
+})
 
 const store = finalCreateStore(reducer)
 
@@ -47,16 +48,13 @@ ReactDOM.render(
           <TreeContainer 
             title="My Folders" />
         }>
-        <ToolbarWrapper
+        
+        <ContentContainer 
           offsetWidth={250}
-          toolbar={
-            <ViewToolbarContainer />
-          }>
-          <TableContainer 
-            showHeader={false}
-            multiSelectable={true}
-            showCheckboxes={true} />
-        </ToolbarWrapper>
+          showHeader={false}
+          multiSelectable={true}
+          showCheckboxes={true} />
+        
       </AppNavWrapper>
     </MuiThemeProvider>
   </Provider>,

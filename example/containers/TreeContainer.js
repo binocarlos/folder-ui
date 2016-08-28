@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 
-import { tree_select_node } from './actions'
-import TreeViewer from '../src/TreeViewer'
+import { tree_select_node } from '../actions'
+import TreeViewer from '../../src/TreeViewer'
 
 export class TreeContainer extends Component {
   render() {
@@ -14,8 +14,8 @@ export class TreeContainer extends Component {
 
 function mapStateToProps(state, ownProps) {
   return {  
-    treedata:state.tree,
-    selected:state.treeselected
+    treedata:state.folderui.tree,
+    selected:state.folderui.treeselected
   }
 }
 

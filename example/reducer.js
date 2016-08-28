@@ -120,7 +120,7 @@ const DEFAULT_STATE = {
   treeselected:ROOT_DATA[0],
   tableselected:[],
   viewtitle:ROOT_DATA[0].name,
-  page:'table'
+  contentmode:'children'
 }
 
 export default function treereducer(state = DEFAULT_STATE, action = {}) {
