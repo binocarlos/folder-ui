@@ -21,6 +21,13 @@ function mapStateToProps(state, ownProps) {
       },{
         title:'Item'
       }
+    ],
+    rightitems:[
+      {
+        title:'Children'
+      },{
+        title:'Details'
+      }
     ]
   }
 }
@@ -29,6 +36,10 @@ function mapDispatchToProps(dispatch, ownProps) {
   return {
     onadd:function(data){
       console.log('add')
+      console.log(JSON.stringify(data, null, 4))
+    },
+    onrightmenu:function(data){
+      console.log('rightmenu')
       console.log(JSON.stringify(data, null, 4))
     },
     onbutton:function(name, selected){

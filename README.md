@@ -115,6 +115,30 @@ A component that will display a Table for an array of items.
  * showHeader - show the column titles (true)
  * onRowSelection - run when rows are selected - passed an array of selected indexes
 
+## BaseToolbar
+
+A base toolbar class that can display buttons and drop-down buttons.
+
+You extend this class into actual Toolbar components.
+
+Your extended class can use the following methods:
+
+##### `getMenuItems(items, handler)`
+
+generate a list of `MenuItem` components from source data
+
+the handler is the function to run when an item is selected and it is passed the selected item
+
+##### `getDropDownButton(label, items, handler)`
+
+generate a ButtonDropdown with the given items - items and handler are passed to `getMenuItems`
+
+##### `getButton(items, handler)`
+
+generate a normal button - handler is run when the button is clicked
+
+You can pass a schema to the toolbar and it will render the correct components.
+
 ## ViewToolbar
 
 A toolbar used for viewing the contents of a folder.
@@ -145,6 +169,10 @@ There are basic rules that apply to what buttons are displayed:
    * data - passed to the onadd function
    * title - text to display
    * icon - React element to display as the icon
+ * rightitems - an array of objects that appears in the right hand drop down
+   * data - passed to the onadd function
+   * title - text to display
+   * icon - React element to display as the icon
  * disable - object with properties to control which buttons not to show
    * add
    * open
@@ -156,6 +184,7 @@ There are basic rules that apply to what buttons are displayed:
  * children - React element to include after the left hand buttons
  * rightchildren - React element to include after the right hand buttons
  * onadd(data) - run when an item from the add menu is clicked
+ * onrightmenu(data) - run when an item from the right hand menu is clicked
  * onbutton(buttonName, selected) - run when a button is clicked, passed the currently selected array
 
 ## tools
