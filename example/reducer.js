@@ -125,7 +125,6 @@ const DEFAULT_STATE = {
   // * data - id -> {}
   // * table - [id]
   table:ROOT_DATA[0].children,
-  tableselected:[],
   // the item we are currently editing
   editing:null,
 }
@@ -155,17 +154,26 @@ export default function folderuireducer(state = DEFAULT_STATE, action = {}) {
         // this needs to be split out into an async api request
         table:{
           $set: getChildren(state.tree, selectedNode.id)
-        },
-        tableselected:{
-          $set:[]
         }
       })
 
     // selected some items in the table
     case FOLDERUI_TABLE_SELECT_NODES:
+      var selectedmap = {}
+      action.data.forEach(i => {
+        selectedmap[state.table[i].id] = true
+      })
       return update(state, {
-        tableselected2:{
-          $set: JSON.parse(JSON.stringify(action.data))
+        table:{
+          $apply: function(table){
+            return table.map(row => {
+              return update(row, {
+                _selected:{
+                  $set: selectedmap[row.id]
+                }
+              })
+            })
+          }
         }
       })
 

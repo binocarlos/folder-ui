@@ -11,13 +11,6 @@ import {
 class ChildrenViewer extends Component {
 
   render() {
-/*
-    var selectedMap = {}
-    var selectedArr = this.props.selectedids || []
-
-    selectedArr.forEach(sid => {
-      selectedMap[sid] = true
-    })*/
 
     const fields = this.props.fields || []
     const data = this.props.data || []
@@ -54,7 +47,7 @@ class ChildrenViewer extends Component {
           deselectOnClickaway={false}
         >
           {data.map( (row, index) => (
-            <TableRow key={index}>
+            <TableRow key={index} selected={row._selected}>
               {fields.map( (field, index) => {
                 const render = renderfns[index]
                 const content = render(row)
@@ -75,7 +68,7 @@ ChildrenViewer.defaultProps = {
   multiSelectable: false,
   selectable: true,
   showHeader: true,
-  selectedids: []
+  selectedids: ''
 }
 
 export default ChildrenViewer

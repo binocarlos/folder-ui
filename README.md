@@ -117,7 +117,7 @@ A component that will display a Table for an array of items.
  * multiSelectable - boolean that controls multi-select (false)
  * showCheckboxes - boolean whether to show select checkboxes (false)
  * showHeader - show the column titles (true)
- * onRowSelection - run when rows are selected - passed an array of selected indexes
+ * onRowSelection - run when rows are selected - passed an array of selected ids
 
 ## FormViewer
 
@@ -128,13 +128,29 @@ A component that will display a [biro](https://github.com/binocarlos/biro) Form 
  * schema - the schema for the current item
  * onSave - run when data is changed
 
-## BaseToolbar
+## Toolbar
 
 A base toolbar class that can display buttons and drop-down buttons.
 
-You extend this class into actual Toolbar components.
+Properties:
 
-Your extended class can use the following methods:
+ * title - the toolbar title
+ * selected - an array of objects that are selected
+ * {leftbuttons,rightbuttons} - an array of dropdown or button descriptions for the {left,right} menu buttons
+   * id - the identifier for the button
+   * type - {button,dropdown,icon}
+   * icon - React Element - used for the icon button
+   * title - the button title
+   * extraProps - extra props passed to the button
+   * items - an array of objects describing what options are in the menu
+     * id - the identifier for the button
+     * data - passed to the onadd function
+     * title - text to display
+ * children - React element to include after the left hand buttons
+ * rightchildren - React element to include after the right hand buttons
+ * onbutton(buttonName, data, selected) - run when a button is clicked, passed the name of the button, the associated button data and the `selected` property
+
+The toolbar also has some helper methods:
 
 ##### `getMenuItems(items, handler)`
 
@@ -142,9 +158,11 @@ generate a list of `MenuItem` components from source data
 
 the handler is the function to run when an item is selected and it is passed the selected item
 
-##### `getDropDownButton(label, items, handler)`
+##### `getDropDownButton(label, items, handler, extraProps)`
 
 generate a ButtonDropdown with the given items - items and handler are passed to `getMenuItems`
+
+extraProps are passed to the underlying button.
 
 ##### `getButton(items, handler, extraProps)`
 
@@ -153,81 +171,6 @@ generate a normal button - handler is run when the button is clicked
 You can pass a schema to the toolbar and it will render the correct components.
 
 extraProps are passed to the underlying button.
-
-## ChildrenToolbar
-
-A toolbar used for viewing the contents of a folder.
-
-There are basic rules that apply to what buttons are displayed:
-
- * when nothing is selected (selected.length==0)
-   * title = parent.name
-   * add
-   * edit
-   * paste
- * when a single thing is selected (selected.length==1)
-   * title = selected[0].name
-   * open
-   * edit
-   * delete
-   * cut
-   * copy
- * when multiple things are selected (selected.length>1)
-   * title = 'Multiple items'
-   * delete
-   * cut
-   * copy
-
-Properties:
-
- * title - the toolbar title
- * selected - an array of objects that are selected
- * additems - an array of objects describing what is in the add menu
-   * data - passed to the onadd function
-   * title - text to display
-   * icon - React element to display as the icon
- * rightitems - an array of objects that appears in the right hand drop down
-   * data - passed to the onadd function
-   * title - text to display
-   * icon - React element to display as the icon
- * disable - object with properties to control which buttons not to show
-   * add
-   * open
-   * edit
-   * delete
-   * cut
-   * copy
-   * paste
- * buttonFilter(name, props) - additional function to remove a button for a particular selection
- * children - React element to include after the left hand buttons
- * rightchildren - React element to include after the right hand buttons
- * onadd(data) - run when an item from the add menu is clicked
- * onrightmenu(data) - run when an item from the right hand menu is clicked
- * onbutton(buttonName, selected) - run when a button is clicked, passed the name of the button and an array of selected objects
-
-## FormToolbar
-
-A toolbar used for editing a single item.
-
-Buttons:
-
- * save
- * cancel
- 
-Props: 
-
- * title - the toolbar title
- * selected - the object that is currently being edited
- * rightitems - an array of objects that appears in the right hand drop down
-   * data - passed to the onadd function
-   * title - text to display
-   * icon - React element to display as the icon
- * disable - object with properties to control which buttons not to show
-   * save
-   * cancel
- * buttonFilter(name, props) - additional function to remove a button for a particular selection
- * onbutton(buttonName, selected) - run when a button is clicked, passed the currently selected object
- * onrightmenu(data) - run when an item from the right hand menu is clicked
 
 ## tools
 
