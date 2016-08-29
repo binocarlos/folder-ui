@@ -69,17 +69,17 @@ class FolderUIToolbar extends Component {
   getButtonFromSchema(schema, i) {
     if (schema.type=='dropdown') {
       return this.getButtonDropdown(schema.title, schema.items, item => {
-        this.props.onbutton(item.id, item.data, this.props.selected)
+        this.props.onButton(item.id, item.data, this.props.selected)
       }, schema.extraProps, i)
     }
     else if (schema.type=='button') {
       return this.getButton(schema.title, item => {
-        this.props.onbutton(item.id, item.data, this.props.selected)
+        this.props.onButton(item.id, item.data, this.props.selected)
       }, schema.extraProps, i)
     }
     else if (schema.type=='icon') {
       return this.getIconDropdown(schema.icon, schema.items, item => {
-        this.props.onbutton(item.id, item.data, this.props.selected)
+        this.props.onButton(item.id, item.data, this.props.selected)
       }, schema.extraProps, i)
     }
     else {
@@ -143,7 +143,7 @@ FolderUIToolbar.propTypes = {
   leftbuttons: PropTypes.array,
   rightbuttons: PropTypes.array,
   rightitems: PropTypes.array,
-  onbutton: PropTypes.func
+  onButton: PropTypes.func
 }
 
 FolderUIToolbar.defaultProps = {
@@ -152,7 +152,7 @@ FolderUIToolbar.defaultProps = {
   leftbuttons: [],
   rightbuttons: [],
   rightitems: [],
-  onbutton: function(){}
+  onButton: function(){}
 }
 
 export default FolderUIToolbar

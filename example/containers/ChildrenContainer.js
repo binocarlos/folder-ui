@@ -47,7 +47,7 @@ function mapStateToProps(state, ownProps) {
     return row._selected
   })
 
-  var leftbuttons = [{
+  var addButton = {
     id:'addmenu',
     type:'dropdown',
     title:'Add',
@@ -58,7 +58,53 @@ function mapStateToProps(state, ownProps) {
       id:'item',
       title:'Item'
     }]
-  }]
+  }
+
+  var actions = []
+  var leftbuttons = []
+
+
+  if(selected.length==0){
+    leftbuttons.push(addButton)
+    actions.push({
+      id:'edit',
+      title:'Edit'
+    },{
+      id:'paste',
+      title:'Paste'
+    })
+  }
+  else if(selected.length==1){
+    actions.push({
+      id:'open',
+      title:'Open'
+    },{
+      id:'edit',
+      title:'Edit'
+    })
+  }
+ 
+  if(selected.length>0){
+    actions.push({
+      id:'delete',
+      title:'Delete'
+    },{
+      id:'copy',
+      title:'Copy'
+    },{
+      id:'cut',
+      title:'Cut'
+    })
+  }
+
+  if(actions.length>0){
+    leftbuttons.push({
+      id:'actions',
+      type:'dropdown',
+      title:'Actions',
+      items:actions
+    })
+  }
 
   var title = ''
   if(selected.length==0){
@@ -70,6 +116,7 @@ function mapStateToProps(state, ownProps) {
   else{
     title = 'Multiple items'
   }
+
   return {
     toolbarTitle:title,
     fields:FIELDS,
