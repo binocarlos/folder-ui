@@ -119,6 +119,7 @@ A component that will display a Table for an array of items.
  * onRowSelection - run when rows are selected - passed an array of selected ids
 
 To control the selected feature - data objects must have a `_selected` property to reflect they are selected.
+
 ## FormViewer
 
 A component that will display a [biro](https://github.com/binocarlos/biro) Form for the current item
@@ -126,7 +127,8 @@ A component that will display a [biro](https://github.com/binocarlos/biro) Form 
  * data - the data for the current item
  * meta - the biro meta for the current item
  * schema - the schema for the current item
- * onSave - run when data is changed
+ * onUpdate - the data in the form has changed
+ * library - extra library items to merge into [biro-material-ui](https://github.com/binocarlos/biro-material-ui)
 
 ## Toolbar
 
@@ -208,7 +210,7 @@ Into:
 }
 ```
 
-#### `processTableData`
+#### `processListData`
 
 Turn an array of objects into tabledata format:
 

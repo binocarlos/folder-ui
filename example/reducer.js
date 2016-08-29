@@ -2,129 +2,26 @@ import {
   FOLDERUI_TREE_SELECT_NODE,
   FOLDERUI_TABLE_SELECT_NODES,
   FOLDERUI_EDIT_ITEM,
+  FOLDERUI_EDIT_ITEM_UPDATE,
   FOLDERUI_EDIT_ITEM_CANCEL,
-  FOLDERUI_EDIT_ITEM_SAVE
+  FOLDERUI_EDIT_ITEM_SAVE,
+  FOLDERUI_EDIT_ITEM_REVERT
 } from './actions'
 import update from 'react/lib/update'
-import { processTreeData, processTableData, getChildren } from '../src/tools'
+import { processTreeData, processListData, getChildren } from '../src/tools'
 
-const ROOT_DATA = [{
-  id:0,
-  name:'My Folders',
-  open:true,
-  children:[{
-    id:1,
-    name:'Folder A',
-    children:[]
-  },{
-    name:'Folder B',
-    id:2,
-    children:[{
-      name:'Sub Folder B1',
-      id:3,
-      children:[{
-        name:'Sub Folder C1',
-        id:25
-      },{
-        name:'Sub Folder C2',
-        id:26
-      }]
-    },{
-      name:'Sub Folder B2',
-      id:24
-    }]
-  },{
-    name:'Folder C',
-    id:4,
-    children:[]
-  },{
-    name:'Folder C1',
-    id:5,
-    children:[]
-  },{
-    name:'Folder C2',
-    id:6,
-    children:[]
-  },{
-    name:'Folder C3',
-    id:7,
-    children:[]
-  },{
-    name:'Folder C4',
-    id:8,
-    children:[]
-  },{
-    name:'Folder C5',
-    id:9,
-    children:[]
-  },{
-    name:'Folder C6',
-    id:10,
-    children:[]
-  },{
-    name:'Folder C7',
-    id:11,
-    children:[]
-  },{
-    name:'Folder C8',
-    id:12,
-    children:[]
-  },{
-    name:'Folder C9',
-    id:13,
-    children:[]
-  },{
-    name:'Folder C10',
-    id:14,
-    children:[]
-  },{
-    name:'Folder C11',
-    id:15,
-    children:[]
-  },{
-    name:'Folder C12',
-    id:16,
-    children:[]
-  },{
-    name:'Folder C13',
-    id:17,
-    children:[]
-  },{
-    name:'Folder C14',
-    id:18,
-    children:[]
-  },{
-    name:'Folder C15',
-    id:19,
-    children:[]
-  },{
-    name:'Folder C16',
-    id:20,
-    children:[]
-  },{
-    name:'Folder C17',
-    id:21,
-    children:[]
-  },{
-    name:'Folder C18',
-    id:22,
-    children:[]
-  },{
-    name:'Folder C19',
-    id:23,
-    children:[]
-  }]
-}]
+import { ROOT_DATA } from './fixtures'
 
+const treedata = processTreeData(ROOT_DATA)
 const DEFAULT_STATE = {
   // * data - id -> {}
   // * children - id -> [id]
   // * rootids - [id]
-  tree:processTreeData(ROOT_DATA),
-  treeselected:ROOT_DATA[0],
+  tree:treedata,
+  treeselected:treedata.data[0],
   // * data - id -> {}
   // * table - [id]
-  table:ROOT_DATA[0].children,
+  table:processListData(getChildren(treedata, 0)),
   // the item we are currently editing
   editing:null,
 }
@@ -153,7 +50,7 @@ export default function folderuireducer(state = DEFAULT_STATE, action = {}) {
         },
         // this needs to be split out into an async api request
         table:{
-          $set: getChildren(state.tree, selectedNode.id)
+          $set: processListData(getChildren(state.tree, selectedNode.id))
         },
         editing:{
           $set: null
@@ -164,18 +61,23 @@ export default function folderuireducer(state = DEFAULT_STATE, action = {}) {
     case FOLDERUI_TABLE_SELECT_NODES:
       var selectedmap = {}
       action.data.forEach(i => {
-        selectedmap[state.table[i].id] = true
+        selectedmap[state.table.list[i]] = true
       })
       return update(state, {
         table:{
-          $apply: function(table){
-            return table.map(row => {
-              return update(row, {
-                _selected:{
-                  $set: selectedmap[row.id]
-                }
+          data:{
+            $apply: function(table){
+              var ret = {}
+              Object.keys(table || {}).forEach(function(key){
+                var row = table[key]
+                ret[row.id] = update(row, {
+                  _selected:{
+                    $set: selectedmap[row.id]
+                  }
+                })         
               })
-            })
+              return ret
+            }
           }
         }
       })
@@ -186,7 +88,30 @@ export default function folderuireducer(state = DEFAULT_STATE, action = {}) {
         editing:{
           $set: {
             data:action.item,
+            original:action.item,
             meta:{}
+          }
+        }
+      })
+    case FOLDERUI_EDIT_ITEM_UPDATE:
+      return update(state, {
+        editing:{
+          data:{
+            $set:action.data
+          },
+          meta:{
+            $set:action.meta
+          }
+        }
+      })
+    case FOLDERUI_EDIT_ITEM_REVERT:
+      return update(state, {
+        editing:{
+          data:{
+            $set:state.editing.original
+          },
+          meta:{
+            $set:{}
           }
         }
       })
@@ -198,6 +123,20 @@ export default function folderuireducer(state = DEFAULT_STATE, action = {}) {
       })
     case FOLDERUI_EDIT_ITEM_SAVE:
       return update(state, {
+        tree:{
+          data:{
+            [action.item.id]:{
+              $merge:action.item
+            }
+          }
+        },
+        table:{
+          data:{
+            [action.item.id]:{
+              $merge:action.item
+            }
+          }
+        },
         editing:{
           $set: null
         }

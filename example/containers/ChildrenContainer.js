@@ -35,9 +35,17 @@ export class ChildrenContainer extends Component {
   }
 }
 
-function getSelectedRows(rows){
-  return rows.filter(row => {
-    return row._selected
+function getSelectedRows(table){
+  return table.list.filter(id => {
+    return table.data[id]._selected
+  }).map(id => {
+    return table.data[id]
+  })
+}
+
+function getTableRows(table){
+  return table.list.map(id => {
+    return table.data[id]
   })
 }
 
@@ -135,10 +143,10 @@ function mapStateToProps(state, ownProps) {
   var parent = state.folderui.treeselected
 
   // the list of table data
-  var data = state.folderui.table
+  var data = getTableRows(state.folderui.table)
 
   // the list of selected table rows 
-  var selected = getSelectedRows(data)
+  var selected = getSelectedRows(state.folderui.table)
 
   // the left button array
   var leftbuttons = getLeftButtons(parent, selected)

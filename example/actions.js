@@ -25,6 +25,25 @@ export function edit_item(item) {
   }
 }
 
+export const FOLDERUI_EDIT_ITEM_UPDATE = 'FOLDERUI_EDIT_ITEM_UPDATE'
+
+export function edit_item_update(data, meta) {
+  return {
+    type: FOLDERUI_EDIT_ITEM_UPDATE,
+    data,
+    meta
+  }
+}
+
+export const FOLDERUI_EDIT_ITEM_REVERT = 'FOLDERUI_EDIT_ITEM_REVERT'
+
+export function edit_item_revert(item) {
+  return {
+    type: FOLDERUI_EDIT_ITEM_REVERT,
+    item
+  }
+}
+
 export const FOLDERUI_EDIT_ITEM_CANCEL = 'FOLDERUI_EDIT_ITEM_CANCEL'
 
 export function edit_item_cancel(item) {

@@ -41,6 +41,33 @@ export function processTreeData(rootnodes = []){
 
 /*
 
+  accepts an array of objects each with an 'id' prop
+
+  returns:
+
+   * data - a flat map of id -> object
+   * list - array of ids (the order of the table)
+  
+*/
+export function processListData(nodes = []){
+  var data = {}
+  
+  nodes.forEach(node => {
+    data[node.id] = node
+  })
+
+  var list = nodes.map(node => {
+    return node.id
+  })
+
+  return {
+    data,
+    list
+  }
+}
+
+/*
+
   return an array of the children for a given id
   
 */

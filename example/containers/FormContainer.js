@@ -3,10 +3,16 @@ import { connect } from 'react-redux'
 
 import ToolbarWrapper from 'kettle-ui/lib/ToolbarWrapper'
 
-import { edit_item_save, edit_item_cancel } from '../actions'
+import { 
+  edit_item_save, 
+  edit_item_cancel, 
+  edit_item_update,
+  edit_item_revert
+} from '../actions'
 
 import FormViewer from '../../src/FormViewer'
 import Toolbar from '../../src/Toolbar'
+import { get_schema } from '../schema'
 
 export class FormContainer extends Component {
 
@@ -32,11 +38,19 @@ export class FormContainer extends Component {
 }
 
 function mapStateToProps(state, ownProps) {
+  var editing = state.folderui.editing
+  var schema = get_schema(editing.data)
   return {
-    title:state.folderui.editing.data.name,
+    title:editing.original.name,
+    data:editing.data,
+    meta:editing.meta,
+    schema:schema,
     leftbuttons:[{
       id:'cancel',
       title:'Cancel'
+    },{
+      id:'revert',
+      title:'Revert'
     },{
       id:'save',
       title:'Save',
@@ -50,6 +64,9 @@ function mapStateToProps(state, ownProps) {
 const BUTTON_HANDLERS = {
   save:(item) => {
     return edit_item_save(item)
+  },
+  revert:(item) => {
+    return edit_item_revert(item)
   },
   cancel:(item) => {
     return edit_item_cancel(item)
@@ -76,7 +93,10 @@ function mapDispatchToProps(dispatch, ownProps) {
   return {
     onButton:function(id, data){
       dispatch(handleButtonActions(id, data))
-    } 
+    },
+    onUpdate:function(data, meta){
+      dispatch(edit_item_update(data, meta))
+    }
   }
 }
 
