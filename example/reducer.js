@@ -154,6 +154,9 @@ export default function folderuireducer(state = DEFAULT_STATE, action = {}) {
         // this needs to be split out into an async api request
         table:{
           $set: getChildren(state.tree, selectedNode.id)
+        },
+        editing:{
+          $set: null
         }
       })
 

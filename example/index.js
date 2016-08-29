@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import injectTapEventPlugin from 'react-tap-event-plugin'
 import { Provider } from 'react-redux'
 import { applyMiddleware, compose, createStore, combineReducers } from 'redux'
+import thunk from 'redux-thunk'
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 
@@ -17,7 +18,7 @@ import ContentContainer from './containers/ContentContainer'
 import folderreducer from './reducer'
 
 const finalCreateStore = compose(
-  applyMiddleware(),
+  applyMiddleware(thunk),
   window.devToolsExtension ? window.devToolsExtension() : f => f
 )(createStore)
 
@@ -50,10 +51,7 @@ ReactDOM.render(
         }>
         
         <ContentContainer 
-          offsetWidth={250}
-          showHeader={false}
-          multiSelectable={true}
-          showCheckboxes={true} />
+          offsetWidth={250} />
         
       </AppNavWrapper>
     </MuiThemeProvider>

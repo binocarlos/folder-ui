@@ -108,7 +108,6 @@ Pass the currently selected id.
 A component that will display a Table for an array of items.
 
  * data - an array of objects
- * selected - an array of selected object ids
  * fields - an array of objects representing column definitions
    * title - the title for the field
    * render(data) - a function that returns a React element used to render the value
@@ -119,6 +118,7 @@ A component that will display a Table for an array of items.
  * showHeader - show the column titles (true)
  * onRowSelection - run when rows are selected - passed an array of selected ids
 
+To control the selected feature - data objects must have a `_selected` property to reflect they are selected.
 ## FormViewer
 
 A component that will display a [biro](https://github.com/binocarlos/biro) Form for the current item
@@ -135,7 +135,6 @@ A base toolbar class that can display buttons and drop-down buttons.
 Properties:
 
  * title - the toolbar title
- * selected - an array of objects that are selected
  * {leftbuttons,rightbuttons} - an array of dropdown or button descriptions for the {left,right} menu buttons
    * id - the identifier for the button
    * type - {button,dropdown,icon}
@@ -148,7 +147,7 @@ Properties:
      * title - text to display
  * children - React element to include after the left hand buttons
  * rightchildren - React element to include after the right hand buttons
- * onbutton(buttonName, data, selected) - run when a button is clicked, passed the name of the button, the associated button data and the `selected` property
+ * onbutton(buttonName, data) - run when a button is clicked, passed the name of the button, the associated button data and the `selected` property
 
 The toolbar also has some helper methods:
 

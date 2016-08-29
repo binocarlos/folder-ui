@@ -67,24 +67,27 @@ class FolderUIToolbar extends Component {
   }
 
   getButtonFromSchema(schema, i) {
-    if (schema.type=='dropdown') {
+    var type = schema.type || 'button'
+    if (type=='dropdown') {
       return this.getButtonDropdown(schema.title, schema.items, item => {
-        this.props.onButton(item.id, item.data, this.props.selected)
+        this.props.onButton(item.id, item.data)
       }, schema.extraProps, i)
     }
-    else if (schema.type=='button') {
-      return this.getButton(schema.title, item => {
-        this.props.onButton(item.id, item.data, this.props.selected)
+    else if (type=='button') {
+      return this.getButton(schema.title, () => {
+        this.props.onButton(schema.id, schema.data)
       }, schema.extraProps, i)
     }
-    else if (schema.type=='icon') {
+    else if (type=='icon') {
       return this.getIconDropdown(schema.icon, schema.items, item => {
-        this.props.onButton(item.id, item.data, this.props.selected)
+        this.props.onButton(item.id, item.data)
       }, schema.extraProps, i)
     }
     else {
+      console.error('unknown button type: ' + type)
+      console.log(JSON.stringify(schema, null, 4))
       return (
-        <div></div>
+        <div key={i}></div>
       )
     }
   }
@@ -139,19 +142,15 @@ class FolderUIToolbar extends Component {
 
 FolderUIToolbar.propTypes = {
   title: PropTypes.string,
-  selected: PropTypes.array,
   leftbuttons: PropTypes.array,
   rightbuttons: PropTypes.array,
-  rightitems: PropTypes.array,
   onButton: PropTypes.func
 }
 
 FolderUIToolbar.defaultProps = {
   title: '',
-  selected: [],
   leftbuttons: [],
   rightbuttons: [],
-  rightitems: [],
   onButton: function(){}
 }
 
