@@ -42,7 +42,7 @@ function mapStateToProps(state, ownProps) {
   var reducername = ownProps.reducername || 'folderui'
 
   var editing = state[reducername].editing
-  var schema = ownProps.getSchema(editing.data)
+  var schema = ownProps.getSchema ? ownProps.getSchema(editing.data) : []
 
   return {
     title:editing.original.name,
@@ -66,11 +66,15 @@ function mapStateToProps(state, ownProps) {
 }
 
 const BUTTON_HANDLERS = {
-  save:(dispatch, item) => {
+  save:(dispatch, item, ownProps) => {
+    if(!ownProps.saveItem) return
 
-    dispatch(edit_item_save(item))
-    dispatch(snackbar_open(item.name + ' saved'))  
-    
+    ownProps.saveItem(item, (err, newItem) => {
+      if(err) dispatch(snackbar_open('saveItem error: ' + err.toString()))
+      dispatch(edit_item_save(item))
+      dispatch(snackbar_open(item.name + ' saved'))  
+    })
+
   },
   revert:(dispatch, item) => {
     dispatch(edit_item_revert(item))
@@ -83,7 +87,7 @@ const BUTTON_HANDLERS = {
 // handler for the toolbar buttons
 // uses thunk so we can get at the current item
 // this avoids passing these things into the toolbar
-function handleButtonActions(id, data){
+function handleButtonActions(id, data, ownProps){
   return (dispatch, getState) => {
     var handler = BUTTON_HANDLERS[id]
     if(!handler){
@@ -94,7 +98,7 @@ function handleButtonActions(id, data){
     var state = getState()
     var item = state.folderui.editing.data
 
-    handler(dispatch, item, data)
+    handler(dispatch, item, ownProps, data)
   }
 }
 
@@ -102,7 +106,7 @@ function handleButtonActions(id, data){
 function mapDispatchToProps(dispatch, ownProps) {
   return {
     onButton:function(id, data){
-      dispatch(handleButtonActions(id, data))
+      dispatch(handleButtonActions(id, data, ownProps))
     },
     onUpdate:function(data, meta){
       dispatch(edit_item_update(data, meta))

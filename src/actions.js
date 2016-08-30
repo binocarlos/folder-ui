@@ -52,15 +52,6 @@ export function table_select_nodes(data) {
   }
 }
 
-export const FOLDERUI_OPEN_ITEM = 'FOLDERUI_OPEN_ITEM'
-
-export function open_item(item) {
-  return {
-    type: FOLDERUI_OPEN_ITEM,
-    item
-  }
-}
-
 export const FOLDERUI_EDIT_ITEM = 'FOLDERUI_EDIT_ITEM'
 
 export function edit_item(item) {

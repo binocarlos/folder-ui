@@ -1,5 +1,9 @@
 import { processTreeData, getChildren } from '../src/tools'
 
+function serialize(val){
+  return JSON.parse(JSON.stringify(val))
+}
+
 export default function db(){
 
   var tree = processTreeData(ROOT_DATA)
@@ -10,13 +14,13 @@ export default function db(){
       Object.keys(item || {}).forEach(function(key){
         saveitem[key] = item[key]
       })
-      done()
+      done(null, serialize(saveitem))
     },
     loadChildren:function(item, done){
-      done(null, getChildren(tree, item.id))
+      done(null, serialize(getChildren(tree, item.id)))
     },
     loadTree:function(done){
-      done(null, ROOT_DATA)
+      done(null, serialize(ROOT_DATA))
     }
   }
 }

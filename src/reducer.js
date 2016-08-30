@@ -1,13 +1,10 @@
 import update from 'react/lib/update'
 import {
   FOLDERUI_TREE_DATA_LOADED,
-  FOLDERUI_TREE_DATA_ERROR,
   FOLDERUI_TABLE_DATA_LOADED,
-  FOLDERUI_TABLE_DATA_ERROR,
   FOLDERUI_TREE_SELECT_NODE,
   FOLDERUI_TABLE_SELECT_NODES,
   FOLDERUI_EDIT_ITEM,
-  FOLDERUI_OPEN_ITEM,
   FOLDERUI_EDIT_ITEM_UPDATE,
   FOLDERUI_EDIT_ITEM_CANCEL,
   FOLDERUI_EDIT_ITEM_SAVE,
@@ -76,18 +73,28 @@ export default function folderuireducer(state = DEFAULT_STATE, action = {}) {
         treeselected:{
           $set: selected
         },
+        editing:{
+          $set: null
+        }
+      })
+
+    case FOLDERUI_TABLE_DATA_LOADED:
+
+      var tableData = processListData(action.data)
+
+      return update(state, {
+        table:{
+          $set:tableData
+        },
+        editing:{
+          $set: null
+        }
       })
 
     // clicked a node in the tree
     case FOLDERUI_TREE_SELECT_NODE:
 
       var selectedNode = action.data
-
-      return selectItem(state, selectedNode)
-
-    case FOLDERUI_OPEN_ITEM:
-
-      var selectedNode = action.item
 
       // this means we have opened something not in the tree
       if(!state.tree.data[selectedNode.id]) return state

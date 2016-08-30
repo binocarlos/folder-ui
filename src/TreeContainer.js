@@ -4,9 +4,8 @@ import { connect } from 'react-redux'
 import { 
   tree_select_node,
   tree_data_loaded,
-  tree_data_error,
   table_data_loaded,
-  table_data_error
+  snackbar_open
 } from './actions'
 import TreeViewer from './TreeViewer'
 
@@ -54,7 +53,7 @@ function mapDispatchToProps(dispatch, ownProps) {
 
         // load the children for the item
         loadChildren(data, (err, children) => {
-          if(err) return dispatch(table_data_error(err))
+          if(err) return dispatch(snackbar_open('loadChildren error: ' + err.toString()))
           dispatch(table_data_loaded(children))
         })
       })
@@ -64,12 +63,12 @@ function mapDispatchToProps(dispatch, ownProps) {
 
         // call the external function to get the tree data
         loadTreeData((err, treedata) => {
-          if(err) return dispatch(tree_data_error(err))
+          if(err) return dispatch(snackbar_open('loadTreeData error: ' + err.toString()))
           dispatch(tree_data_loaded(treedata))
           // call the external function to get the children
           // for the first element in the tree data
           loadChildren(treedata[0], (err, children) => {
-            if(err) return dispatch(table_data_error(err))
+            if(err) return dispatch(snackbar_open('loadChildren error: ' + err.toString()))
             dispatch(table_data_loaded(children))
           })
         })

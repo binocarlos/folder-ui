@@ -6,7 +6,8 @@ import ToolbarWrapper from 'kettle-ui/lib/ToolbarWrapper'
 import { 
   table_select_nodes,
   edit_item,
-  open_item
+  tree_select_node,
+  table_data_loaded
 } from './actions'
 
 import ChildrenViewer from './ChildrenViewer'
@@ -192,13 +193,23 @@ function mapStateToProps(state, ownProps) {
 
 const BUTTON_HANDLERS = {
 
-  edit:(dispatch, parent, selected) => {
+  edit:(dispatch, parent, selected, ownProps) => {
     dispatch(edit_item(selected.length>0 ? selected[0] : parent))
   },
 
-  open:(dispatch, parent, selected) => {
+  open:(dispatch, parent, selected, ownProps) => {
     if(selected.length!=1) return
-    dispatch(open_item(selected[0]))
+    if(!ownProps.loadChildren) return
+
+    var data = selected[0]
+
+    // load the children for the item
+    ownProps.loadChildren(data, (err, children) => {
+      if(err) return dispatch(snackbar_open('loadChildren error: ' + err.toString()))
+      dispatch(table_data_loaded(children))
+      // tell the tree structure this item is open
+      dispatch(tree_select_node(data))
+    })
   }
 }
 
@@ -216,7 +227,7 @@ function handleButtonActions(id, data, ownProps){
     var parent = state[reducername].treeselected
     var selected = getSelectedRows(state[reducername].table)
 
-    handler(dispatch, parent, selected, data)
+    handler(dispatch, parent, selected, ownProps, data)
   }
 }
 

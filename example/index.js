@@ -17,6 +17,7 @@ import TreeContainer from '../src/TreeContainer'
 import ContentContainer from '../src/ContentContainer'
 
 import folderreducer from '../src/reducer'
+import { get_schema } from './schema'
 
 const finalCreateStore = compose(
   applyMiddleware(thunk),
@@ -57,6 +58,7 @@ ReactDOM.render(
         
         <ContentContainer 
           loadChildren={db.loadChildren}
+          getSchema={get_schema}
           saveItem={db.saveItem}
           offsetWidth={250} />
         
