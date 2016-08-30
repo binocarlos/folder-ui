@@ -7,10 +7,10 @@ import {
   table_select_nodes,
   edit_item,
   open_item
-} from '../actions'
+} from './actions'
 
-import ChildrenViewer from '../../src/ChildrenViewer'
-import Toolbar from '../../src/Toolbar'
+import ChildrenViewer from './ChildrenViewer'
+import Toolbar from './Toolbar'
 
 export class ChildrenContainer extends Component {
 
@@ -40,7 +40,8 @@ export class ChildrenContainer extends Component {
 }
 
 function getSelectedRows(table){
-  return table.list.filter(id => {
+  table = table || {}
+  return (table.list || []).filter(id => {
     return table.data[id]._selected
   }).map(id => {
     return table.data[id]
@@ -48,7 +49,8 @@ function getSelectedRows(table){
 }
 
 function getTableRows(table){
-  return table.list.map(id => {
+  table = table || {}
+  return (table.list || []).map(id => {
     return table.data[id]
   })
 }
@@ -75,7 +77,7 @@ function getLeftButtons(parent, selected, canOpen){
   var actions = []
   var leftbuttons = []
 
-  if(selected.length==0){
+  if(parent && selected.length==0){
     var addButton = getAddButton(parent)
     leftbuttons.push(addButton)
     actions.push({
@@ -132,6 +134,8 @@ function getLeftButtons(parent, selected, canOpen){
 
 // the title depends on the selection
 function getToolbarTitle(parent, selected){
+  parent = parent || {}
+  selected = selected || []
   var title = ''
   if(selected.length==0){
     title = parent.name
@@ -152,20 +156,22 @@ const FIELDS = [{
 
 function mapStateToProps(state, ownProps) {
 
+  var reducerName = ownProps.reducername || 'folderui'
+
   // a rule that says you can only 'open' things that are in
   // the tree
   var canOpen = (item) => {
-    return state.folderui.tree.data[item.id] ? true : false
+    return state[reducerName].tree.data[item.id] ? true : false
   }
 
   // the parent of the table data
-  var parent = state.folderui.treeselected
+  var parent = state[reducerName].treeselected
 
   // the list of table data
-  var data = getTableRows(state.folderui.table)
+  var data = getTableRows(state[reducerName].table)
 
   // the list of selected table rows 
-  var selected = getSelectedRows(state.folderui.table)
+  var selected = getSelectedRows(state[reducerName].table)
 
   // the left button array
   var leftbuttons = getLeftButtons(parent, selected, canOpen)
@@ -199,14 +205,16 @@ const BUTTON_HANDLERS = {
 // handler for the toolbar buttons
 // uses thunk so we can get at the current parent / selected list
 // this avoids passing these things into the toolbar
-function handleButtonActions(id, data){
+function handleButtonActions(id, data, ownProps){
   return (dispatch, getState) => {
     var handler = BUTTON_HANDLERS[id]
     if(!handler) return
 
+    var reducername = ownProps.reducername || 'folderui'
+
     var state = getState()
-    var parent = state.folderui.treeselected
-    var selected = getSelectedRows(state.folderui.table)
+    var parent = state[reducername].treeselected
+    var selected = getSelectedRows(state[reducername].table)
 
     handler(dispatch, parent, selected, data)
   }
@@ -215,7 +223,7 @@ function handleButtonActions(id, data){
 function mapDispatchToProps(dispatch, ownProps) {
   return {
     onButton:function(id, data){
-      dispatch(handleButtonActions(id, data))
+      dispatch(handleButtonActions(id, data, ownProps))
     },
     onRowSelection:function(data){
       dispatch(table_select_nodes(data))

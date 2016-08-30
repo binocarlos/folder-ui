@@ -1,4 +1,27 @@
-export const ROOT_DATA = [{
+import { processTreeData, getChildren } from '../src/tools'
+
+export default function db(){
+
+  var tree = processTreeData(ROOT_DATA)
+
+  return {
+    saveItem:function(item, done){
+      var saveitem = tree.data[item.id]
+      Object.keys(item || {}).forEach(function(key){
+        saveitem[key] = item[key]
+      })
+      done()
+    },
+    loadChildren:function(item, done){
+      done(null, getChildren(tree, item.id))
+    },
+    loadTree:function(done){
+      done(null, ROOT_DATA)
+    }
+  }
+}
+
+const ROOT_DATA = [{
   id:0,
   name:'My Folders',
   open:true,

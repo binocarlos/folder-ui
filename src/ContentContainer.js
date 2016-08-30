@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import ToolbarWrapper from 'kettle-ui/lib/ToolbarWrapper'
 
-import { snackbar_close } from '../actions'
+import { snackbar_close } from './actions'
 import ChildrenContainer from './ChildrenContainer'
 import FormContainer from './FormContainer'
 import Snackbar from 'material-ui/Snackbar'
@@ -37,10 +37,12 @@ export class ContentContainer extends Component {
 
 function mapStateToProps(state, ownProps) {
 
+  var reducername = ownProps.reducername || 'folderui'
+
   return {
-    mode:state.folderui.editing ? 'form' : 'children',
-    snackbarOpen:state.folderui.snackbar.open,
-    snackbarMessage:state.folderui.snackbar.message
+    mode:state[reducername].editing ? 'form' : 'children',
+    snackbarOpen:state[reducername].snackbar.open,
+    snackbarMessage:state[reducername].snackbar.message
   }
 }
 

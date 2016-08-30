@@ -9,11 +9,10 @@ import {
   edit_item_update,
   edit_item_revert,
   snackbar_open
-} from '../actions'
+} from './actions'
 
-import FormViewer from '../../src/FormViewer'
-import Toolbar from '../../src/Toolbar'
-import { get_schema } from '../schema'
+import FormViewer from './FormViewer'
+import Toolbar from './Toolbar'
 
 export class FormContainer extends Component {
 
@@ -39,8 +38,12 @@ export class FormContainer extends Component {
 }
 
 function mapStateToProps(state, ownProps) {
-  var editing = state.folderui.editing
-  var schema = get_schema(editing.data)
+
+  var reducername = ownProps.reducername || 'folderui'
+
+  var editing = state[reducername].editing
+  var schema = ownProps.getSchema(editing.data)
+
   return {
     title:editing.original.name,
     data:editing.data,
@@ -65,12 +68,8 @@ function mapStateToProps(state, ownProps) {
 const BUTTON_HANDLERS = {
   save:(dispatch, item) => {
 
-    // TODO - put an async handler here
-    // that speaks to the server
-    setTimeout(() => {
-      dispatch(edit_item_save(item))
-      dispatch(snackbar_open(item.name + ' saved'))  
-    },1)
+    dispatch(edit_item_save(item))
+    dispatch(snackbar_open(item.name + ' saved'))  
     
   },
   revert:(dispatch, item) => {

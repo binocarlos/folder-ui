@@ -174,6 +174,38 @@ You can pass a schema to the toolbar and it will render the correct components.
 
 extraProps are passed to the underlying button.
 
+## ChildrenContainer
+
+A container that displays a toolbar and the children of an item
+
+ * loadChildren(item, done) - load the children for an item
+ * reducername - where to look in the state
+
+## FormContainer
+
+A container that displays a toolbar and biro form for an item.
+
+ * saveItem(item, done) - save the data for an item
+ * getSchema(item) - get the form schema for an item
+ * reducername - where to look in the state
+
+## TreeContainer
+
+A container that displays a tree.
+
+ * loadTree(done) - loads the data for the tree, in normal format (it will be passed via `tools.processTreeData`)
+ * onSelect(item) - run when a tree item is selected - used to trigger other behavior (like load children in the table)
+ * reducername - where to look in the state
+
+## ContentContainer
+
+A combo of ChildrenContainer and FormContainer.
+
+ * loadChildren(item, done)
+ * saveItem(item, done)
+ * getSchema(item, done)
+ * reducername - where to look in the state
+
 ## tools
 
 #### `processTreeData`

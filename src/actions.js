@@ -1,3 +1,39 @@
+export const FOLDERUI_TREE_DATA_LOADED = 'FOLDERUI_TREE_DATA_LOADED'
+
+export function tree_data_loaded(data) {
+  return {
+    type: FOLDERUI_TREE_DATA_LOADED,
+    data
+  }
+}
+
+export const FOLDERUI_TREE_DATA_ERROR = 'FOLDERUI_TREE_DATA_ERROR'
+
+export function tree_data_error(error) {
+  return {
+    type: FOLDERUI_TREE_DATA_ERROR,
+    error
+  }
+}
+
+export const FOLDERUI_TABLE_DATA_LOADED = 'FOLDERUI_TABLE_DATA_LOADED'
+
+export function table_data_loaded(data) {
+  return {
+    type: FOLDERUI_TABLE_DATA_LOADED,
+    data
+  }
+}
+
+export const FOLDERUI_TABLE_DATA_ERROR = 'FOLDERUI_TABLE_DATA_ERROR'
+
+export function table_data_error(error) {
+  return {
+    type: FOLDERUI_TABLE_DATA_ERROR,
+    error
+  }
+}
+
 export const FOLDERUI_TREE_SELECT_NODE = 'FOLDERUI_TREE_SELECT_NODE'
 
 export function tree_select_node(data) {

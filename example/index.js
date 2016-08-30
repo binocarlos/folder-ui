@@ -12,10 +12,11 @@ import AppNavWrapper from 'kettle-ui/lib/AppNavWrapper'
 
 import { Container, Row, Col } from 'kettle-ui/lib/Grid'
 
-import TreeContainer from './containers/TreeContainer'
-import ContentContainer from './containers/ContentContainer'
+import DB from './db'
+import TreeContainer from '../src/TreeContainer'
+import ContentContainer from '../src/ContentContainer'
 
-import folderreducer from './reducer'
+import folderreducer from '../src/reducer'
 
 const finalCreateStore = compose(
   applyMiddleware(thunk),
@@ -27,6 +28,8 @@ const reducer = combineReducers({
 })
 
 const store = finalCreateStore(reducer)
+
+var db = DB()
 
 injectTapEventPlugin()
 
@@ -47,10 +50,14 @@ ReactDOM.render(
         }}
         navbar={
           <TreeContainer 
+            loadTree={db.loadTree}
+            loadChildren={db.loadChildren}
             title="My Folders" />
         }>
         
         <ContentContainer 
+          loadChildren={db.loadChildren}
+          saveItem={db.saveItem}
           offsetWidth={250} />
         
       </AppNavWrapper>

@@ -1,4 +1,9 @@
-import { 
+import update from 'react/lib/update'
+import {
+  FOLDERUI_TREE_DATA_LOADED,
+  FOLDERUI_TREE_DATA_ERROR,
+  FOLDERUI_TABLE_DATA_LOADED,
+  FOLDERUI_TABLE_DATA_ERROR,
   FOLDERUI_TREE_SELECT_NODE,
   FOLDERUI_TABLE_SELECT_NODES,
   FOLDERUI_EDIT_ITEM,
@@ -10,21 +15,18 @@ import {
   FOLDERUI_SNACKBAR_OPEN,
   FOLDERUI_SNACKBAR_CLOSE
 } from './actions'
-import update from 'react/lib/update'
-import { processTreeData, processListData, getChildren } from '../src/tools'
+import { processTreeData, processListData, getChildren } from './tools'
 
-import { ROOT_DATA } from './fixtures'
-
-const treedata = processTreeData(ROOT_DATA)
+const treedata = processTreeData([])
 const DEFAULT_STATE = {
   // * data - id -> {}
   // * children - id -> [id]
   // * rootids - [id]
-  tree:treedata,
-  treeselected:treedata.data[0],
+  tree:null,
+  treeselected:null,
   // * data - id -> {}
   // * table - [id]
-  table:processListData(getChildren(treedata, 0)),
+  table:null,
   // the item we are currently editing
   editing:null,
   // the snackbar
@@ -41,7 +43,6 @@ function selectItem(state, selectedNode){
         [selectedNode.id]:{
           $merge: {
             open: true
-
           }
         }
       }
@@ -61,6 +62,21 @@ function selectItem(state, selectedNode){
 
 export default function folderuireducer(state = DEFAULT_STATE, action = {}) {
   switch (action.type) {
+
+    // clicked a node in the tree
+    case FOLDERUI_TREE_DATA_LOADED:
+
+      var treeData = processTreeData(action.data)
+      var selected = treeData.data[treeData.rootids[0]]
+
+      return update(state, {
+        tree:{
+          $set:treeData
+        },
+        treeselected:{
+          $set: selected
+        },
+      })
 
     // clicked a node in the tree
     case FOLDERUI_TREE_SELECT_NODE:
