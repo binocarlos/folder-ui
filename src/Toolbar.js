@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import Menu from 'material-ui/Menu'
 import MenuItem from 'material-ui/MenuItem'
+import Divider from 'material-ui/Divider'
 import RaisedButton from 'material-ui/RaisedButton'
 import ButtonDropdown from 'kettle-ui/lib/ButtonDropdown'
 import IconDropdown from 'kettle-ui/lib/IconDropdown'
@@ -16,14 +17,19 @@ const STYLES = {
   }
 }
 
+
 class FolderUIToolbar extends Component {
 
   getMenuItems(items, handler) {
     return (items || []).map((item,i) => {
       return (
-        <MenuItem key={i} primaryText={item.title} onTouchTap={() => {
-          handler(item)
-        }}/>
+        item.divider ? (
+          <Divider key={i} />
+        ) : (
+          <MenuItem key={i} primaryText={item.title} onTouchTap={() => {
+            handler(item)
+          }}/>
+        )
       )
     })
   }
@@ -32,6 +38,7 @@ class FolderUIToolbar extends Component {
     return (
       <ButtonDropdown
         key={i}
+        timestamp={new Date().getTime()}
         buttonclass={RaisedButton}
         buttonprops={{
           label:label,

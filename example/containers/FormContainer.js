@@ -7,7 +7,8 @@ import {
   edit_item_save, 
   edit_item_cancel, 
   edit_item_update,
-  edit_item_revert
+  edit_item_revert,
+  snackbar_open
 } from '../actions'
 
 import FormViewer from '../../src/FormViewer'
@@ -54,7 +55,7 @@ function mapStateToProps(state, ownProps) {
     },{
       id:'save',
       title:'Save',
-      extraProps:{
+      extraProps:{ 
         primary:true
       }
     }]
@@ -62,14 +63,21 @@ function mapStateToProps(state, ownProps) {
 }
 
 const BUTTON_HANDLERS = {
-  save:(item) => {
-    return edit_item_save(item)
+  save:(dispatch, item) => {
+
+    // TODO - put an async handler here
+    // that speaks to the server
+    setTimeout(() => {
+      dispatch(edit_item_save(item))
+      dispatch(snackbar_open(item.name + ' saved'))  
+    },1)
+    
   },
-  revert:(item) => {
-    return edit_item_revert(item)
+  revert:(dispatch, item) => {
+    dispatch(edit_item_revert(item))
   },
-  cancel:(item) => {
-    return edit_item_cancel(item)
+  cancel:(dispatch, item) => {
+    dispatch(edit_item_cancel(item))
   }
 }
 
@@ -79,12 +87,15 @@ const BUTTON_HANDLERS = {
 function handleButtonActions(id, data){
   return (dispatch, getState) => {
     var handler = BUTTON_HANDLERS[id]
-    if(!handler) return
+    if(!handler){
+      console.error('no button handler found for: ' + id)
+      return
+    }
 
     var state = getState()
     var item = state.folderui.editing.data
 
-    dispatch(handler(item, data))
+    handler(dispatch, item, data)
   }
 }
 

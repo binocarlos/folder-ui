@@ -16,6 +16,15 @@ export function table_select_nodes(data) {
   }
 }
 
+export const FOLDERUI_OPEN_ITEM = 'FOLDERUI_OPEN_ITEM'
+
+export function open_item(item) {
+  return {
+    type: FOLDERUI_OPEN_ITEM,
+    item
+  }
+}
+
 export const FOLDERUI_EDIT_ITEM = 'FOLDERUI_EDIT_ITEM'
 
 export function edit_item(item) {
@@ -59,5 +68,22 @@ export function edit_item_save(item) {
   return {
     type: FOLDERUI_EDIT_ITEM_SAVE,
     item
+  }
+}
+
+export const FOLDERUI_SNACKBAR_OPEN = 'FOLDERUI_SNACKBAR_OPEN'
+
+export function snackbar_open(message) {
+  return {
+    type: FOLDERUI_SNACKBAR_OPEN,
+    message
+  }
+}
+
+export const FOLDERUI_SNACKBAR_CLOSE = 'FOLDERUI_SNACKBAR_CLOSE'
+
+export function snackbar_close() {
+  return {
+    type: FOLDERUI_SNACKBAR_CLOSE
   }
 }

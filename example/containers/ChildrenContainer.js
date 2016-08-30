@@ -3,7 +3,11 @@ import { connect } from 'react-redux'
 
 import ToolbarWrapper from 'kettle-ui/lib/ToolbarWrapper'
 
-import { table_select_nodes, edit_item } from '../actions'
+import { 
+  table_select_nodes,
+  edit_item,
+  open_item
+} from '../actions'
 
 import ChildrenViewer from '../../src/ChildrenViewer'
 import Toolbar from '../../src/Toolbar'
@@ -67,7 +71,7 @@ function getAddButton(parent){
 
 // work out what buttons (add, actions) to include
 // based on what is selected
-function getLeftButtons(parent, selected){
+function getLeftButtons(parent, selected, canOpen){
   var actions = []
   var leftbuttons = []
 
@@ -83,17 +87,26 @@ function getLeftButtons(parent, selected){
     })
   }
   else if(selected.length==1){
+
     actions.push({
-      id:'open',
-      title:'Open'
-    },{
       id:'edit',
       title:'Edit'
     })
+
+    // lets check that we can open the single item
+    if(canOpen(selected[0])){
+      actions.push({
+        id:'open',
+        title:'Open'
+      })
+    }
+    
   }
  
   if(selected.length>0){
     actions.push({
+      divider:true
+    },{
       id:'delete',
       title:'Delete'
     },{
@@ -139,6 +152,12 @@ const FIELDS = [{
 
 function mapStateToProps(state, ownProps) {
 
+  // a rule that says you can only 'open' things that are in
+  // the tree
+  var canOpen = (item) => {
+    return state.folderui.tree.data[item.id] ? true : false
+  }
+
   // the parent of the table data
   var parent = state.folderui.treeselected
 
@@ -149,22 +168,31 @@ function mapStateToProps(state, ownProps) {
   var selected = getSelectedRows(state.folderui.table)
 
   // the left button array
-  var leftbuttons = getLeftButtons(parent, selected)
+  var leftbuttons = getLeftButtons(parent, selected, canOpen)
 
   // the title
   var title = getToolbarTitle(parent, selected)
+
+  
 
   return {
     title:title,
     fields:FIELDS,
     data:data,
-    leftbuttons:leftbuttons
+    leftbuttons:leftbuttons,
+    canOpen:canOpen
   }
 }
 
 const BUTTON_HANDLERS = {
-  edit:function(parent, selected){
-    return edit_item(selected.length>0 ? selected[0] : parent)
+
+  edit:(dispatch, parent, selected) => {
+    dispatch(edit_item(selected.length>0 ? selected[0] : parent))
+  },
+
+  open:(dispatch, parent, selected) => {
+    if(selected.length!=1) return
+    dispatch(open_item(selected[0]))
   }
 }
 
@@ -180,7 +208,7 @@ function handleButtonActions(id, data){
     var parent = state.folderui.treeselected
     var selected = getSelectedRows(state.folderui.table)
 
-    dispatch(handler(parent, selected, data))
+    handler(dispatch, parent, selected, data)
   }
 }
 

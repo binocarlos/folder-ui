@@ -2,10 +2,13 @@ import {
   FOLDERUI_TREE_SELECT_NODE,
   FOLDERUI_TABLE_SELECT_NODES,
   FOLDERUI_EDIT_ITEM,
+  FOLDERUI_OPEN_ITEM,
   FOLDERUI_EDIT_ITEM_UPDATE,
   FOLDERUI_EDIT_ITEM_CANCEL,
   FOLDERUI_EDIT_ITEM_SAVE,
-  FOLDERUI_EDIT_ITEM_REVERT
+  FOLDERUI_EDIT_ITEM_REVERT,
+  FOLDERUI_SNACKBAR_OPEN,
+  FOLDERUI_SNACKBAR_CLOSE
 } from './actions'
 import update from 'react/lib/update'
 import { processTreeData, processListData, getChildren } from '../src/tools'
@@ -24,6 +27,36 @@ const DEFAULT_STATE = {
   table:processListData(getChildren(treedata, 0)),
   // the item we are currently editing
   editing:null,
+  // the snackbar
+  snackbar:{
+    open:false,
+    message:''
+  }
+}
+
+function selectItem(state, selectedNode){
+  return update(state, {
+    tree:{
+      data:{
+        [selectedNode.id]:{
+          $merge: {
+            open: true
+
+          }
+        }
+      }
+    },
+    treeselected:{
+      $set: state.tree.data[selectedNode.id]
+    },
+    // this needs to be split out into an async api request
+    table:{
+      $set: processListData(getChildren(state.tree, selectedNode.id))
+    },
+    editing:{
+      $set: null
+    }
+  })
 }
 
 export default function folderuireducer(state = DEFAULT_STATE, action = {}) {
@@ -34,29 +67,17 @@ export default function folderuireducer(state = DEFAULT_STATE, action = {}) {
 
       var selectedNode = action.data
 
-      return update(state, {
-        tree:{
-          data:{
-            [selectedNode.id]:{
-              $merge: {
-                open: true
+      return selectItem(state, selectedNode)
 
-              }
-            }
-          }
-        },
-        treeselected:{
-          $set: state.tree.data[selectedNode.id]
-        },
-        // this needs to be split out into an async api request
-        table:{
-          $set: processListData(getChildren(state.tree, selectedNode.id))
-        },
-        editing:{
-          $set: null
-        }
-      })
+    case FOLDERUI_OPEN_ITEM:
 
+      var selectedNode = action.item
+
+      // this means we have opened something not in the tree
+      if(!state.tree.data[selectedNode.id]) return state
+
+      return selectItem(state, selectedNode)
+      
     // selected some items in the table
     case FOLDERUI_TABLE_SELECT_NODES:
       var selectedmap = {}
@@ -139,6 +160,28 @@ export default function folderuireducer(state = DEFAULT_STATE, action = {}) {
         },
         editing:{
           $set: null
+        }
+      })
+    case FOLDERUI_SNACKBAR_OPEN:
+      return update(state, {
+        snackbar:{
+          open:{
+            $set:true
+          },
+          message:{
+            $set:action.message
+          }
+        }
+      })
+    case FOLDERUI_SNACKBAR_CLOSE:
+      return update(state, {
+        snackbar:{
+          open:{
+            $set:false
+          },
+          message:{
+            $set:''
+          }
         }
       })
     default:

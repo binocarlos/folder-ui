@@ -147,6 +147,7 @@ Properties:
      * id - the identifier for the button
      * data - passed to the onadd function
      * title - text to display
+     * divider - a boolean that turns this item into a menu divider
  * children - React element to include after the left hand buttons
  * rightchildren - React element to include after the right hand buttons
  * onbutton(buttonName, data) - run when a button is clicked, passed the name of the button, the associated button data and the `selected` property

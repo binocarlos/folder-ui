@@ -1,14 +1,6 @@
 const TYPES = {
   folder:[{
     name:'name'
-  },{
-    name:'name2'
-  },{
-    name:'name3'
-  },{
-    name:'name4'
-  },{
-    name:'name5'
   }],
   item:[{
     name:'name'
