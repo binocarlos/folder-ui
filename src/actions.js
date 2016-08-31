@@ -52,6 +52,16 @@ export function table_select_nodes(data) {
   }
 }
 
+export const FOLDERUI_ADD_ITEM = 'FOLDERUI_ADD_ITEM'
+
+export function add_item(parent, item) {
+  return {
+    type: FOLDERUI_ADD_ITEM,
+    parent,
+    item
+  }
+}
+
 export const FOLDERUI_EDIT_ITEM = 'FOLDERUI_EDIT_ITEM'
 
 export function edit_item(item) {

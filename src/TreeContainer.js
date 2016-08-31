@@ -26,7 +26,7 @@ export class TreeContainer extends Component {
 
 function mapStateToProps(state, ownProps) {
 
-  var reducername = ownProps.reducername || 'folderui'
+  let reducername = ownProps.reducername || 'folderui'
 
   return {  
     treedata:state[reducername].tree,

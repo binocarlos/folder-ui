@@ -17,12 +17,12 @@
 
 */
 export function processTreeData(rootnodes = []){
-  var data = {}
-  var map = {}
-  var rootids = rootnodes.map(n => n.id)
+  let data = {}
+  let map = {}
+  let rootids = rootnodes.map(n => n.id)
 
   function processNode(node){
-    var children = node.children || []
+    let children = node.children || []
     node = Object.assign({}, node)
     delete(node.children)
     data[node.id] = node
@@ -50,13 +50,13 @@ export function processTreeData(rootnodes = []){
   
 */
 export function processListData(nodes = []){
-  var data = {}
+  let data = {}
   
   nodes.forEach(node => {
     data[node.id] = node
   })
 
-  var list = nodes.map(node => {
+  let list = nodes.map(node => {
     return node.id
   })
 

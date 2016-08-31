@@ -20,7 +20,7 @@ export class ContentContainer extends Component {
 
   render() {
 
-    var ContentType = this.props.mode=='form' ? FormContainer : ChildrenContainer
+    let ContentType = this.props.mode=='form' ? FormContainer : ChildrenContainer
 
     return (
       <div style={STYLES.wrapper}>
@@ -37,7 +37,7 @@ export class ContentContainer extends Component {
 
 function mapStateToProps(state, ownProps) {
 
-  var reducername = ownProps.reducername || 'folderui'
+  let reducername = ownProps.reducername || 'folderui'
 
   return {
     mode:state[reducername].editing ? 'form' : 'children',

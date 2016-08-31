@@ -22,8 +22,8 @@ class FormViewer extends Component {
 
   render() {
 
-    var library = Object.assign({}, muiLibrary, this.props.library)
-    var styles = getStyles()
+    let library = Object.assign({}, muiLibrary, this.props.library)
+    let styles = getStyles()
 
     return (
       <Container>

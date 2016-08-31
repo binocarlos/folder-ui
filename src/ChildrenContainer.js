@@ -6,6 +6,7 @@ import ToolbarWrapper from 'kettle-ui/lib/ToolbarWrapper'
 import { 
   table_select_nodes,
   edit_item,
+  add_item,
   tree_select_node,
   table_data_loaded
 } from './actions'
@@ -59,15 +60,21 @@ function getTableRows(table){
 // the add dropdown - depends on what type the parent is
 function getAddButton(parent){
   return {
-    id:'addmenu',
+    id:'add',
     type:'dropdown',
     title:'Add',
     items:[{
       id:'folder',
-      title:'Folder'
+      title:'Folder',
+      data:{
+        type:'folder'
+      }
     },{
       id:'item',
-      title:'Item'
+      title:'Item',
+      data:{
+        type:'item'
+      }
     }]
   }
 }
@@ -75,11 +82,11 @@ function getAddButton(parent){
 // work out what buttons (add, actions) to include
 // based on what is selected
 function getLeftButtons(parent, selected, canOpen){
-  var actions = []
-  var leftbuttons = []
+  let actions = []
+  let leftbuttons = []
 
   if(parent && selected.length==0){
-    var addButton = getAddButton(parent)
+    let addButton = getAddButton(parent)
     leftbuttons.push(addButton)
     actions.push({
       id:'edit',
@@ -137,7 +144,7 @@ function getLeftButtons(parent, selected, canOpen){
 function getToolbarTitle(parent, selected){
   parent = parent || {}
   selected = selected || []
-  var title = ''
+  let title = ''
   if(selected.length==0){
     title = parent.name
   }
@@ -157,30 +164,28 @@ const FIELDS = [{
 
 function mapStateToProps(state, ownProps) {
 
-  var reducerName = ownProps.reducername || 'folderui'
+  let reducerName = ownProps.reducername || 'folderui'
 
   // a rule that says you can only 'open' things that are in
   // the tree
-  var canOpen = (item) => {
+  let canOpen = (item) => {
     return state[reducerName].tree.data[item.id] ? true : false
   }
 
   // the parent of the table data
-  var parent = state[reducerName].treeselected
+  let parent = state[reducerName].treeselected
 
   // the list of table data
-  var data = getTableRows(state[reducerName].table)
+  let data = getTableRows(state[reducerName].table)
 
   // the list of selected table rows 
-  var selected = getSelectedRows(state[reducerName].table)
+  let selected = getSelectedRows(state[reducerName].table)
 
   // the left button array
-  var leftbuttons = getLeftButtons(parent, selected, canOpen)
+  let leftbuttons = getLeftButtons(parent, selected, canOpen)
 
   // the title
-  var title = getToolbarTitle(parent, selected)
-
-  
+  let title = getToolbarTitle(parent, selected)
 
   return {
     title:title,
@@ -193,15 +198,19 @@ function mapStateToProps(state, ownProps) {
 
 const BUTTON_HANDLERS = {
 
-  edit:(dispatch, parent, selected, ownProps) => {
-    dispatch(edit_item(selected.length>0 ? selected[0] : parent))
+  add:(dispatch, stateProps, ownProps, data) => {
+    dispatch(add_item(stateProps.parent, Object.assign({}, data.data)))
   },
 
-  open:(dispatch, parent, selected, ownProps) => {
-    if(selected.length!=1) return
+  edit:(dispatch, stateProps, ownProps) => {
+    dispatch(edit_item(stateProps.selected.length>0 ? stateProps.selected[0] : stateProps.parent))
+  },
+
+  open:(dispatch, stateProps, ownProps) => {
+    if(stateProps.selected.length!=1) return
     if(!ownProps.loadChildren) return
 
-    var data = selected[0]
+    let data = stateProps.selected[0]
 
     // load the children for the item
     ownProps.loadChildren(data, (err, children) => {
@@ -218,16 +227,22 @@ const BUTTON_HANDLERS = {
 // this avoids passing these things into the toolbar
 function handleButtonActions(id, data, ownProps){
   return (dispatch, getState) => {
-    var handler = BUTTON_HANDLERS[id]
+
+    let handler = BUTTON_HANDLERS[id]
     if(!handler) return
 
-    var reducername = ownProps.reducername || 'folderui'
+    let reducername = ownProps.reducername || 'folderui'
 
-    var state = getState()
-    var parent = state[reducername].treeselected
-    var selected = getSelectedRows(state[reducername].table)
+    let state = getState()
+    let parent = state[reducername].treeselected
+    let selected = getSelectedRows(state[reducername].table)
 
-    handler(dispatch, parent, selected, ownProps, data)
+    let stateProps = {
+      parent,
+      selected
+    }
+
+    handler(dispatch, stateProps, ownProps, data)
   }
 }
 

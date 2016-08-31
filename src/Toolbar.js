@@ -74,20 +74,20 @@ class FolderUIToolbar extends Component {
   }
 
   getButtonFromSchema(schema, i) {
-    var type = schema.type || 'button'
+    let type = schema.type || 'button'
     if (type=='dropdown') {
       return this.getButtonDropdown(schema.title, schema.items, item => {
-        this.props.onButton(item.id, item.data)
+        this.props.onButton(schema.id, item)
       }, schema.extraProps, i)
     }
     else if (type=='button') {
       return this.getButton(schema.title, () => {
-        this.props.onButton(schema.id, schema.data)
+        this.props.onButton(schema.id, schema)
       }, schema.extraProps, i)
     }
     else if (type=='icon') {
       return this.getIconDropdown(schema.icon, schema.items, item => {
-        this.props.onButton(item.id, item.data)
+        this.props.onButton(schema.id, item)
       }, schema.extraProps, i)
     }
     else {

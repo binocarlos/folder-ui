@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom'
 import injectTapEventPlugin from 'react-tap-event-plugin'
 import { Provider } from 'react-redux'
 import { applyMiddleware, compose, createStore, combineReducers } from 'redux'
+import { Router, Route, browserHistory } from 'react-router'
+import { syncHistoryWithStore, routerReducer } from 'react-router-redux'
 import thunk from 'redux-thunk'
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
@@ -25,19 +27,35 @@ const finalCreateStore = compose(
 )(createStore)
 
 const reducer = combineReducers({
-  folderui: folderreducer
+  folderui: folderreducer,
+  routing: routerReducer
 })
 
 const store = finalCreateStore(reducer)
 
-var db = DB()
+const history = syncHistoryWithStore(browserHistory, store)
+
+let db = DB()
 
 injectTapEventPlugin()
 
+
+/*
+
+TODO - get the routing to handle the page transitions
+
+      <Router history={history}>
+        <Route path="/" component={App}>
+          <Route path="foo" component={Foo}/>
+          <Route path="bar" component={Bar}/>
+        </Route>
+      </Router>
+*/
 ReactDOM.render(  
   <Provider store={store}>
     <MuiThemeProvider>
-     <AppNavWrapper
+
+      <AppNavWrapper
         appbar={
           <AppBar
             showMenuIconButton={false}

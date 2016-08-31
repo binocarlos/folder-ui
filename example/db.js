@@ -6,11 +6,11 @@ function serialize(val){
 
 export default function db(){
 
-  var tree = processTreeData(ROOT_DATA)
+  let tree = processTreeData(ROOT_DATA)
 
   return {
     saveItem:function(item, done){
-      var saveitem = tree.data[item.id]
+      let saveitem = tree.data[item.id]
       Object.keys(item || {}).forEach(function(key){
         saveitem[key] = item[key]
       })

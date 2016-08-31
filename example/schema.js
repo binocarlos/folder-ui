@@ -10,6 +10,6 @@ const TYPES = {
 }
 
 export function get_schema(item){
-  var type = item.type || 'folder'
+  let type = item.type || 'folder'
   return TYPES[type]
 }

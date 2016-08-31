@@ -5,6 +5,7 @@ import {
   FOLDERUI_TREE_SELECT_NODE,
   FOLDERUI_TABLE_SELECT_NODES,
   FOLDERUI_EDIT_ITEM,
+  FOLDERUI_ADD_ITEM,
   FOLDERUI_EDIT_ITEM_UPDATE,
   FOLDERUI_EDIT_ITEM_CANCEL,
   FOLDERUI_EDIT_ITEM_SAVE,
@@ -26,6 +27,8 @@ const DEFAULT_STATE = {
   table:null,
   // the item we are currently editing
   editing:null,
+  // if set it means we are adding an item
+  addparent:null,
   // the snackbar
   snackbar:{
     open:false,
@@ -63,8 +66,8 @@ export default function folderuireducer(state = DEFAULT_STATE, action = {}) {
     // clicked a node in the tree
     case FOLDERUI_TREE_DATA_LOADED:
 
-      var treeData = processTreeData(action.data)
-      var selected = treeData.data[treeData.rootids[0]]
+      let treeData = processTreeData(action.data)
+      let selected = treeData.data[treeData.rootids[0]]
 
       return update(state, {
         tree:{
@@ -80,7 +83,7 @@ export default function folderuireducer(state = DEFAULT_STATE, action = {}) {
 
     case FOLDERUI_TABLE_DATA_LOADED:
 
-      var tableData = processListData(action.data)
+      let tableData = processListData(action.data)
 
       return update(state, {
         table:{
@@ -94,7 +97,7 @@ export default function folderuireducer(state = DEFAULT_STATE, action = {}) {
     // clicked a node in the tree
     case FOLDERUI_TREE_SELECT_NODE:
 
-      var selectedNode = action.data
+      let selectedNode = action.data
 
       // this means we have opened something not in the tree
       if(!state.tree.data[selectedNode.id]) return state
@@ -103,7 +106,7 @@ export default function folderuireducer(state = DEFAULT_STATE, action = {}) {
       
     // selected some items in the table
     case FOLDERUI_TABLE_SELECT_NODES:
-      var selectedmap = {}
+      let selectedmap = {}
       action.data.forEach(i => {
         selectedmap[state.table.list[i]] = true
       })
@@ -111,9 +114,9 @@ export default function folderuireducer(state = DEFAULT_STATE, action = {}) {
         table:{
           data:{
             $apply: function(table){
-              var ret = {}
+              let ret = {}
               Object.keys(table || {}).forEach(function(key){
-                var row = table[key]
+                let row = table[key]
                 ret[row.id] = update(row, {
                   _selected:{
                     $set: selectedmap[row.id]
@@ -122,6 +125,21 @@ export default function folderuireducer(state = DEFAULT_STATE, action = {}) {
               })
               return ret
             }
+          }
+        }
+      })
+
+    case FOLDERUI_ADD_ITEM:
+    console.log('do add')
+      return update(state, {
+        addparent:{
+          $set:action.parent
+        },
+        editing:{
+          $set: {
+            data:action.item,
+            original:action.item,
+            meta:{}
           }
         }
       })
@@ -161,6 +179,9 @@ export default function folderuireducer(state = DEFAULT_STATE, action = {}) {
       })
     case FOLDERUI_EDIT_ITEM_CANCEL:
       return update(state, {
+        addparent:{
+          $set:null
+        },
         editing:{
           $set: null
         }
@@ -180,6 +201,9 @@ export default function folderuireducer(state = DEFAULT_STATE, action = {}) {
               $merge:action.item
             }
           }
+        },
+        addparent:{
+          $set:null
         },
         editing:{
           $set: null

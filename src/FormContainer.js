@@ -39,10 +39,10 @@ export class FormContainer extends Component {
 
 function mapStateToProps(state, ownProps) {
 
-  var reducername = ownProps.reducername || 'folderui'
+  let reducername = ownProps.reducername || 'folderui'
 
-  var editing = state[reducername].editing
-  var schema = ownProps.getSchema ? ownProps.getSchema(editing.data) : []
+  let editing = state[reducername].editing
+  let schema = ownProps.getSchema ? ownProps.getSchema(editing.data) : []
 
   return {
     title:editing.original.name,
@@ -66,20 +66,45 @@ function mapStateToProps(state, ownProps) {
 }
 
 const BUTTON_HANDLERS = {
-  save:(dispatch, item, ownProps) => {
+  save:(dispatch, stateProps, ownProps) => {
     if(!ownProps.saveItem) return
 
-    ownProps.saveItem(item, (err, newItem) => {
-      if(err) dispatch(snackbar_open('saveItem error: ' + err.toString()))
-      dispatch(edit_item_save(item))
-      dispatch(snackbar_open(item.name + ' saved'))  
-    })
+    let item = stateProps.item
+    let addparent = stateProps.addparent
+
+    // we are doing an ADD
+    if(addparent){
+
+      console.log('-------------------------------------------');
+      console.log('-------------------------------------------');
+      console.log('doing add')
+      return
+      ownProps.saveItem(item, (err, newItem) => {
+        if(err) dispatch(snackbar_open('saveItem error: ' + err.toString()))
+        dispatch(edit_item_save(item))
+        dispatch(snackbar_open(item.name + ' saved'))  
+      })
+    }
+    // we are doing a normal SAVE
+    else{
+      console.log('-------------------------------------------');
+      console.log('-------------------------------------------');
+      console.log('doing save')
+      return
+      ownProps.saveItem(item, (err, newItem) => {
+        if(err) dispatch(snackbar_open('saveItem error: ' + err.toString()))
+        dispatch(edit_item_save(item))
+        dispatch(snackbar_open(item.name + ' saved'))  
+      })
+    }
 
   },
-  revert:(dispatch, item) => {
+  revert:(dispatch, stateProps) => {
+    let item = stateProps.item
     dispatch(edit_item_revert(item))
   },
-  cancel:(dispatch, item) => {
+  cancel:(dispatch, stateProps) => {
+    let item = stateProps.item
     dispatch(edit_item_cancel(item))
   }
 }
@@ -88,17 +113,26 @@ const BUTTON_HANDLERS = {
 // uses thunk so we can get at the current item
 // this avoids passing these things into the toolbar
 function handleButtonActions(id, data, ownProps){
+
+  let reducername = ownProps.reducername || 'folderui'
+
   return (dispatch, getState) => {
-    var handler = BUTTON_HANDLERS[id]
+    let handler = BUTTON_HANDLERS[id]
     if(!handler){
       console.error('no button handler found for: ' + id)
       return
     }
 
-    var state = getState()
-    var item = state.folderui.editing.data
+    let state = getState()
+    let item = state[reducername].editing.data
+    let addparent = state[reducername].addparent
 
-    handler(dispatch, item, ownProps, data)
+    let stateProps = {
+      item,
+      addparent
+    }
+
+    handler(dispatch, stateProps, ownProps, data)
   }
 }
 

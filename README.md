@@ -179,6 +179,10 @@ extraProps are passed to the underlying button.
 A container that displays a toolbar and the children of an item
 
  * loadChildren(item, done) - load the children for an item
+ * deleteItems(items, done) - delete some items
+ * copyItems(items, done) - copy items to the clipboard
+ * cutItems(items, done) - cut items to the clipboard
+ * pasteItems(parent, mode, items, done) - paste items into a parent (mode is 'cut' or 'copy')
  * reducername - where to look in the state
 
 ## FormContainer
@@ -186,6 +190,7 @@ A container that displays a toolbar and the children of an item
 A container that displays a toolbar and biro form for an item.
 
  * saveItem(item, done) - save the data for an item
+ * addItem(parent, item, done) - add an item to a parent
  * getSchema(item) - get the form schema for an item
  * reducername - where to look in the state
 
@@ -201,10 +206,7 @@ A container that displays a tree.
 
 A combo of ChildrenContainer and FormContainer.
 
- * loadChildren(item, done)
- * saveItem(item, done)
- * getSchema(item, done)
- * reducername - where to look in the state
+ * merged props from `ChildrenContainer` and `FormContainer`
 
 ## tools
 

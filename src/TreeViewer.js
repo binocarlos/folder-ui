@@ -22,20 +22,20 @@ function getStyles(overrides = {}){
 class TreeViewer extends Component {
   
   getTreeNode(data, get_icon, styles, i) {
-    var treedata = this.props.treedata || {}
-    var children = getChildren(treedata, data.id)
-    var name = data.name || 'no title'
-    var use_icon = get_icon(data)
+    let treedata = this.props.treedata || {}
+    let children = getChildren(treedata, data.id)
+    let name = data.name || 'no title'
+    let use_icon = get_icon(data)
 
-    var childnodes = children.map((node, i) => {
+    let childnodes = children.map((node, i) => {
       return this.getTreeNode(node, get_icon, styles, i)
     })
 
-    var handleClick = () => {
+    let handleClick = () => {
       this.props.selectNode(data)
     }
 
-    var itemStyle = data.id==this.props.selected.id ? styles.selected : null
+    let itemStyle = data.id==this.props.selected.id ? styles.selected : null
 
     return (
       <ListItem 
@@ -53,13 +53,13 @@ class TreeViewer extends Component {
   }
 
   render() {
-    var treedata = this.props.treedata || {}
-    var get_icon = this.props.getIcon || function(data){
+    let treedata = this.props.treedata || {}
+    let get_icon = this.props.getIcon || function(data){
       return <Folder />
     }
-    var styles = getStyles(this.props.styles)
+    let styles = getStyles(this.props.styles)
 
-    var rootnodes = (treedata.rootids || []).map(id => {
+    let rootnodes = (treedata.rootids || []).map(id => {
       return treedata.data[id]
     })
 
