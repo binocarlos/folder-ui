@@ -7,6 +7,7 @@ import {
   table_select_nodes,
   edit_item,
   add_item,
+  add_item_save,
   tree_select_node,
   table_data_loaded
 } from './actions'

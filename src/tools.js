@@ -74,3 +74,32 @@ export function processListData(nodes = []){
 export function getChildren(tree, id){
   return (tree.children[id] || []).map(cid => tree.data[cid])
 }
+
+/*
+
+  get the next available id from the tree items
+  
+*/
+export function getNextId(tree){
+  var highestID = 0
+  Object.keys(tree.data || {}).forEach(function(key){
+    if(tree.data[key].id>highestID){
+      highestID = tree.data[key].id
+    }
+  })
+  return highestID+1
+}
+
+/*
+
+  add a child item to a parent
+  
+*/
+export function addChild(tree, parent, child){
+  if(!child.id) child.id = getNextId(tree)
+  tree.data[child.id] = child
+  var existingChildren = tree.children[parent.id] || []
+  existingChildren.push(child.id)
+  tree.children[parent.id] = existingChildren
+  return tree
+}

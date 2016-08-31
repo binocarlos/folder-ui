@@ -78,6 +78,7 @@ ReactDOM.render(
           loadChildren={db.loadChildren}
           getSchema={get_schema}
           saveItem={db.saveItem}
+          addItem={db.addItem}
           offsetWidth={250} />
         
       </AppNavWrapper>

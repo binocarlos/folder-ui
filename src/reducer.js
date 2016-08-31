@@ -6,6 +6,7 @@ import {
   FOLDERUI_TABLE_SELECT_NODES,
   FOLDERUI_EDIT_ITEM,
   FOLDERUI_ADD_ITEM,
+  FOLDERUI_ADD_ITEM_SAVE,
   FOLDERUI_EDIT_ITEM_UPDATE,
   FOLDERUI_EDIT_ITEM_CANCEL,
   FOLDERUI_EDIT_ITEM_SAVE,
@@ -130,7 +131,6 @@ export default function folderuireducer(state = DEFAULT_STATE, action = {}) {
       })
 
     case FOLDERUI_ADD_ITEM:
-    console.log('do add')
       return update(state, {
         addparent:{
           $set:action.parent

@@ -1,4 +1,4 @@
-import { processTreeData, getChildren } from '../src/tools'
+import { processTreeData, getChildren, addChild } from '../src/tools'
 
 function serialize(val){
   return JSON.parse(JSON.stringify(val))
@@ -15,6 +15,10 @@ export default function db(){
         saveitem[key] = item[key]
       })
       done(null, serialize(saveitem))
+    },
+    addItem:function(parent, item, done){
+      tree = addChild(tree, parent, item)
+      done(null, item)
     },
     loadChildren:function(item, done){
       done(null, serialize(getChildren(tree, item.id)))

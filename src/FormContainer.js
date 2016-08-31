@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import ToolbarWrapper from 'kettle-ui/lib/ToolbarWrapper'
 
 import { 
+  table_data_loaded,
   edit_item_save, 
   edit_item_cancel, 
   edit_item_update,
@@ -67,34 +68,40 @@ function mapStateToProps(state, ownProps) {
 
 const BUTTON_HANDLERS = {
   save:(dispatch, stateProps, ownProps) => {
-    if(!ownProps.saveItem) return
+    
 
+    let parent = stateProps.addparent
     let item = stateProps.item
-    let addparent = stateProps.addparent
 
     // we are doing an ADD
-    if(addparent){
+    if(parent){
 
-      console.log('-------------------------------------------');
-      console.log('-------------------------------------------');
-      console.log('doing add')
-      return
-      ownProps.saveItem(item, (err, newItem) => {
-        if(err) dispatch(snackbar_open('saveItem error: ' + err.toString()))
-        dispatch(edit_item_save(item))
-        dispatch(snackbar_open(item.name + ' saved'))  
+      // check we have the functions to handle the data in our own props
+      if(!ownProps.addItem) return
+      if(!ownProps.loadChildren) return
+
+      // add the item to the server
+      ownProps.addItem(parent, item, (err, newItem) => {
+        if(err) dispatch(snackbar_open('addItem error: ' + err.toString()))
+
+        // load the children for the parent (should include the added item)
+        ownProps.loadChildren(parent, function(err, parentChildren){
+          if(err) dispatch(snackbar_open('loadChildren error: ' + err.toString()))
+
+          // trigger the save and children loaded actions
+          dispatch(edit_item_cancel(parent, newItem))
+          dispatch(table_data_loaded(parentChildren))
+          dispatch(snackbar_open(newItem.name + ' added'))  
+        })        
       })
     }
     // we are doing a normal SAVE
     else{
-      console.log('-------------------------------------------');
-      console.log('-------------------------------------------');
-      console.log('doing save')
-      return
+      if(!ownProps.saveItem) return
       ownProps.saveItem(item, (err, newItem) => {
         if(err) dispatch(snackbar_open('saveItem error: ' + err.toString()))
-        dispatch(edit_item_save(item))
-        dispatch(snackbar_open(item.name + ' saved'))  
+        dispatch(edit_item_save(newItem))
+        dispatch(snackbar_open(newItem.name + ' saved'))  
       })
     }
 

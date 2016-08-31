@@ -189,6 +189,7 @@ A container that displays a toolbar and the children of an item
 
 A container that displays a toolbar and biro form for an item.
 
+ * loadChildren(item, done) - load the children for an item
  * saveItem(item, done) - save the data for an item
  * addItem(parent, item, done) - add an item to a parent
  * getSchema(item) - get the form schema for an item
