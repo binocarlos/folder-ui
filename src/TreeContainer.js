@@ -37,11 +37,19 @@ function mapStateToProps(state, ownProps) {
 function mapDispatchToProps(dispatch, ownProps) {
 
   function loadTreeData(done){
-    ownProps.loadTree && ownProps.loadTree(done)
+    if(!ownProps.loadTree) {
+      console.error('no loadTree method')
+      return
+    }
+    ownProps.loadTree(done)
   }
 
   function loadChildren(item, done){
-    ownProps.loadChildren && ownProps.loadChildren(item, done)
+    if(!ownProps.loadChildren) {
+      console.error('no loadChildren method')
+      return
+    }
+    ownProps.loadChildren(item, done)
   }
 
   return {

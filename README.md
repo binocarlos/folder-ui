@@ -178,11 +178,10 @@ extraProps are passed to the underlying button.
 
 A container that displays a toolbar and the children of an item
 
+ * loadTree(done) - loads the data for the tree, in normal format (it will be passed via `tools.processTreeData`)
  * loadChildren(item, done) - load the children for an item
  * deleteItems(items, done) - delete some items
- * copyItems(items, done) - copy items to the clipboard
- * cutItems(items, done) - cut items to the clipboard
- * pasteItems(parent, mode, items, done) - paste items into a parent (mode is 'cut' or 'copy')
+ * pasteItems(mode, parent, items, done) - paste items into a parent (mode is 'cut' or 'copy')
  * reducername - where to look in the state
 
 ## FormContainer

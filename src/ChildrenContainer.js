@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
+import pluralise from 'pluralise'
 
 import ToolbarWrapper from 'kettle-ui/lib/ToolbarWrapper'
 
@@ -9,7 +10,11 @@ import {
   add_item,
   add_item_save,
   tree_select_node,
-  table_data_loaded
+  table_data_loaded,
+  copy_items,
+  cut_items,
+  refresh_selected,
+  snackbar_open
 } from './actions'
 
 import ChildrenViewer from './ChildrenViewer'
@@ -65,24 +70,18 @@ function getAddButton(parent){
     type:'dropdown',
     title:'Add',
     items:[{
-      id:'folder',
-      title:'Folder',
-      data:{
-        type:'folder'
-      }
+      type:'folder',
+      title:'Folder'
     },{
-      id:'item',
-      title:'Item',
-      data:{
-        type:'item'
-      }
+      type:'item',
+      title:'Item'
     }]
   }
 }
 
 // work out what buttons (add, actions) to include
 // based on what is selected
-function getLeftButtons(parent, selected, canOpen){
+function getLeftButtons(parent, selected, clipboard, canOpen){
   let actions = []
   let leftbuttons = []
 
@@ -92,10 +91,14 @@ function getLeftButtons(parent, selected, canOpen){
     actions.push({
       id:'edit',
       title:'Edit'
-    },{
-      id:'paste',
-      title:'Paste'
     })
+
+    if(clipboard.length>0){
+      actions.push({
+        id:'paste',
+        title:'Paste'
+      })
+    }
   }
   else if(selected.length==1){
 
@@ -116,10 +119,10 @@ function getLeftButtons(parent, selected, canOpen){
  
   if(selected.length>0){
     actions.push({
-      divider:true
-    },{
       id:'delete',
       title:'Delete'
+    },{
+      divider:true
     },{
       id:'copy',
       title:'Copy'
@@ -182,8 +185,11 @@ function mapStateToProps(state, ownProps) {
   // the list of selected table rows 
   let selected = getSelectedRows(state[reducerName].table)
 
+  // the current clipboard
+  let clipboard = state[reducerName].clipboard
+
   // the left button array
-  let leftbuttons = getLeftButtons(parent, selected, canOpen)
+  let leftbuttons = getLeftButtons(parent, selected, clipboard, canOpen)
 
   // the title
   let title = getToolbarTitle(parent, selected)
@@ -200,7 +206,7 @@ function mapStateToProps(state, ownProps) {
 const BUTTON_HANDLERS = {
 
   add:(dispatch, stateProps, ownProps, data) => {
-    dispatch(add_item(stateProps.parent, Object.assign({}, data.data)))
+    dispatch(add_item(stateProps.parent, Object.assign({}, data)))
   },
 
   edit:(dispatch, stateProps, ownProps) => {
@@ -209,7 +215,10 @@ const BUTTON_HANDLERS = {
 
   open:(dispatch, stateProps, ownProps) => {
     if(stateProps.selected.length!=1) return
-    if(!ownProps.loadChildren) return
+    if(!ownProps.loadChildren) {
+      console.error('no loadChildren method')
+      return
+    }
 
     let data = stateProps.selected[0]
 
@@ -220,6 +229,38 @@ const BUTTON_HANDLERS = {
       // tell the tree structure this item is open
       dispatch(tree_select_node(data))
     })
+  },
+
+  cut:(dispatch, stateProps, ownProps) => {
+    if(stateProps.selected.length<=0) return
+    dispatch(cut_items(stateProps.selected))
+    dispatch(snackbar_open(stateProps.selected.length + ' ' + pluralise(stateProps.selected.length, 'item') + ' cut to the clipboard'))
+  },
+
+  copy:(dispatch, stateProps, ownProps) => {
+    if(stateProps.selected.length<=0) return
+    dispatch(copy_items(stateProps.selected))
+    dispatch(snackbar_open(stateProps.selected.length + ' ' + pluralise(stateProps.selected.length, 'item') + ' copied to the clipboard'))
+  },
+
+  paste:(dispatch, stateProps, ownProps) => {
+    if(stateProps.clipboardItems.length<=0) return
+    if(!ownProps.pasteItems){
+      console.error('no pasteItems method')
+      return
+    }
+    
+    let mode = stateProps.clipboardMode
+    let parent = stateProps.parent
+    let items = stateProps.clipboardItems
+
+    ownProps.pasteItems(mode, parent, items, (err, newItems) => {
+      if(err) return dispatch(snackbar_open('pasteItems error: ' + err.toString()))
+      
+      refresh_selected(ownProps, parent)
+
+      dispatch(snackbar_open(items.length + ' ' + pluralise(items.length, 'item') + ' pasted into ' + parent.name))
+    })
   }
 }
 
@@ -228,7 +269,6 @@ const BUTTON_HANDLERS = {
 // this avoids passing these things into the toolbar
 function handleButtonActions(id, data, ownProps){
   return (dispatch, getState) => {
-
     let handler = BUTTON_HANDLERS[id]
     if(!handler) return
 
@@ -237,10 +277,18 @@ function handleButtonActions(id, data, ownProps){
     let state = getState()
     let parent = state[reducername].treeselected
     let selected = getSelectedRows(state[reducername].table)
+    let clipboardItems = state[reducername].clipboard.map(item => {
+      let ret = Object.assign({}, item)
+      delete(item._selected)
+      return ret
+    })
+    let clipboardMode = clipboardItems.length > 0 ? clipboardItems[0].type : null
 
     let stateProps = {
       parent,
-      selected
+      selected,
+      clipboardMode,
+      clipboardItems
     }
 
     handler(dispatch, stateProps, ownProps, data)

@@ -77,6 +77,39 @@ export function getChildren(tree, id){
 
 /*
 
+  move an item in the tree
+  
+*/
+export function moveItem(tree, itemid, toid){
+  let parentID = getParentId(tree, itemid)
+
+  tree.children[parentID] = tree.children[parentID].filter(id => {
+    return id!=itemid
+  })
+
+  tree.children[toid] = tree.children[toid] || []
+  tree.children[toid].push(itemid)
+  return tree
+}
+
+/*
+
+  get the parentid of an item
+  
+*/
+export function getParentId(tree, itemid){
+  let ret = null
+  Object.keys(tree.children || {}).forEach((parentid) => {
+    let results = tree.children[parentid].filter(id => {
+      return id==itemid
+    })
+    if(results.length>0) ret = parentid
+  })
+  return ret
+}
+
+/*
+
   get the next available id from the tree items
   
 */

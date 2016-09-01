@@ -44,9 +44,10 @@ function mapStateToProps(state, ownProps) {
 
   let editing = state[reducername].editing
   let schema = ownProps.getSchema ? ownProps.getSchema(editing.data) : []
+  let addparent = state[reducername].addparent
 
   return {
-    title:editing.original.name,
+    title:addparent ? 'New ' + (editing.original.type || 'item') : editing.original.name,
     data:editing.data,
     meta:editing.meta,
     schema:schema,
@@ -77,8 +78,14 @@ const BUTTON_HANDLERS = {
     if(parent){
 
       // check we have the functions to handle the data in our own props
-      if(!ownProps.addItem) return
-      if(!ownProps.loadChildren) return
+      if(!ownProps.addItem) {
+        console.error('no addItem method')
+        return
+      }
+      if(!ownProps.loadChildren) {
+        console.error('no loadChildren method')
+        return
+      }
 
       // add the item to the server
       ownProps.addItem(parent, item, (err, newItem) => {
@@ -97,7 +104,10 @@ const BUTTON_HANDLERS = {
     }
     // we are doing a normal SAVE
     else{
-      if(!ownProps.saveItem) return
+      if(!ownProps.saveItem) {
+        console.error('no saveItem method')
+        return
+      }
       ownProps.saveItem(item, (err, newItem) => {
         if(err) dispatch(snackbar_open('saveItem error: ' + err.toString()))
         dispatch(edit_item_save(newItem))

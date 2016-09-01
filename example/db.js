@@ -1,4 +1,4 @@
-import { processTreeData, getChildren, addChild } from '../src/tools'
+import { processTreeData, getChildren, addChild, moveItem } from '../src/tools'
 
 function serialize(val){
   return JSON.parse(JSON.stringify(val))
@@ -9,21 +9,39 @@ export default function db(){
   let tree = processTreeData(ROOT_DATA)
 
   return {
-    saveItem:function(item, done){
+    saveItem:(item, done) => {
       let saveitem = tree.data[item.id]
       Object.keys(item || {}).forEach(function(key){
         saveitem[key] = item[key]
       })
       done(null, serialize(saveitem))
     },
-    addItem:function(parent, item, done){
+    addItem:(parent, item, done) => {
       tree = addChild(tree, parent, item)
-      done(null, item)
+      done(null, serialize(item))
     },
-    loadChildren:function(item, done){
+    pasteItems:(mode, parent, items, done) => {
+      let newItems = []
+      if(mode=='copy'){
+        newItems = items.map(item => {
+          delete(item.id)
+          tree = addChild(tree, parent, item)
+          return item
+        })
+      }
+      else if(mode=='cut'){
+        items.forEach(item => {
+          tree = moveItem(tree, item.id, parent.id)
+        })
+        newItems = items
+      }
+
+      done(null, serialize(newItems))
+    },
+    loadChildren:(item, done) => {
       done(null, serialize(getChildren(tree, item.id)))
     },
-    loadTree:function(done){
+    loadTree:(done) => {
       done(null, serialize(ROOT_DATA))
     }
   }

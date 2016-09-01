@@ -4,6 +4,8 @@ import {
   FOLDERUI_TABLE_DATA_LOADED,
   FOLDERUI_TREE_SELECT_NODE,
   FOLDERUI_TABLE_SELECT_NODES,
+  FOLDERUI_CUT_ITEMS,
+  FOLDERUI_COPY_ITEMS,
   FOLDERUI_EDIT_ITEM,
   FOLDERUI_ADD_ITEM,
   FOLDERUI_ADD_ITEM_SAVE,
@@ -26,6 +28,8 @@ const DEFAULT_STATE = {
   // * data - id -> {}
   // * table - [id]
   table:null,
+  // * [{id:X,type:'{cut,copy}'}]
+  clipboard:[],
   // the item we are currently editing
   editing:null,
   // if set it means we are adding an item
@@ -127,6 +131,20 @@ export default function folderuireducer(state = DEFAULT_STATE, action = {}) {
               return ret
             }
           }
+        }
+      })
+
+    case FOLDERUI_CUT_ITEMS:
+      return update(state, {
+        clipboard:{
+          $set:action.items
+        }
+      })
+
+    case FOLDERUI_COPY_ITEMS:
+      return update(state, {
+        clipboard:{
+          $set:action.items
         }
       })
 

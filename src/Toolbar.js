@@ -77,7 +77,7 @@ class FolderUIToolbar extends Component {
     let type = schema.type || 'button'
     if (type=='dropdown') {
       return this.getButtonDropdown(schema.title, schema.items, item => {
-        this.props.onButton(schema.id, item)
+        this.props.onButton(item.id || schema.id, item)
       }, schema.extraProps, i)
     }
     else if (type=='button') {
@@ -87,7 +87,7 @@ class FolderUIToolbar extends Component {
     }
     else if (type=='icon') {
       return this.getIconDropdown(schema.icon, schema.items, item => {
-        this.props.onButton(schema.id, item)
+        this.props.onButton(item.id || schema.id, item)
       }, schema.extraProps, i)
     }
     else {
