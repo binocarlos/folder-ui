@@ -92,6 +92,15 @@ export function moveItem(tree, itemid, toid){
   return tree
 }
 
+export function deleteItem(tree, item){
+  let parentID = getParentId(tree, item.id)
+
+  delete(tree.data[item.id])
+  tree.children[parentID] = tree.children[parentID].filter(id => {
+    return id!=item.id
+  })
+}
+
 /*
 
   get the parentid of an item
@@ -135,4 +144,30 @@ export function addChild(tree, parent, child){
   existingChildren.push(child.id)
   tree.children[parent.id] = existingChildren
   return tree
+}
+
+/*
+
+  get the rows in a table that are selected
+  
+*/
+export function getSelectedTableRows(table){
+  table = table || {}
+  return (table.list || []).filter(id => {
+    return table.data[id]._selected
+  }).map(id => {
+    return table.data[id]
+  })
+}
+
+/*
+
+  get the rows in a table
+  
+*/
+export function getTableRows(table){
+  table = table || {}
+  return (table.list || []).map(id => {
+    return table.data[id]
+  })
 }

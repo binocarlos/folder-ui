@@ -9,7 +9,8 @@ import {
   edit_item_cancel, 
   edit_item_update,
   edit_item_revert,
-  snackbar_open
+  snackbar_open,
+  api_save_item
 } from './actions'
 
 import FormViewer from './FormViewer'
@@ -69,52 +70,10 @@ function mapStateToProps(state, ownProps) {
 
 const BUTTON_HANDLERS = {
   save:(dispatch, stateProps, ownProps) => {
-    
-
     let parent = stateProps.addparent
     let item = stateProps.item
 
-    // we are doing an ADD
-    if(parent){
-
-      // check we have the functions to handle the data in our own props
-      if(!ownProps.addItem) {
-        console.error('no addItem method')
-        return
-      }
-      if(!ownProps.loadChildren) {
-        console.error('no loadChildren method')
-        return
-      }
-
-      // add the item to the server
-      ownProps.addItem(parent, item, (err, newItem) => {
-        if(err) dispatch(snackbar_open('addItem error: ' + err.toString()))
-
-        // load the children for the parent (should include the added item)
-        ownProps.loadChildren(parent, function(err, parentChildren){
-          if(err) dispatch(snackbar_open('loadChildren error: ' + err.toString()))
-
-          // trigger the save and children loaded actions
-          dispatch(edit_item_cancel(parent, newItem))
-          dispatch(table_data_loaded(parentChildren))
-          dispatch(snackbar_open(newItem.name + ' added'))  
-        })        
-      })
-    }
-    // we are doing a normal SAVE
-    else{
-      if(!ownProps.saveItem) {
-        console.error('no saveItem method')
-        return
-      }
-      ownProps.saveItem(item, (err, newItem) => {
-        if(err) dispatch(snackbar_open('saveItem error: ' + err.toString()))
-        dispatch(edit_item_save(newItem))
-        dispatch(snackbar_open(newItem.name + ' saved'))  
-      })
-    }
-
+    dispatch(api_save_item(ownProps, parent, item))
   },
   revert:(dispatch, stateProps) => {
     let item = stateProps.item

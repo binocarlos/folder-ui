@@ -5,17 +5,21 @@ import pluralise from 'pluralise'
 import ToolbarWrapper from 'kettle-ui/lib/ToolbarWrapper'
 
 import { 
+  api_select_node,
+  api_paste_items,
   table_select_nodes,
-  edit_item,
   add_item,
-  add_item_save,
-  tree_select_node,
-  table_data_loaded,
+  edit_item,
   copy_items,
   cut_items,
-  refresh_selected,
-  snackbar_open
+  snackbar_open,
+  dialog_open
 } from './actions'
+
+import {
+  getTableRows,
+  getSelectedTableRows
+} from './tools'
 
 import ChildrenViewer from './ChildrenViewer'
 import Toolbar from './Toolbar'
@@ -47,21 +51,7 @@ export class ChildrenContainer extends Component {
   }
 }
 
-function getSelectedRows(table){
-  table = table || {}
-  return (table.list || []).filter(id => {
-    return table.data[id]._selected
-  }).map(id => {
-    return table.data[id]
-  })
-}
 
-function getTableRows(table){
-  table = table || {}
-  return (table.list || []).map(id => {
-    return table.data[id]
-  })
-}
 
 // the add dropdown - depends on what type the parent is
 function getAddButton(parent){
@@ -102,11 +92,6 @@ function getLeftButtons(parent, selected, clipboard, canOpen){
   }
   else if(selected.length==1){
 
-    actions.push({
-      id:'edit',
-      title:'Edit'
-    })
-
     // lets check that we can open the single item
     if(canOpen(selected[0])){
       actions.push({
@@ -114,6 +99,13 @@ function getLeftButtons(parent, selected, clipboard, canOpen){
         title:'Open'
       })
     }
+
+    actions.push({
+      id:'edit',
+      title:'Edit'
+    })
+
+    
     
   }
  
@@ -144,23 +136,6 @@ function getLeftButtons(parent, selected, clipboard, canOpen){
   return leftbuttons
 }
 
-// the title depends on the selection
-function getToolbarTitle(parent, selected){
-  parent = parent || {}
-  selected = selected || []
-  let title = ''
-  if(selected.length==0){
-    title = parent.name
-  }
-  else if(selected.length==1){
-    title = selected[0].name
-  }
-  else{
-    title = 'Multiple items'
-  }
-  return title
-}
-
 const FIELDS = [{
   title:'name',
   render:data => data.name
@@ -183,7 +158,7 @@ function mapStateToProps(state, ownProps) {
   let data = getTableRows(state[reducerName].table)
 
   // the list of selected table rows 
-  let selected = getSelectedRows(state[reducerName].table)
+  let selected = getSelectedTableRows(state[reducerName].table)
 
   // the current clipboard
   let clipboard = state[reducerName].clipboard
@@ -192,7 +167,7 @@ function mapStateToProps(state, ownProps) {
   let leftbuttons = getLeftButtons(parent, selected, clipboard, canOpen)
 
   // the title
-  let title = getToolbarTitle(parent, selected)
+  let title = (parent || {}).name
 
   return {
     title:title,
@@ -213,22 +188,19 @@ const BUTTON_HANDLERS = {
     dispatch(edit_item(stateProps.selected.length>0 ? stateProps.selected[0] : stateProps.parent))
   },
 
+  // TODO: this is coupled to the ContentContainer because it needs the dialog
+  delete:(dispatch, stateProps, ownProps) => {
+    dispatch(dialog_open('Are you sure you want to delete ' + stateProps.selected.length + ' ' + pluralise(stateProps.selected.length, 'item') + '?', {
+      type:'delete'
+    }))
+  },
+
   open:(dispatch, stateProps, ownProps) => {
     if(stateProps.selected.length!=1) return
-    if(!ownProps.loadChildren) {
-      console.error('no loadChildren method')
-      return
-    }
+    
+    let item = stateProps.selected[0]
 
-    let data = stateProps.selected[0]
-
-    // load the children for the item
-    ownProps.loadChildren(data, (err, children) => {
-      if(err) return dispatch(snackbar_open('loadChildren error: ' + err.toString()))
-      dispatch(table_data_loaded(children))
-      // tell the tree structure this item is open
-      dispatch(tree_select_node(data))
-    })
+    dispatch(api_select_node(ownProps, item))
   },
 
   cut:(dispatch, stateProps, ownProps) => {
@@ -245,22 +217,12 @@ const BUTTON_HANDLERS = {
 
   paste:(dispatch, stateProps, ownProps) => {
     if(stateProps.clipboardItems.length<=0) return
-    if(!ownProps.pasteItems){
-      console.error('no pasteItems method')
-      return
-    }
-    
+
     let mode = stateProps.clipboardMode
     let parent = stateProps.parent
     let items = stateProps.clipboardItems
 
-    ownProps.pasteItems(mode, parent, items, (err, newItems) => {
-      if(err) return dispatch(snackbar_open('pasteItems error: ' + err.toString()))
-      
-      refresh_selected(ownProps, parent)
-
-      dispatch(snackbar_open(items.length + ' ' + pluralise(items.length, 'item') + ' pasted into ' + parent.name))
-    })
+    dispatch(api_paste_items(ownProps, mode, parent, items))
   }
 }
 
@@ -276,7 +238,7 @@ function handleButtonActions(id, data, ownProps){
 
     let state = getState()
     let parent = state[reducername].treeselected
-    let selected = getSelectedRows(state[reducername].table)
+    let selected = getSelectedTableRows(state[reducername].table)
     let clipboardItems = state[reducername].clipboard.map(item => {
       let ret = Object.assign({}, item)
       delete(item._selected)

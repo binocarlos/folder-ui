@@ -14,7 +14,10 @@ import {
   FOLDERUI_EDIT_ITEM_SAVE,
   FOLDERUI_EDIT_ITEM_REVERT,
   FOLDERUI_SNACKBAR_OPEN,
-  FOLDERUI_SNACKBAR_CLOSE
+  FOLDERUI_SNACKBAR_CLOSE,
+  FOLDERUI_DIALOG_OPEN,
+  FOLDERUI_DIALOG_CONFIRM,
+  FOLDERUI_DIALOG_CLOSE
 } from './actions'
 import { processTreeData, processListData, getChildren } from './tools'
 
@@ -38,6 +41,11 @@ const DEFAULT_STATE = {
   snackbar:{
     open:false,
     message:''
+  },
+  dialog:{
+    open:false,
+    message:'',
+    data:null
   }
 }
 
@@ -115,21 +123,14 @@ export default function folderuireducer(state = DEFAULT_STATE, action = {}) {
       action.data.forEach(i => {
         selectedmap[state.table.list[i]] = true
       })
+      var newData = JSON.parse(JSON.stringify(state.table.data))
+      Object.keys(newData || {}).forEach(function(key){
+        newData[key]._selected = selectedmap[key] ? true : false
+      })
       return update(state, {
         table:{
           data:{
-            $apply: function(table){
-              let ret = {}
-              Object.keys(table || {}).forEach(function(key){
-                let row = table[key]
-                ret[row.id] = update(row, {
-                  _selected:{
-                    $set: selectedmap[row.id]
-                  }
-                })         
-              })
-              return ret
-            }
+            $set: newData
           }
         }
       })
@@ -246,6 +247,26 @@ export default function folderuireducer(state = DEFAULT_STATE, action = {}) {
           },
           message:{
             $set:''
+          }
+        }
+      })
+    case FOLDERUI_DIALOG_OPEN:
+      return update(state, {
+        dialog:{
+          $set:{
+            open:true,
+            message:action.message,
+            data:action.data
+          }
+        }
+      })
+    case FOLDERUI_DIALOG_CLOSE:
+      return update(state, {
+        dialog:{
+          $set:{
+            open:false,
+            message:null,
+            data:null
           }
         }
       })

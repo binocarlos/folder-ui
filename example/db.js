@@ -1,4 +1,4 @@
-import { processTreeData, getChildren, addChild, moveItem } from '../src/tools'
+import { processTreeData, getChildren, addChild, moveItem, deleteItem } from '../src/tools'
 
 function serialize(val){
   return JSON.parse(JSON.stringify(val))
@@ -37,6 +37,12 @@ export default function db(){
       }
 
       done(null, serialize(newItems))
+    },
+    deleteItems:(items, done) => {
+      items.forEach(item => {
+        deleteItem(tree, item)
+      })
+      done(null, items)
     },
     loadChildren:(item, done) => {
       done(null, serialize(getChildren(tree, item.id)))

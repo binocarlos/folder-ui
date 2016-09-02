@@ -79,6 +79,7 @@ ReactDOM.render(
           getSchema={get_schema}
           saveItem={db.saveItem}
           addItem={db.addItem}
+          deleteItems={db.deleteItems}
           pasteItems={db.pasteItems}
           offsetWidth={250} />
         
