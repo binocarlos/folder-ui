@@ -11,6 +11,141 @@ Install the module to your project:
 $ npm install folder-ui --save
 ```
 
+## Containers
+
+These React components are designed to integrate with a [redux](https://github.com/reactjs/redux) app.
+
+They come with a reducer and a set of actions:
+
+```javascript
+import React from 'react'
+import ReactDOM from 'react-dom'
+import injectTapEventPlugin from 'react-tap-event-plugin'
+import { Provider } from 'react-redux'
+import { applyMiddleware, compose, createStore, combineReducers } from 'redux'
+import { Router, Route, browserHistory } from 'react-router'
+import { syncHistoryWithStore, routerReducer } from 'react-router-redux'
+import thunk from 'redux-thunk'
+
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+
+import AppBar from 'material-ui/AppBar'
+import AppNavWrapper from 'kettle-ui/lib/AppNavWrapper'
+
+import { Container, Row, Col } from 'kettle-ui/lib/Grid'
+
+import DB from './db'
+import TreeContainer from 'folder-ui/lib/TreeContainer'
+import ContentContainer from 'folder-ui/lib/ContentContainer'
+
+import folderreducer from 'folder-ui/lib/reducer'
+import { get_schema } from './schema'
+
+const finalCreateStore = compose(
+  applyMiddleware(thunk),
+  window.devToolsExtension ? window.devToolsExtension() : f => f
+)(createStore)
+
+const reducer = combineReducers({
+  folderui: folderreducer,
+  routing: routerReducer
+})
+
+const store = finalCreateStore(reducer)
+
+const history = syncHistoryWithStore(browserHistory, store)
+
+let db = DB()
+
+injectTapEventPlugin()
+
+ReactDOM.render(  
+  <Provider store={store}>
+    <MuiThemeProvider>
+
+      <AppNavWrapper
+        appbar={
+          <AppBar
+            showMenuIconButton={false}
+            title="Home"
+            zDepth={2} />
+        }
+        width={250}
+        paperprops={{
+          zDepth:1,
+          rounded:false
+        }}
+        navbar={
+          <TreeContainer 
+            loadTree={db.loadTree}
+            loadChildren={db.loadChildren}
+            title="My Folders" />
+        }>
+        
+        <ContentContainer 
+          loadChildren={db.loadChildren}
+          getSchema={get_schema}
+          saveItem={db.saveItem}
+          addItem={db.addItem}
+          deleteItems={db.deleteItems}
+          pasteItems={db.pasteItems}
+          offsetWidth={250} />
+        
+      </AppNavWrapper>
+    </MuiThemeProvider>
+  </Provider>,
+  document.getElementById('mount')
+)
+```
+
+## Database
+
+You need to provide a set of database functions so the containers can load/save data.
+
+The following is the signature of the database interface:
+
+ * `saveItem:(item, done)` - save an item
+ * `addItem:(parent, item, done)` - add an item to a parent
+ * `pasteItems:(mode, parent, items, done)` - paste items, mode is {copy,cut}
+ * `deleteItems:(items, done)` - delete items from a parent
+ * `loadChildren:(item, done)` - load the children for an item
+ * `loadTree:(done)` - load the tree data for an item
+
+## ChildrenContainer
+
+A container that displays a toolbar and the children of an item
+
+ * loadTree(done) - loads the data for the tree, in normal format (it will be passed via `tools.processTreeData`)
+ * loadChildren(item, done) - load the children for an item
+ * deleteItems(items, done) - delete some items
+ * pasteItems(mode, parent, items, done) - paste items into a parent (mode is 'cut' or 'copy')
+ * reducername - where to look in the state
+
+## FormContainer
+
+A container that displays a toolbar and biro form for an item.
+
+ * loadChildren(item, done) - load the children for an item
+ * saveItem(item, done) - save the data for an item
+ * addItem(parent, item, done) - add an item to a parent
+ * getSchema(item) - get the form schema for an item
+ * reducername - where to look in the state
+
+## TreeContainer
+
+A container that displays a tree.
+
+ * loadTree(done) - loads the data for the tree, in normal format (it will be passed via `tools.processTreeData`)
+ * onSelect(item) - run when a tree item is selected - used to trigger other behavior (like load children in the table)
+ * reducername - where to look in the state
+
+## ContentContainer
+
+A combo of ChildrenContainer and FormContainer.
+
+ * merged props from `ChildrenContainer` and `FormContainer`
+
+
 ## TreeViewer
 
 Renders a tree menu for navigating around folders.
@@ -174,39 +309,7 @@ You can pass a schema to the toolbar and it will render the correct components.
 
 extraProps are passed to the underlying button.
 
-## ChildrenContainer
 
-A container that displays a toolbar and the children of an item
-
- * loadTree(done) - loads the data for the tree, in normal format (it will be passed via `tools.processTreeData`)
- * loadChildren(item, done) - load the children for an item
- * deleteItems(items, done) - delete some items
- * pasteItems(mode, parent, items, done) - paste items into a parent (mode is 'cut' or 'copy')
- * reducername - where to look in the state
-
-## FormContainer
-
-A container that displays a toolbar and biro form for an item.
-
- * loadChildren(item, done) - load the children for an item
- * saveItem(item, done) - save the data for an item
- * addItem(parent, item, done) - add an item to a parent
- * getSchema(item) - get the form schema for an item
- * reducername - where to look in the state
-
-## TreeContainer
-
-A container that displays a tree.
-
- * loadTree(done) - loads the data for the tree, in normal format (it will be passed via `tools.processTreeData`)
- * onSelect(item) - run when a tree item is selected - used to trigger other behavior (like load children in the table)
- * reducername - where to look in the state
-
-## ContentContainer
-
-A combo of ChildrenContainer and FormContainer.
-
- * merged props from `ChildrenContainer` and `FormContainer`
 
 ## tools
 

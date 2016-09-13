@@ -161,7 +161,7 @@ function mapStateToProps(state, ownProps) {
   let selected = getSelectedTableRows(state[reducerName].table)
 
   // the current clipboard
-  let clipboard = state[reducerName].clipboard
+  let clipboard = state[reducerName].clipboard.items
 
   // the left button array
   let leftbuttons = getLeftButtons(parent, selected, clipboard, canOpen)
@@ -239,12 +239,12 @@ function handleButtonActions(id, data, ownProps){
     let state = getState()
     let parent = state[reducername].treeselected
     let selected = getSelectedTableRows(state[reducername].table)
-    let clipboardItems = state[reducername].clipboard.map(item => {
+    let clipboardItems = state[reducername].clipboard.items.map(item => {
       let ret = Object.assign({}, item)
       delete(item._selected)
       return ret
     })
-    let clipboardMode = clipboardItems.length > 0 ? clipboardItems[0].type : null
+    let clipboardMode = state[reducername].clipboard.type
 
     let stateProps = {
       parent,

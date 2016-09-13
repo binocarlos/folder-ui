@@ -76,6 +76,7 @@ ReactDOM.render(
         
         <ContentContainer 
           loadChildren={db.loadChildren}
+          loadTree={db.loadTree}
           getSchema={get_schema}
           saveItem={db.saveItem}
           addItem={db.addItem}

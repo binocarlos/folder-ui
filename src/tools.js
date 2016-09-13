@@ -7,7 +7,8 @@
   in the following format:
 
    * data - a flat map of id -> object
-   * map - a flat map of id -> [childids]
+   * children - a flat map of id -> [childids]
+   * rootids - an array of the top level node ids
   
   this function accepts a top level array of objects
   with the following properties:
@@ -37,6 +38,24 @@ export function processTreeData(rootnodes = []){
     children:map,
     rootids
   }
+}
+
+/*
+
+  turn a tree data structure back into it's original data
+
+  so an object with 'data', 'children' and 'rootids' properties
+  is turned into a single array of objects each with a 'children' property
+  
+*/
+export function dumpTreeData(tree = {}){
+  function convertNode(id){
+    var ret = Object.assign({}, tree.data[id])
+    ret.children = tree.children[id].map(convertNode)
+    return ret
+  }
+
+  return tree.rootids.map(convertNode)
 }
 
 /*

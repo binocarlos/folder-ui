@@ -72,6 +72,15 @@ export function copy_items(items) {
   }
 }
 
+export const FOLDERUI_PASTE_ITEMS = 'FOLDERUI_PASTE_ITEMS'
+
+export function paste_items(item) {
+  return {
+    type: FOLDERUI_PASTE_ITEMS,
+    item
+  }
+}
+
 export const FOLDERUI_ADD_ITEM = 'FOLDERUI_ADD_ITEM'
 
 export function add_item(parent, item) {
@@ -242,12 +251,16 @@ export function api_paste_items(ownProps, mode, parent, items, done) {
       console.error('no pasteItems method')
       return
     }
+    // paste the items using the database api
     ownProps.pasteItems(mode, parent, items, (err, newItems) => {
       if(err) {
         done && done(err)
         return dispatch(snackbar_open('pasteItems error: ' + err.toString()))
       }
 
+      dispatch(paste_items(parent))
+      
+      // now reload the tree because it has new items
       dispatch(api_load_tree_data(ownProps, parent, (err) => {
         if(err) {
           done && done(err)
