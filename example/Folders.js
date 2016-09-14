@@ -38,6 +38,7 @@ class Folders extends Component {
           <TreeContainer 
             loadTree={db.loadTree}
             loadChildren={db.loadChildren}
+            loadItem={db.loadItem}
             updateView={this.updateView.bind(this)}
             currentView={currentView}
             title="My Folders" />
@@ -48,6 +49,7 @@ class Folders extends Component {
           loadTree={db.loadTree}
           getSchema={get_schema}
           saveItem={db.saveItem}
+          loadItem={db.loadItem}
           addItem={db.addItem}
           deleteItems={db.deleteItems}
           pasteItems={db.pasteItems}

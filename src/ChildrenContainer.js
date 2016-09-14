@@ -9,7 +9,7 @@ import {
   api_paste_items,
   table_select_nodes,
   add_item,
-  edit_item,
+  api_edit_item,
   copy_items,
   cut_items,
   snackbar_open,
@@ -185,7 +185,18 @@ const BUTTON_HANDLERS = {
   },
 
   edit:(dispatch, stateProps, ownProps) => {
-    dispatch(edit_item(stateProps.selected.length>0 ? stateProps.selected[0] : stateProps.parent))
+
+    let item = stateProps.selected.length>0 ? stateProps.selected[0] : stateProps.parent
+    if(ownProps.updateView){
+      ownProps.updateView({
+        view:'edit',
+        id:item.id
+      })
+    }
+    else{
+      dispatch(api_edit_item(item.id))
+    }
+
   },
 
   // TODO: this is coupled to the ContentContainer because it needs the dialog
@@ -200,7 +211,15 @@ const BUTTON_HANDLERS = {
     
     let item = stateProps.selected[0]
 
-    dispatch(api_select_node(ownProps, item))
+    if(ownProps.updateView){
+      ownProps.updateView({
+        view:'children',
+        id:item.id
+      })
+    }
+    else{
+      dispatch(api_select_node(ownProps, item))  
+    }
   },
 
   cut:(dispatch, stateProps, ownProps) => {
@@ -259,10 +278,10 @@ function handleButtonActions(id, data, ownProps){
 
 function mapDispatchToProps(dispatch, ownProps) {
   return {
-    onButton:function(id, data){
+    onButton:(id, data) => {
       dispatch(handleButtonActions(id, data, ownProps))
     },
-    onRowSelection:function(data){
+    onRowSelection:(data) => {
       dispatch(table_select_nodes(data))
     }
   }

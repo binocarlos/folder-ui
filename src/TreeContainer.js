@@ -55,8 +55,7 @@ function mapDispatchToProps(dispatch, ownProps) {
 
   return {
     selectNode:(item, force) => {
-
-      // we have some route handling looking after this
+      
       if(ownProps.updateView && !force){
         ownProps.updateView({
           view:'children',

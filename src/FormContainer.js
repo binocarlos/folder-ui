@@ -43,7 +43,11 @@ function mapStateToProps(state, ownProps) {
 
   let reducername = ownProps.reducername || 'folderui'
 
-  let editing = state[reducername].editing
+  let editing = state[reducername].editing || {
+    data:{},
+    original:{},
+    meta:{}
+  }
   let schema = ownProps.getSchema ? ownProps.getSchema(editing.data) : []
   let addparent = state[reducername].addparent
 
@@ -79,9 +83,19 @@ const BUTTON_HANDLERS = {
     let item = stateProps.item
     dispatch(edit_item_revert(item))
   },
-  cancel:(dispatch, stateProps) => {
+  cancel:(dispatch, stateProps, ownProps) => {
     let item = stateProps.item
-    dispatch(edit_item_cancel(item))
+    let selected = stateProps.selected
+
+    if(ownProps.updateView){
+      ownProps.updateView({
+        view:'children',
+        id:selected.id
+      })
+    }
+    else{
+      dispatch(edit_item_cancel())
+    }
   }
 }
 
@@ -102,10 +116,12 @@ function handleButtonActions(id, data, ownProps){
     let state = getState()
     let item = state[reducername].editing.data
     let addparent = state[reducername].addparent
+    let selected = state[reducername].treeselected
 
     let stateProps = {
       item,
-      addparent
+      addparent,
+      selected
     }
 
     handler(dispatch, stateProps, ownProps, data)
@@ -115,10 +131,10 @@ function handleButtonActions(id, data, ownProps){
 
 function mapDispatchToProps(dispatch, ownProps) {
   return {
-    onButton:function(id, data){
+    onButton:(id, data) => {
       dispatch(handleButtonActions(id, data, ownProps))
     },
-    onUpdate:function(data, meta){
+    onUpdate:(data, meta) => {
       dispatch(edit_item_update(data, meta))
     }
   }

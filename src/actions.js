@@ -121,10 +121,9 @@ export function edit_item_revert(item) {
 
 export const FOLDERUI_EDIT_ITEM_CANCEL = 'FOLDERUI_EDIT_ITEM_CANCEL'
 
-export function edit_item_cancel(item) {
+export function edit_item_cancel() {
   return {
-    type: FOLDERUI_EDIT_ITEM_CANCEL,
-    item
+    type: FOLDERUI_EDIT_ITEM_CANCEL
   }
 }
 
@@ -279,6 +278,33 @@ export function api_paste_items(ownProps, mode, parent, items, done) {
   }
 }
 
+
+/*
+
+  handle an item edit
+
+   * load the item by id
+   * trigger the edit_item action
+  
+*/
+export function api_edit_item(ownProps, id, done){
+  return function(dispatch, getState) {
+    if(!ownProps.loadItem){
+      console.error('no loadItem method')
+      return
+    }
+    // paste the items using the database api
+    ownProps.loadItem(id, (err, item) => {
+      if(err) {
+        done && done(err)
+        return dispatch(snackbar_open('loadItem error: ' + err.toString()))
+      }
+
+      dispatch(edit_item(item))
+      done && done()
+    })
+  }
+}
 /*
 
   handle an item save

@@ -7,6 +7,8 @@ import ToolbarWrapper from 'kettle-ui/lib/ToolbarWrapper'
 
 import {
   api_delete_items,
+  api_edit_item,
+  edit_item_cancel,
   snackbar_close,
   dialog_close
 } from './actions'
@@ -30,9 +32,30 @@ const STYLES = {
 
 export class ContentContainer extends Component {
 
+  checkProps(nextProps){
+
+    // these are set because of the URL changing
+    if(nextProps.triggerView){
+      if(nextProps.triggerView.view=='edit'){
+        this.props.editItem(nextProps.triggerView.id)
+      }
+      else if(nextProps.triggerView.view=='children'){
+        this.props.cancelEditItem()
+      }
+    }
+  }
+  
+  componentDidMount() {
+    this.checkProps(this.props)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.checkProps(nextProps)
+  }
+
   render() {
 
-    let ContentType = this.props.mode=='form' ? FormContainer : ChildrenContainer
+    let ContentType = this.props.mode=='edit' ? FormContainer : ChildrenContainer
 
     const dialogActions = [
       <FlatButton
@@ -82,9 +105,25 @@ export class ContentContainer extends Component {
 function mapStateToProps(state, ownProps) {
 
   let reducername = ownProps.reducername || 'folderui'
+  let urlEditItem = null
+
+  let editingItem = state[reducername].editing
+  let currentMode = editingItem ? 'edit' : 'children'
+
+  let triggerView = null
+
+  if(ownProps.currentView){
+    let urlMode = ownProps.currentView.view
+    let urlId = ownProps.currentView.id
+
+    if(urlMode!=currentMode){
+      triggerView = ownProps.currentView
+    }
+  }
 
   return {
-    mode:state[reducername].editing ? 'form' : 'children',
+    mode:currentMode,
+    triggerView:triggerView,
     snackbarOpen:state[reducername].snackbar.open,
     snackbarMessage:state[reducername].snackbar.message,
     dialogOpen:state[reducername].dialog.open,
@@ -94,10 +133,10 @@ function mapStateToProps(state, ownProps) {
 
 function mapDispatchToProps(dispatch, ownProps) {
   return {
-    snackbarClose:function(){
+    snackbarClose:() => {
       dispatch(snackbar_close())
     },
-    dialogConfirm:function(){
+    dialogConfirm:() => {
       dispatch((dispatch, getState) => {
         let reducername = ownProps.reducername || 'folderui'
         let state = getState()
@@ -110,8 +149,14 @@ function mapDispatchToProps(dispatch, ownProps) {
         }
       })
     },
-    dialogClose:function(){
-      dispatch((dialog_close()))
+    dialogClose:() => {
+      dispatch(dialog_close())
+    },
+    editItem:(id) => {
+      dispatch(api_edit_item(ownProps, id))
+    },
+    cancelEditItem:() => {
+      dispatch(edit_item_cancel())
     }
   }
 }

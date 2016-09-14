@@ -16,6 +16,9 @@ export default function db(){
       })
       done(null, serialize(saveitem))
     },
+    loadItem:(id, done) => {
+      done(null, serialize(tree.data[id]))
+    },
     addItem:(parent, item, done) => {
       tree = addChild(tree, parent, item)
       done(null, serialize(item))

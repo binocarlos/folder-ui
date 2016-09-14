@@ -119,6 +119,7 @@ You need to provide a set of database functions so the containers can load/save 
 The following is the signature of the database interface:
 
  * `saveItem:(item, context, done)` - save an item
+ * `loadItem:(id, context, done)` - load a single item
  * `addItem:(parent, item, context, done)` - add an item to a parent
  * `pasteItems:(mode, parent, items, context, done)` - paste items, mode is {copy,cut}
  * `deleteItems:(items, context, done)` - delete items from a parent
