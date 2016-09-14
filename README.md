@@ -98,18 +98,115 @@ ReactDOM.render(
 )
 ```
 
+## Context
+
+You may want to use multiple `folder-ui` components in your app which would all load data from different locations.
+
+The `context` property passed to all the containers is passed on to each of the database functions.
+
+This enables you to use a different context for loading data depending on which instance of the folder-ui is being used.
+
+## reducername
+
+The `reducername` property passed to containers is also used when multiple copies of `folder-ui` components are used in your app.
+
+It controls what base reducer property is used to control which component - you can use multiple components each with their own individual reducer providing you pass the correct `reducername` (the top level property for that component).
+
 ## Database
 
 You need to provide a set of database functions so the containers can load/save data.
 
 The following is the signature of the database interface:
 
- * `saveItem:(item, done)` - save an item
- * `addItem:(parent, item, done)` - add an item to a parent
- * `pasteItems:(mode, parent, items, done)` - paste items, mode is {copy,cut}
- * `deleteItems:(items, done)` - delete items from a parent
- * `loadChildren:(item, done)` - load the children for an item
- * `loadTree:(done)` - load the tree data for an item
+ * `saveItem:(item, context, done)` - save an item
+ * `addItem:(parent, item, context, done)` - add an item to a parent
+ * `pasteItems:(mode, parent, items, context, done)` - paste items, mode is {copy,cut}
+ * `deleteItems:(items, context, done)` - delete items from a parent
+ * `loadChildren:(item, context, done)` - load the children for an item
+ * `loadTree:(context, done)` - load the tree data for an item
+
+## Views
+
+Sometimes it is desirable to allow the state of the current selected item / page to be represented by the application URL.
+
+This allows you to use [react-router](https://github.com/reactjs/react-router) (or something else) to navigate around the app.
+
+To do this - you can pass a `updateView` function and a `currentView` property into the various containers.
+
+`updateView` will be called when the internal view of the `folder-ui` container changes - such as when an item from the tree is choosen.
+
+`currentView` is expected to represent the same value that was passed to `updateView`.
+
+The workflow is to capture the data from `updateView` - encode it into a Route and then decode the Route and pass the data back into the container.
+
+Here is an example of a component that does this:
+
+```javascript
+import React, { Component, PropTypes } from 'react'
+import { withRouter } from 'react-router'
+
+import NavWrapper from 'kettle-ui/lib/NavWrapper'
+
+import TreeContainer from '../src/TreeContainer'
+import ContentContainer from '../src/ContentContainer'
+
+import DB from './db'
+import { get_schema } from './schema'
+
+let db = DB()
+
+class Folders extends Component {
+
+  updateView(data){
+    var currentPath = this.props.route.path.replace(/\/?\*?$/g, '')
+    this.props.router.push('/' + currentPath + '/' + data.id + '/' + data.view)
+  }
+
+  render() {
+
+    var urlParts = (this.props.params.splat || '').split('/')
+
+    var currentView = urlParts[0] ? {
+      id:urlParts[0],
+      view:urlParts[1] || 'children'
+    } : null
+
+    return (
+      <NavWrapper
+        width={250}
+        paperprops={{
+          zDepth:1,
+          rounded:false
+        }}
+        navbar={
+          <TreeContainer 
+            loadTree={db.loadTree}
+            loadChildren={db.loadChildren}
+            updateView={this.updateView.bind(this)}
+            currentView={currentView}
+            title="My Folders" />
+        }>
+        
+        <ContentContainer 
+          loadChildren={db.loadChildren}
+          loadTree={db.loadTree}
+          getSchema={get_schema}
+          saveItem={db.saveItem}
+          addItem={db.addItem}
+          deleteItems={db.deleteItems}
+          pasteItems={db.pasteItems}
+          updateView={this.updateView.bind(this)}
+          currentView={currentView}
+          offsetWidth={250} />
+        
+      </NavWrapper>
+    )
+  }
+
+}
+
+export default withRouter(Folders)
+```
 
 ## ChildrenContainer
 
@@ -120,6 +217,8 @@ A container that displays a toolbar and the children of an item
  * deleteItems(items, done) - delete some items
  * pasteItems(mode, parent, items, done) - paste items into a parent (mode is 'cut' or 'copy')
  * reducername - where to look in the state
+ * updateView - a function that is run when the view of the container updates
+ * currentView - an object representing the current view (pass in the value from updateView)
 
 ## FormContainer
 
@@ -138,13 +237,14 @@ A container that displays a tree.
  * loadTree(done) - loads the data for the tree, in normal format (it will be passed via `tools.processTreeData`)
  * onSelect(item) - run when a tree item is selected - used to trigger other behavior (like load children in the table)
  * reducername - where to look in the state
+ * updateView - a function that is run when the view of the container updates
+ * currentView - an object representing the current view (pass in the value from updateView)
 
 ## ContentContainer
 
 A combo of ChildrenContainer and FormContainer.
 
  * merged props from `ChildrenContainer` and `FormContainer`
-
 
 ## TreeViewer
 

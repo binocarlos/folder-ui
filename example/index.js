@@ -3,23 +3,21 @@ import ReactDOM from 'react-dom'
 import injectTapEventPlugin from 'react-tap-event-plugin'
 import { Provider } from 'react-redux'
 import { applyMiddleware, compose, createStore, combineReducers } from 'redux'
-import { Router, Route, browserHistory } from 'react-router'
+import { Router, Route, IndexRoute, hashHistory } from 'react-router'
 import { syncHistoryWithStore, routerReducer } from 'react-router-redux'
 import thunk from 'redux-thunk'
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 
-import AppBar from 'material-ui/AppBar'
-import AppNavWrapper from 'kettle-ui/lib/AppNavWrapper'
-
-import { Container, Row, Col } from 'kettle-ui/lib/Grid'
-
-import DB from './db'
 import TreeContainer from '../src/TreeContainer'
 import ContentContainer from '../src/ContentContainer'
 
+import Wrapper from './Wrapper'
+import Home from './Home'
+import About from './About'
+import Folders from './Folders'
+
 import folderreducer from '../src/reducer'
-import { get_schema } from './schema'
 
 const finalCreateStore = compose(
   applyMiddleware(thunk),
@@ -33,12 +31,9 @@ const reducer = combineReducers({
 
 const store = finalCreateStore(reducer)
 
-const history = syncHistoryWithStore(browserHistory, store)
-
-let db = DB()
+const history = syncHistoryWithStore(hashHistory, store)
 
 injectTapEventPlugin()
-
 
 /*
 
@@ -55,36 +50,15 @@ ReactDOM.render(
   <Provider store={store}>
     <MuiThemeProvider>
 
-      <AppNavWrapper
-        appbar={
-          <AppBar
-            showMenuIconButton={false}
-            title="Home"
-            zDepth={2} />
-        }
-        width={250}
-        paperprops={{
-          zDepth:1,
-          rounded:false
-        }}
-        navbar={
-          <TreeContainer 
-            loadTree={db.loadTree}
-            loadChildren={db.loadChildren}
-            title="My Folders" />
-        }>
-        
-        <ContentContainer 
-          loadChildren={db.loadChildren}
-          loadTree={db.loadTree}
-          getSchema={get_schema}
-          saveItem={db.saveItem}
-          addItem={db.addItem}
-          deleteItems={db.deleteItems}
-          pasteItems={db.pasteItems}
-          offsetWidth={250} />
-        
-      </AppNavWrapper>
+      <Router history={history}>
+        <Route path="/" component={Wrapper}>
+          <IndexRoute component={Home} />
+          <Route path="folders" component={Folders} />
+          <Route path="folders/*" component={Folders} />
+          <Route path="about" component={About} />
+        </Route>
+      </Router>
+
     </MuiThemeProvider>
   </Provider>,
   document.getElementById('mount')

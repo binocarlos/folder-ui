@@ -202,7 +202,7 @@ export function api_load_children(ownProps, item, done) {
   if an item is passed it's children are loaded and it's selected in the tree
   
 */
-export function api_load_tree_data(ownProps, item, done) {
+export function api_load_tree_data(ownProps, selectid, done) {
   
   return function(dispatch, getState) {
     if(!ownProps.loadTree) {
@@ -217,9 +217,13 @@ export function api_load_tree_data(ownProps, item, done) {
         return dispatch(snackbar_open('loadTree error: ' + err.toString()))
       }
 
-      item = item || treedata[0]
       dispatch(tree_data_loaded(treedata))
-      dispatch(api_select_node(ownProps, item))
+
+      var state = getState()
+      selectid = selectid || treedata[0].id
+      var selectitem = state.folderui.tree.data[selectid]
+
+      dispatch(api_select_node(ownProps, selectitem))
 
       done && done()
     })
@@ -261,7 +265,7 @@ export function api_paste_items(ownProps, mode, parent, items, done) {
       dispatch(paste_items(parent))
       
       // now reload the tree because it has new items
-      dispatch(api_load_tree_data(ownProps, parent, (err) => {
+      dispatch(api_load_tree_data(ownProps, parent.id, (err) => {
         if(err) {
           done && done(err)
           return
