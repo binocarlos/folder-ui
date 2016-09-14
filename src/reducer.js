@@ -20,7 +20,7 @@ import {
   FOLDERUI_DIALOG_CONFIRM,
   FOLDERUI_DIALOG_CLOSE
 } from './actions'
-import { processTreeData, processListData, getChildren } from './tools'
+import { processTreeData, processListData, getChildren, getAncestors } from './tools'
 
 const treedata = processTreeData([])
 const DEFAULT_STATE = {
@@ -56,20 +56,20 @@ const DEFAULT_STATE = {
 function selectItem(state, selectedNode){
   return update(state, {
     tree:{
-      data:{
-        [selectedNode.id]:{
-          $merge: {
-            open: true
-          }
-        }
+      $apply:(tree) => {
+        var useTree = JSON.parse(JSON.stringify(tree))
+        var ancestors = getAncestors(useTree, selectedNode.id)
+
+        useTree.data[selectedNode.id].open = true
+        ancestors.forEach(ancestor => {
+          ancestor.open = true
+        })
+
+        return useTree
       }
     },
     treeselected:{
       $set: state.tree.data[selectedNode.id]
-    },
-    // this needs to be split out into an async api request
-    table:{
-      $set: processListData(getChildren(state.tree, selectedNode.id))
     },
     editing:{
       $set: null

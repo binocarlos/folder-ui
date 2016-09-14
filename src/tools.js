@@ -96,6 +96,22 @@ export function getChildren(tree, id){
 
 /*
 
+  return an array of ancestor objects for an item
+  
+*/
+export function getAncestors(tree, id){
+  var ret = []
+  var nextParentId = null
+  var currentId = id
+  while(nextParentId = getParentId(tree, currentId)){
+    ret.push(tree.data[nextParentId])
+    currentId = nextParentId
+  }
+  return ret
+}
+
+/*
+
   move an item in the tree
   
 */
