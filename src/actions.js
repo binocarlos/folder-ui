@@ -422,8 +422,16 @@ export function api_delete_items(ownProps, parent, items, done) {
         }
         dispatch(dialog_close())
         dispatch(table_select_nodes([]))
-        dispatch(snackbar_open(items.length + ' ' + pluralise(items.length, 'item') + ' deleted'))
-        done && done()
+
+        dispatch(api_load_tree_data(ownProps, parent.id, (err) => {
+          if(err) {
+            done && done(err)
+            return
+          }
+
+          dispatch(snackbar_open(items.length + ' ' + pluralise(items.length, 'item') + ' deleted'))
+          done && done()
+        }))
       }))  
     })
   }
