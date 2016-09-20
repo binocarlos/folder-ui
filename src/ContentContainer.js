@@ -6,6 +6,7 @@ import FlatButton from 'material-ui/FlatButton'
 import ToolbarWrapper from 'kettle-ui/lib/ToolbarWrapper'
 
 import {
+  add_item,
   api_delete_items,
   api_edit_item,
   edit_item_cancel,
@@ -37,6 +38,11 @@ export class ContentContainer extends Component {
     if(triggerView){
       if(triggerView.view=='edit'){
         this.props.editItem(triggerView.subid || triggerView.id)
+      }
+      else if(triggerView.view=='add'){
+        this.props.addItem(nextProps.parent, {
+          type:triggerView.subid
+        })
       }
       else if(triggerView.view=='children'){
         this.props.cancelEditItem()
@@ -107,6 +113,7 @@ function mapStateToProps(state, ownProps) {
   let reducername = ownProps.reducername || 'folderui'
   let urlEditItem = null
 
+  let parent = state[reducername].treeselected
   let editingItem = state[reducername].editing
 
   // the view the app currently thinks it has
@@ -117,29 +124,18 @@ function mapStateToProps(state, ownProps) {
 
   if(currentView){
     let urlMode = currentView.view
-    let urlMainId = currentView.id
-    let urlSubId = currentView.subid
-
-    // always give preference to the sub-id
-    // the main-id is the current tree selection
-    let urlId = urlSubId || urlMainId
 
     // we are currently looking at a different view
     // than the URL says we should
     if(urlMode!=currentMode){
       triggerView = currentView
     }
-
-    // this means the URL is requesting to edit an item that we
-    // are not currently editing
-    //if(urlId && editingItem && urlId!=editingItem.id){
-    //  triggerView = currentView
-    //}
   }
 
   return {
     editingItem:editingItem,
     triggerView:triggerView,
+    parent:parent,
     mode:currentMode,
     snackbarOpen:state[reducername].snackbar.open,
     snackbarMessage:state[reducername].snackbar.message,
@@ -171,6 +167,9 @@ function mapDispatchToProps(dispatch, ownProps) {
     },
     editItem:(id) => {
       dispatch(api_edit_item(ownProps, id))
+    },
+    addItem:(parent, data) => {
+      dispatch(add_item(parent, data))
     },
     cancelEditItem:() => {
       dispatch(edit_item_cancel())

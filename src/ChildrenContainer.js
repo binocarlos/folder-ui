@@ -181,7 +181,26 @@ function mapStateToProps(state, ownProps) {
 const BUTTON_HANDLERS = {
 
   add:(dispatch, stateProps, ownProps, data) => {
-    dispatch(add_item(stateProps.parent, Object.assign({}, data)))
+
+    // we are saving the view state in the URL
+    // /123/add/folder
+    if(ownProps.updateView){
+
+      let viewUpdate = {
+        view:'add',
+        id:stateProps.parent.id,
+        subid:data.type
+      }
+
+      console.log('-------------------------------------------');
+      console.log(JSON.stringify(viewUpdate, null, 4))
+      ownProps.updateView()
+    }
+    else{
+      dispatch(add_item(stateProps.parent, Object.assign({}, data)))
+    }
+
+    
   },
 
   edit:(dispatch, stateProps, ownProps) => {
