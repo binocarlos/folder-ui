@@ -87,6 +87,8 @@ const BUTTON_HANDLERS = {
     let item = stateProps.item
     let selected = stateProps.selected
 
+    // use the URL to save view state
+    // in this case redirect to the selected id 'children' view
     if(ownProps.updateView){
       ownProps.updateView({
         view:'children',

@@ -33,16 +33,16 @@ const STYLES = {
 export class ContentContainer extends Component {
 
   checkProps(nextProps){
-
-    // these are set because of the URL changing
-    if(nextProps.triggerView){
-      if(nextProps.triggerView.view=='edit'){
-        this.props.editItem(nextProps.triggerView.id)
+    let triggerView = nextProps.triggerView
+    if(triggerView){
+      if(triggerView.view=='edit'){
+        this.props.editItem(triggerView.subid || triggerView.id)
       }
-      else if(nextProps.triggerView.view=='children'){
+      else if(triggerView.view=='children'){
         this.props.cancelEditItem()
       }
     }
+
   }
   
   componentDidMount() {
@@ -108,22 +108,39 @@ function mapStateToProps(state, ownProps) {
   let urlEditItem = null
 
   let editingItem = state[reducername].editing
-  let currentMode = editingItem ? 'edit' : 'children'
 
+  // the view the app currently thinks it has
+  // (i.e. are we currently editing a thing)
+  let currentMode = editingItem ? 'edit' : 'children'
+  let currentView = ownProps.currentView
   let triggerView = null
 
-  if(ownProps.currentView){
-    let urlMode = ownProps.currentView.view
-    let urlId = ownProps.currentView.id
+  if(currentView){
+    let urlMode = currentView.view
+    let urlMainId = currentView.id
+    let urlSubId = currentView.subid
 
+    // always give preference to the sub-id
+    // the main-id is the current tree selection
+    let urlId = urlSubId || urlMainId
+
+    // we are currently looking at a different view
+    // than the URL says we should
     if(urlMode!=currentMode){
-      triggerView = ownProps.currentView
+      triggerView = currentView
     }
+
+    // this means the URL is requesting to edit an item that we
+    // are not currently editing
+    //if(urlId && editingItem && urlId!=editingItem.id){
+    //  triggerView = currentView
+    //}
   }
 
   return {
-    mode:currentMode,
+    editingItem:editingItem,
     triggerView:triggerView,
+    mode:currentMode,
     snackbarOpen:state[reducername].snackbar.open,
     snackbarMessage:state[reducername].snackbar.message,
     dialogOpen:state[reducername].dialog.open,

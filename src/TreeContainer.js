@@ -13,6 +13,8 @@ export class TreeContainer extends Component {
   componentDidMount() {
 
     // first check that we have some tree data
+    // if no - then use the id in the view if set
+    // (meaning we load initial tree data for an id in the URL)
     if(!this.props.treedata){
       let selectid = this.props.currentView ? this.props.currentView.id : null
       this.props.requestTreeData(selectid)
@@ -23,6 +25,8 @@ export class TreeContainer extends Component {
   componentWillReceiveProps(nextProps) {
 
     // now check the currentView properties against the state
+    // if the currentView is an id different to the current tree id
+    // we trigger a select tree node using the URL id
     if(nextProps.currentView && this.props.selected){
       let currentViewID = nextProps.currentView.id
       let currentTreeID = this.props.selected.id

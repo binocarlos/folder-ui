@@ -15,7 +15,13 @@ class Folders extends Component {
 
   updateView(data){
     let currentPath = this.props.route.path.replace(/\/?\*?$/g, '')
-    this.props.router.push('/' + currentPath + '/' + data.id + '/' + data.view)
+
+    let parts = ['', currentPath, data.id, data.view]
+
+    if(data.subid){
+      parts.push(data.subid)
+    }
+    this.props.router.push(parts.join('/'))
   }
 
   render() {
@@ -24,7 +30,8 @@ class Folders extends Component {
 
     let currentView = urlParts[0] ? {
       id:urlParts[0],
-      view:urlParts[1] || 'children'
+      view:urlParts[1] || 'children',
+      subid:urlParts[2]
     } : null
 
     return (

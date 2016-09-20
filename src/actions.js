@@ -313,6 +313,7 @@ export function api_edit_item(ownProps, id, done){
 
 export function api_save_item(ownProps, parent, item, done) {
 
+  let reducername = ownProps.reducername || 'folderui'
   return function(dispatch, getState) {
     // we are doing an ADD
     if(parent){
@@ -339,10 +340,21 @@ export function api_save_item(ownProps, parent, item, done) {
             done && done(err)
             return
           }
-          // trigger the save and children loaded actions
-          dispatch(edit_item_cancel(parent, newItem))
+          
           dispatch(table_select_nodes([]))
           dispatch(snackbar_open(newItem.name + ' added'))
+
+          // use the URL to save view state
+          if(ownProps.updateView){            
+            ownProps.updateView({
+              view:'children',
+              id:parent.id
+            })
+          }
+          else{
+            dispatch(edit_item_cancel())
+          }
+
           done && done()
         }))    
       })
@@ -361,6 +373,20 @@ export function api_save_item(ownProps, parent, item, done) {
         dispatch(edit_item_save(newItem))
         dispatch(table_select_nodes([]))
         dispatch(snackbar_open(newItem.name + ' saved'))  
+
+        let treeselected = getState()[reducername].treeselected
+
+        // use the URL to save view state
+        if(ownProps.updateView){            
+          ownProps.updateView({
+            view:'children',
+            id:treeselected.id
+          })
+        }
+        else{
+          dispatch(edit_item_cancel())
+        }
+
         done && done()
       })
     }

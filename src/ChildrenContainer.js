@@ -187,11 +187,19 @@ const BUTTON_HANDLERS = {
   edit:(dispatch, stateProps, ownProps) => {
 
     let item = stateProps.selected.length>0 ? stateProps.selected[0] : stateProps.parent
+    let parent = stateProps.parent
+
+    // we are saving the view state in the URL
+    // /123/edit/456
     if(ownProps.updateView){
-      ownProps.updateView({
+      let viewProps = {
         view:'edit',
-        id:item.id
-      })
+        id:parent.id
+      }
+      if(stateProps.selected.length>0){
+        viewProps.subid = item.id
+      }
+      ownProps.updateView(viewProps)
     }
     else{
       dispatch(api_edit_item(item.id))
@@ -200,6 +208,7 @@ const BUTTON_HANDLERS = {
   },
 
   // TODO: this is coupled to the ContentContainer because it needs the dialog
+  // we should have a 'deleteConfirm' prop
   delete:(dispatch, stateProps, ownProps) => {
     dispatch(dialog_open('Are you sure you want to delete ' + stateProps.selected.length + ' ' + pluralise(stateProps.selected.length, 'item') + '?', {
       type:'delete'
@@ -210,7 +219,9 @@ const BUTTON_HANDLERS = {
     if(stateProps.selected.length!=1) return
     
     let item = stateProps.selected[0]
-
+    
+    // we are saving the view state in the URL
+    // /123/children
     if(ownProps.updateView){
       ownProps.updateView({
         view:'children',
