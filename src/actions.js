@@ -59,7 +59,11 @@ export const FOLDERUI_CUT_ITEMS = 'FOLDERUI_CUT_ITEMS'
 export function cut_items(items) {
   return {
     type: FOLDERUI_CUT_ITEMS,
-    items
+    items:items.map(item => {
+      let ret = Object.assign({}, item)
+      delete(ret._selected)
+      return ret
+    })
   }
 }
 
@@ -68,12 +72,17 @@ export const FOLDERUI_COPY_ITEMS = 'FOLDERUI_COPY_ITEMS'
 export function copy_items(items) {
   return {
     type: FOLDERUI_COPY_ITEMS,
-    items
+    items:items.map(item => {
+      let ret = Object.assign({}, item)
+      delete(ret._selected)
+      return ret
+    })
   }
 }
 
 export const FOLDERUI_PASTE_ITEMS = 'FOLDERUI_PASTE_ITEMS'
 
+// item is the parent we are pasting to
 export function paste_items(item) {
   return {
     type: FOLDERUI_PASTE_ITEMS,

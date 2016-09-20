@@ -51,7 +51,7 @@ export function processTreeData(rootnodes = []){
 export function dumpTreeData(tree = {}){
   function convertNode(id){
     var ret = Object.assign({}, tree.data[id])
-    ret.children = tree.children[id].map(convertNode)
+    ret.children = (tree.children[id] || []).map(convertNode)
     return ret
   }
 
