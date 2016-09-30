@@ -3,6 +3,7 @@ import {
   FOLDERUI_TREE_DATA_LOADED,
   FOLDERUI_TABLE_DATA_LOADED,
   FOLDERUI_TREE_SELECT_NODE,
+  FOLDERUI_TREE_TOGGLE,
   FOLDERUI_TABLE_SELECT_NODES,
   FOLDERUI_CUT_ITEMS,
   FOLDERUI_COPY_ITEMS,
@@ -29,6 +30,7 @@ const DEFAULT_STATE = {
   // * rootids - [id]
   tree:null,
   treeselected:null,
+  treeopen:{},
   // * data - id -> {}
   // * table - [id]
   table:null,
@@ -55,17 +57,17 @@ const DEFAULT_STATE = {
 
 function selectItem(state, selectedNode){
   return update(state, {
-    tree:{
-      $apply:(tree) => {
-        var useTree = JSON.parse(JSON.stringify(tree))
-        var ancestors = getAncestors(useTree, selectedNode.id)
+    treeopen:{
+      $apply:(treeopen) => {
+        let useTreeOpen = JSON.parse(JSON.stringify(treeopen))
+        let ancestors = getAncestors(state.tree, selectedNode.id)
 
-        useTree.data[selectedNode.id].open = true
+        useTreeOpen[selectedNode.id] = true
         ancestors.forEach(ancestor => {
-          ancestor.open = true
+          useTreeOpen[ancestor.id] = true
         })
 
-        return useTree
+        return useTreeOpen
       }
     },
     treeselected:{
@@ -120,7 +122,19 @@ export default function folderuireducer(state = DEFAULT_STATE, action = {}) {
       if(!state.tree.data[selectedNode.id]) return state
 
       return selectItem(state, selectedNode)
-      
+    
+    case FOLDERUI_TREE_TOGGLE:
+
+      let existingMode = state.treeopen[action.id] ? true : false
+
+      return update(state, {
+        treeopen:{
+          [action.id]:{
+            $set:!existingMode
+          }
+        }
+      })
+
     // selected some items in the table
     case FOLDERUI_TABLE_SELECT_NODES:
       let selectedmap = {}

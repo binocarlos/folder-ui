@@ -45,6 +45,15 @@ export function tree_select_node(data) {
   }
 }
 
+export const FOLDERUI_TREE_TOGGLE = 'FOLDERUI_TREE_TOGGLE'
+
+export function tree_toggle_node(id) {
+  return {
+    type: FOLDERUI_TREE_TOGGLE,
+    id
+  }
+}
+
 export const FOLDERUI_TABLE_SELECT_NODES = 'FOLDERUI_TABLE_SELECT_NODES'
 
 export function table_select_nodes(data) {

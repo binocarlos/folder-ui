@@ -3,7 +3,8 @@ import { connect } from 'react-redux'
 
 import {
   api_load_tree_data,
-  api_select_node
+  api_select_node,
+  tree_toggle_node
 } from './actions'
 
 import TreeViewer from './TreeViewer'
@@ -51,15 +52,17 @@ function mapStateToProps(state, ownProps) {
 
   return {  
     treedata:state[reducername].tree,
-    selected:state[reducername].treeselected
+    selected:state[reducername].treeselected,
+    treeopen:state[reducername].treeopen
   }
 }
 
 function mapDispatchToProps(dispatch, ownProps) {
 
+  let reducername = ownProps.reducername || 'folderui'
+
   return {
     selectNode:(item, force) => {
-      
       if(ownProps.updateView && !force){
         ownProps.updateView({
           view:'children',
@@ -69,7 +72,9 @@ function mapDispatchToProps(dispatch, ownProps) {
       else{
         dispatch(api_select_node(ownProps, item))  
       }
-      
+    },
+    toggleNode:(item) => {
+      dispatch(tree_toggle_node(item.id))  
     },
     requestTreeData:(selectid) => {
       dispatch(api_load_tree_data(ownProps, selectid))

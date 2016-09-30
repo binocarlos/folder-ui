@@ -21,18 +21,23 @@ function getStyles(overrides = {}){
 
 class TreeViewer extends Component {
   
-  getTreeNode(data, get_icon, styles, i) {
+  getTreeNode(data, get_icon, styles, i, treeopen) {
     let treedata = this.props.treedata || {}
     let children = getChildren(treedata, data.id)
     let name = data.name || 'no title'
     let use_icon = get_icon(data)
+    let is_node_open = treeopen[data.id] ? true : false
 
     let childnodes = children.map((node, i) => {
-      return this.getTreeNode(node, get_icon, styles, i)
+      return this.getTreeNode(node, get_icon, styles, i, treeopen)
     })
 
     let handleClick = () => {
       this.props.selectNode(data)
+    }
+
+    let handleToggle = () => {
+      this.props.toggleNode(data)
     }
 
     let itemStyle = data.id==this.props.selected.id ? styles.selected : null
@@ -45,15 +50,16 @@ class TreeViewer extends Component {
         leftIcon={use_icon} 
         style={itemStyle}
         onTouchTap={handleClick}
-        onNestedListToggle={handleClick}
-        open={data.open}
-        initiallyOpen={data.open}
+        onNestedListToggle={handleToggle}
+        open={is_node_open}
+        initiallyOpen={is_node_open}
         nestedItems={childnodes} />
     )
   }
 
   render() {
     let treedata = this.props.treedata || {}
+    let treeopen = this.props.treeopen || {}
     let get_icon = this.props.getIcon || function(data){
       return <Folder />
     }
@@ -75,7 +81,7 @@ class TreeViewer extends Component {
           null
         }
         {rootnodes.map((node, i) => {
-          return this.getTreeNode(node, get_icon, styles, i)
+          return this.getTreeNode(node, get_icon, styles, i, treeopen)
         })}
       </List>
     )    
