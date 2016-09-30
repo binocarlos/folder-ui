@@ -40,22 +40,24 @@ class FolderContainer extends Component {
         }}
         navbar={
           <TreeContainer 
-            loadTreeDB={this.props.db.loadTree}
-            loadChildrenDB={this.props.db.loadChildren}
-            loadItemDB={this.props.db.loadItem}
+            context={this.props.context}
+            loadTreeDB={this.props.db.loadTreeDB}
+            loadChildrenDB={this.props.db.loadChildrenDB}
+            loadItemDB={this.props.db.loadItemDB}
             updateView={this.updateView.bind(this)}
             currentView={currentView} />
         }>
         
         <ContentContainer 
-          loadChildrenDB={this.props.db.loadChildren}
-          loadTreeDB={this.props.db.loadTree}
+          context={this.props.context}
+          loadChildrenDB={this.props.db.loadChildrenDB}
+          loadTreeDB={this.props.db.loadTreeDB}
           getSchema={this.props.getSchema}
-          saveItemDB={this.props.db.saveItem}
-          loadItemDB={this.props.db.loadItem}
-          addItemDB={this.props.db.addItem}
-          deleteItemsDB={this.props.db.deleteItems}
-          pasteItemsDB={this.props.db.pasteItems}
+          saveItemDB={this.props.db.saveItemDB}
+          loadItemDB={this.props.db.loadItemDB}
+          addItemDB={this.props.db.addItemDB}
+          deleteItemsDB={this.props.db.deleteItemsDB}
+          pasteItemsDB={this.props.db.pasteItemsDB}
           updateView={this.updateView.bind(this)}
           currentView={currentView}
           offsetWidth={this.props.width} />

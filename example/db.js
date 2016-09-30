@@ -9,21 +9,21 @@ export default function db(){
   let tree = processTreeData(ROOT_DATA)
 
   return {
-    saveItem:(item, done) => {
+    saveItemDB:(item, context, done) => {
       let saveitem = tree.data[item.id]
       Object.keys(item || {}).forEach(function(key){
         saveitem[key] = item[key]
       })
       done(null, serialize(saveitem))
     },
-    loadItem:(id, done) => {
+    loadItemDB:(id, context, done) => {
       done(null, serialize(tree.data[id]))
     },
-    addItem:(parent, item, done) => {
+    addItemDB:(parent, item, context, done) => {
       tree = addChild(tree, parent, item)
       done(null, serialize(item))
     },
-    pasteItems:(mode, parent, items, done) => {
+    pasteItemsDB:(mode, parent, items, context, done) => {
       let newItems = []
 
       if(mode=='copy'){
@@ -42,16 +42,16 @@ export default function db(){
 
       done(null, serialize(newItems))
     },
-    deleteItems:(items, done) => {
+    deleteItemsDB:(items, context, done) => {
       items.forEach(item => {
         deleteItem(tree, item)
       })
       done(null, items)
     },
-    loadChildren:(item, done) => {
+    loadChildrenDB:(item, context, done) => {
       done(null, serialize(getChildren(tree, item.id)))
     },
-    loadTree:(done) => {
+    loadTreeDB:(context, done) => {
       done(null, serialize(dumpTreeData(tree)))
     }
   }

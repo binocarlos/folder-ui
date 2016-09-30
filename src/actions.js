@@ -195,13 +195,16 @@ export function dialog_close() {
   
 */
 export function api_load_children(ownProps, item, done) {
+
+  let context = ownProps.context || {}
+
   return function(dispatch, getState) {
     if(!ownProps.loadChildrenDB) {
       console.error('no loadChildrenDB method')
       return
     }
 
-    ownProps.loadChildrenDB(item, (err, children) => {
+    ownProps.loadChildrenDB(item, context, (err, children) => {
       if(err) {
         done && done(err)
         return dispatch(snackbar_open('loadChildrenDB error: ' + err.toString()))
@@ -221,6 +224,8 @@ export function api_load_children(ownProps, item, done) {
 */
 export function api_load_tree_data(ownProps, selectid, done) {
   
+  let context = ownProps.context || {}
+
   return function(dispatch, getState) {
     if(!ownProps.loadTreeDB) {
       console.error('no loadTreeDB method')
@@ -228,7 +233,7 @@ export function api_load_tree_data(ownProps, selectid, done) {
     }
 
     // call the external function to get the tree data
-    ownProps.loadTreeDB((err, treedata) => {
+    ownProps.loadTreeDB(context, (err, treedata) => {
       if(err) {
         done && done(err)
         return dispatch(snackbar_open('loadTreeDB error: ' + err.toString()))
@@ -267,13 +272,16 @@ export function api_select_node(ownProps, item, done) {
   
 */
 export function api_paste_items(ownProps, mode, parent, items, done) {
+
+  let context = ownProps.context || {}
+
   return function(dispatch, getState) {
     if(!ownProps.pasteItemsDB){
       console.error('no pasteItemsDB method')
       return
     }
     // paste the items using the database api
-    ownProps.pasteItemsDB(mode, parent, items, (err, newItems) => {
+    ownProps.pasteItemsDB(mode, parent, items, context, (err, newItems) => {
       if(err) {
         done && done(err)
         return dispatch(snackbar_open('pasteItemsDB error: ' + err.toString()))
@@ -306,13 +314,16 @@ export function api_paste_items(ownProps, mode, parent, items, done) {
   
 */
 export function api_edit_item(ownProps, id, done){
+
+  let context = ownProps.context || {}
+
   return function(dispatch, getState) {
     if(!ownProps.loadItemDB){
       console.error('no loadItemDB method')
       return
     }
     // paste the items using the database api
-    ownProps.loadItemDB(id, (err, item) => {
+    ownProps.loadItemDB(id, context, (err, item) => {
       if(err) {
         done && done(err)
         return dispatch(snackbar_open('loadItem error: ' + err.toString()))
@@ -331,6 +342,7 @@ export function api_edit_item(ownProps, id, done){
 
 export function api_save_item(ownProps, parent, item, done) {
 
+  let context = ownProps.context || {}
   let reducername = ownProps.reducername || 'folderui'
 
   return function(dispatch, getState) {
@@ -349,7 +361,7 @@ export function api_save_item(ownProps, parent, item, done) {
       }
 
       // add the item to the server
-      ownProps.addItemDB(parent, item, (err, newItem) => {
+      ownProps.addItemDB(parent, item, context, (err, newItem) => {
 
         if(err){
           done && done(err)
@@ -396,7 +408,7 @@ export function api_save_item(ownProps, parent, item, done) {
         console.error('no saveItemDB method')
         return
       }
-      ownProps.saveItemDB(item, (err, newItem) => {
+      ownProps.saveItemDB(item, context, (err, newItem) => {
         if(err) {
           done && done(err)
           return dispatch(snackbar_open('saveItemDB error: ' + err.toString()))
@@ -426,13 +438,15 @@ export function api_save_item(ownProps, parent, item, done) {
 
 export function api_delete_items(ownProps, parent, items, done) {
 
+  let context = ownProps.context || {}
+
   return function(dispatch, getState) {
     if(!ownProps.deleteItemsDB) {
       console.error('no deleteItemsDB method')
       return
     }
 
-    ownProps.deleteItemsDB(items, (err, newItem) => {
+    ownProps.deleteItemsDB(items, context, (err, newItem) => {
       if(err){
         done && done(err)
         return dispatch(snackbar_open('deleteItemsDB error: ' + err.toString()))

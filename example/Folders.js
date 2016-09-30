@@ -19,6 +19,10 @@ class Folders extends Component {
       <FolderContainer
         db={db}
         width={250}
+        context={{
+          // this is arbritrary data passed to the database functions
+          mainapp:true
+        }}
         splat={this.props.params.splat}
         path={this.props.route.path}
         updateRoute={this.updateRoute.bind(this)}

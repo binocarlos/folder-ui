@@ -274,7 +274,8 @@ Uses `react-router` to render a full tree, children and form container.
  * getSchema(item) - get the form schema for an item
  * width - the width of the tree sidebar
  * splat - the '/*' part of the url
-
+ * context
+ 
 To use this you must wrap your component with `react-router` and pass in the `splat`, `path` and `updateRoute` props:
 
 ```javascript
