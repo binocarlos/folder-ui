@@ -21,21 +21,26 @@ function getStyles(overrides = {}){
 
 class TreeViewer extends Component {
   
-  getTreeNode(data, get_icon, styles, i) {
-    var treedata = this.props.treedata || {}
-    var children = getChildren(treedata, data.id)
-    var name = data.name || 'no title'
-    var use_icon = get_icon(data)
+  getTreeNode(data, get_icon, styles, i, treeopen) {
+    let treedata = this.props.treedata || {}
+    let children = getChildren(treedata, data.id)
+    let name = data.name || 'no title'
+    let use_icon = get_icon(data)
+    let is_node_open = treeopen[data.id] ? true : false
 
-    var childnodes = children.map((node, i) => {
-      return this.getTreeNode(node, get_icon, styles, i)
+    let childnodes = children.map((node, i) => {
+      return this.getTreeNode(node, get_icon, styles, i, treeopen)
     })
 
-    var handleClick = () => {
+    let handleClick = () => {
       this.props.selectNode(data)
     }
 
-    var itemStyle = data.id==this.props.selected.id ? styles.selected : null
+    let handleToggle = () => {
+      this.props.toggleNode(data)
+    }
+
+    let itemStyle = data.id==this.props.selected.id ? styles.selected : null
 
     return (
       <ListItem 
@@ -45,21 +50,22 @@ class TreeViewer extends Component {
         leftIcon={use_icon} 
         style={itemStyle}
         onTouchTap={handleClick}
-        onNestedListToggle={handleClick}
-        open={data.open}
-        initiallyOpen={data.open}
+        onNestedListToggle={handleToggle}
+        open={is_node_open}
+        initiallyOpen={is_node_open}
         nestedItems={childnodes} />
     )
   }
 
   render() {
-    var treedata = this.props.treedata || {}
-    var get_icon = this.props.getIcon || function(data){
+    let treedata = this.props.treedata || {}
+    let treeopen = this.props.treeopen || {}
+    let get_icon = this.props.getIcon || function(data){
       return <Folder />
     }
-    var styles = getStyles(this.props.styles)
+    let styles = getStyles(this.props.styles)
 
-    var rootnodes = (treedata.rootids || []).map(id => {
+    let rootnodes = (treedata.rootids || []).map(id => {
       return treedata.data[id]
     })
 
@@ -75,7 +81,7 @@ class TreeViewer extends Component {
           null
         }
         {rootnodes.map((node, i) => {
-          return this.getTreeNode(node, get_icon, styles, i)
+          return this.getTreeNode(node, get_icon, styles, i, treeopen)
         })}
       </List>
     )    
