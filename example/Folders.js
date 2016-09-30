@@ -13,7 +13,7 @@ let db = DB()
 
 class Folders extends Component {
 
-  updateView(data){
+  updateView(data = {}){
     let currentPath = this.props.route.path.replace(/\/?\*?$/g, '')
 
     let parts = ['', currentPath, data.id, data.view]

@@ -234,13 +234,6 @@ export default function folderuireducer(state = DEFAULT_STATE, action = {}) {
             }
           }
         },
-        table:{
-          data:{
-            [action.item.id]:{
-              $merge:action.item
-            }
-          }
-        },
         addparent:{
           $set:null
         },
@@ -248,6 +241,7 @@ export default function folderuireducer(state = DEFAULT_STATE, action = {}) {
           $set: null
         }
       })
+
     case FOLDERUI_SNACKBAR_OPEN:
       return update(state, {
         snackbar:{
