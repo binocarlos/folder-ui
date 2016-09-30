@@ -187,15 +187,15 @@ export function dialog_close() {
 */
 export function api_load_children(ownProps, item, done) {
   return function(dispatch, getState) {
-    if(!ownProps.loadChildren) {
-      console.error('no loadChildren method')
+    if(!ownProps.loadChildrenDB) {
+      console.error('no loadChildrenDB method')
       return
     }
 
-    ownProps.loadChildren(item, (err, children) => {
+    ownProps.loadChildrenDB(item, (err, children) => {
       if(err) {
         done && done(err)
-        return dispatch(snackbar_open('loadChildren error: ' + err.toString()))
+        return dispatch(snackbar_open('loadChildrenDB error: ' + err.toString()))
       }
       dispatch(table_data_loaded(children))
       done && done()
@@ -213,16 +213,16 @@ export function api_load_children(ownProps, item, done) {
 export function api_load_tree_data(ownProps, selectid, done) {
   
   return function(dispatch, getState) {
-    if(!ownProps.loadTree) {
-      console.error('no loadTree method')
+    if(!ownProps.loadTreeDB) {
+      console.error('no loadTreeDB method')
       return
     }
 
     // call the external function to get the tree data
-    ownProps.loadTree((err, treedata) => {
+    ownProps.loadTreeDB((err, treedata) => {
       if(err) {
         done && done(err)
-        return dispatch(snackbar_open('loadTree error: ' + err.toString()))
+        return dispatch(snackbar_open('loadTreeDB error: ' + err.toString()))
       }
 
       dispatch(tree_data_loaded(treedata))
@@ -259,15 +259,15 @@ export function api_select_node(ownProps, item, done) {
 */
 export function api_paste_items(ownProps, mode, parent, items, done) {
   return function(dispatch, getState) {
-    if(!ownProps.pasteItems){
-      console.error('no pasteItems method')
+    if(!ownProps.pasteItemsDB){
+      console.error('no pasteItemsDB method')
       return
     }
     // paste the items using the database api
-    ownProps.pasteItems(mode, parent, items, (err, newItems) => {
+    ownProps.pasteItemsDB(mode, parent, items, (err, newItems) => {
       if(err) {
         done && done(err)
-        return dispatch(snackbar_open('pasteItems error: ' + err.toString()))
+        return dispatch(snackbar_open('pasteItemsDB error: ' + err.toString()))
       }
 
       dispatch(paste_items(parent))
@@ -298,12 +298,12 @@ export function api_paste_items(ownProps, mode, parent, items, done) {
 */
 export function api_edit_item(ownProps, id, done){
   return function(dispatch, getState) {
-    if(!ownProps.loadItem){
-      console.error('no loadItem method')
+    if(!ownProps.loadItemDB){
+      console.error('no loadItemDB method')
       return
     }
     // paste the items using the database api
-    ownProps.loadItem(id, (err, item) => {
+    ownProps.loadItemDB(id, (err, item) => {
       if(err) {
         done && done(err)
         return dispatch(snackbar_open('loadItem error: ' + err.toString()))
@@ -323,25 +323,28 @@ export function api_edit_item(ownProps, id, done){
 export function api_save_item(ownProps, parent, item, done) {
 
   let reducername = ownProps.reducername || 'folderui'
+
   return function(dispatch, getState) {
+
     // we are doing an ADD
     if(parent){
 
       // check we have the functions to handle the data in our own props
-      if(!ownProps.addItem) {
-        console.error('no addItem method')
+      if(!ownProps.addItemDB) {
+        console.error('no addItemDB method')
         return
       }
-      if(!ownProps.loadChildren) {
-        console.error('no loadChildren method')
+      if(!ownProps.loadChildrenDB) {
+        console.error('no loadChildrenDB method')
         return
       }
 
       // add the item to the server
-      ownProps.addItem(parent, item, (err, newItem) => {
+      ownProps.addItemDB(parent, item, (err, newItem) => {
+
         if(err){
           done && done(err)
-          return dispatch(snackbar_open('addItem error: ' + err.toString()))
+          return dispatch(snackbar_open('addItemDB error: ' + err.toString()))
         }
 
         dispatch(api_load_children(ownProps, parent, (err) => {
@@ -349,35 +352,45 @@ export function api_save_item(ownProps, parent, item, done) {
             done && done(err)
             return
           }
+
+          // now reload the tree because it has new items
+          dispatch(api_load_tree_data(ownProps, parent.id, (err) => {
+            if(err) {
+              done && done(err)
+              return
+            }
+
+            dispatch(table_select_nodes([]))
+            dispatch(snackbar_open(newItem.name + ' added'))
+
+            // use the URL to save view state
+            if(ownProps.updateView){            
+              ownProps.updateView({
+                view:'children',
+                id:parent.id
+              })
+            }
+            else{
+              dispatch(edit_item_cancel())
+            }
+
+            done && done()
+          }))
           
-          dispatch(table_select_nodes([]))
-          dispatch(snackbar_open(newItem.name + ' added'))
-
-          // use the URL to save view state
-          if(ownProps.updateView){            
-            ownProps.updateView({
-              view:'children',
-              id:parent.id
-            })
-          }
-          else{
-            dispatch(edit_item_cancel())
-          }
-
-          done && done()
+          
         }))    
       })
     }
     // we are doing a normal SAVE
     else{
-      if(!ownProps.saveItem) {
-        console.error('no saveItem method')
+      if(!ownProps.saveItemDB) {
+        console.error('no saveItemDB method')
         return
       }
-      ownProps.saveItem(item, (err, newItem) => {
+      ownProps.saveItemDB(item, (err, newItem) => {
         if(err) {
           done && done(err)
-          return dispatch(snackbar_open('saveItem error: ' + err.toString()))
+          return dispatch(snackbar_open('saveItemDB error: ' + err.toString()))
         }
         dispatch(edit_item_save(newItem))
         dispatch(table_select_nodes([]))
@@ -405,15 +418,15 @@ export function api_save_item(ownProps, parent, item, done) {
 export function api_delete_items(ownProps, parent, items, done) {
 
   return function(dispatch, getState) {
-    if(!ownProps.deleteItems) {
-      console.error('no deleteItems method')
+    if(!ownProps.deleteItemsDB) {
+      console.error('no deleteItemsDB method')
       return
     }
 
-    ownProps.deleteItems(items, (err, newItem) => {
+    ownProps.deleteItemsDB(items, (err, newItem) => {
       if(err){
         done && done(err)
-        return dispatch(snackbar_open('deleteItems error: ' + err.toString()))
+        return dispatch(snackbar_open('deleteItemsDB error: ' + err.toString()))
       }
       dispatch(api_load_children(ownProps, parent, (err) => {
         if(err){

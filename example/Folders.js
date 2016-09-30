@@ -43,23 +43,23 @@ class Folders extends Component {
         }}
         navbar={
           <TreeContainer 
-            loadTree={db.loadTree}
-            loadChildren={db.loadChildren}
-            loadItem={db.loadItem}
+            loadTreeDB={db.loadTree}
+            loadChildrenDB={db.loadChildren}
+            loadItemDB={db.loadItem}
             updateView={this.updateView.bind(this)}
             currentView={currentView}
             title="My Folders" />
         }>
         
         <ContentContainer 
-          loadChildren={db.loadChildren}
-          loadTree={db.loadTree}
+          loadChildrenDB={db.loadChildren}
+          loadTreeDB={db.loadTree}
           getSchema={get_schema}
-          saveItem={db.saveItem}
-          loadItem={db.loadItem}
-          addItem={db.addItem}
-          deleteItems={db.deleteItems}
-          pasteItems={db.pasteItems}
+          saveItemDB={db.saveItem}
+          loadItemDB={db.loadItem}
+          addItemDB={db.addItem}
+          deleteItemsDB={db.deleteItems}
+          pasteItemsDB={db.pasteItems}
           updateView={this.updateView.bind(this)}
           currentView={currentView}
           offsetWidth={250} />
