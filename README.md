@@ -11,6 +11,11 @@ Install the module to your project:
 $ npm install folder-ui --save
 ```
 
+
+![screenshot1](https://raw.githubusercontent.com/binocarlos/folder-ui/master/screenshot1.png)
+
+![screenshot2](https://raw.githubusercontent.com/binocarlos/folder-ui/master/screenshot2.png)
+
 ## Containers
 
 These React components are designed to integrate with a [redux](https://github.com/reactjs/redux) app.
