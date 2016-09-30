@@ -15,7 +15,7 @@ $ npm install folder-ui --save
 
 These React components are designed to integrate with a [redux](https://github.com/reactjs/redux) app.
 
-They come with a reducer and a set of actions:
+The root `index.js`:
 
 ```javascript
 import React from 'react'
@@ -23,23 +23,16 @@ import ReactDOM from 'react-dom'
 import injectTapEventPlugin from 'react-tap-event-plugin'
 import { Provider } from 'react-redux'
 import { applyMiddleware, compose, createStore, combineReducers } from 'redux'
-import { Router, Route, browserHistory } from 'react-router'
+import { Router, Route, IndexRoute, hashHistory } from 'react-router'
 import { syncHistoryWithStore, routerReducer } from 'react-router-redux'
 import thunk from 'redux-thunk'
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 
-import AppBar from 'material-ui/AppBar'
-import AppNavWrapper from 'kettle-ui/lib/AppNavWrapper'
+import Wrapper from './Wrapper'
+import Folders from './Folders'
 
-import { Container, Row, Col } from 'kettle-ui/lib/Grid'
-
-import DB from './db'
-import TreeContainer from 'folder-ui/lib/TreeContainer'
-import ContentContainer from 'folder-ui/lib/ContentContainer'
-
-import folderreducer from 'folder-ui/lib/reducer'
-import { get_schema } from './schema'
+import folderreducer from '../src/reducer'
 
 const finalCreateStore = compose(
   applyMiddleware(thunk),
@@ -53,9 +46,7 @@ const reducer = combineReducers({
 
 const store = finalCreateStore(reducer)
 
-const history = syncHistoryWithStore(browserHistory, store)
-
-let db = DB()
+const history = syncHistoryWithStore(hashHistory, store)
 
 injectTapEventPlugin()
 
@@ -63,39 +54,53 @@ ReactDOM.render(
   <Provider store={store}>
     <MuiThemeProvider>
 
-      <AppNavWrapper
-        appbar={
-          <AppBar
-            showMenuIconButton={false}
-            title="Home"
-            zDepth={2} />
-        }
-        width={250}
-        paperprops={{
-          zDepth:1,
-          rounded:false
-        }}
-        navbar={
-          <TreeContainer 
-            loadTreeDB={db.loadTree}
-            loadChildrenDB={db.loadChildren}
-            title="My Folders" />
-        }>
-        
-        <ContentContainer 
-          loadChildrenDB={db.loadChildren}
-          getSchema={get_schema}
-          saveItemDB={db.saveItem}
-          addItemDB={db.addItem}
-          deleteItemsDB={db.deleteItems}
-          pasteItemsDB={db.pasteItems}
-          offsetWidth={250} />
-        
-      </AppNavWrapper>
+      <Router history={history}>
+        <Route path="/" component={Wrapper}>
+          <IndexRoute component={Folders} />
+          <Route path="*" component={Folders} />
+        </Route>
+      </Router>
+
     </MuiThemeProvider>
   </Provider>,
   document.getElementById('mount')
 )
+```
+
+And the core `Folders.js` component:
+
+```javascript
+import React, { Component, PropTypes } from 'react'
+import FolderContainer from '../src/FolderContainer'
+import { withRouter } from 'react-router'
+
+import DB from './db'
+import { get_schema } from './schema'
+
+let db = DB()
+
+class Folders extends Component {
+
+  updateRoute(url) {
+    this.props.router.push(url)
+  }
+
+  render() {
+
+    return (
+      <FolderContainer
+        db={db}
+        width={250}
+        splat={this.props.params.splat}
+        path={this.props.route.path}
+        updateRoute={this.updateRoute.bind(this)}
+        getSchema={get_schema} />
+    )
+  }
+
+}
+
+export default withRouter(Folders)
 ```
 
 ## Context
