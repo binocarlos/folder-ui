@@ -191,10 +191,7 @@ const BUTTON_HANDLERS = {
         id:stateProps.parent.id,
         subid:data.type
       }
-
-      console.log('-------------------------------------------');
-      console.log(JSON.stringify(viewUpdate, null, 4))
-      ownProps.updateView()
+      ownProps.updateView(viewUpdate)
     }
     else{
       dispatch(add_item(stateProps.parent, Object.assign({}, data)))

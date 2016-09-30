@@ -40,7 +40,8 @@ export class ContentContainer extends Component {
         this.props.editItem(triggerView.subid || triggerView.id)
       }
       else if(triggerView.view=='add'){
-        this.props.addItem(nextProps.parent, {
+        if(!nextProps.urlparent) return
+        this.props.addItem(nextProps.urlparent, {
           type:triggerView.subid
         })
       }
@@ -115,27 +116,35 @@ function mapStateToProps(state, ownProps) {
 
   let parent = state[reducername].treeselected
   let editingItem = state[reducername].editing
+  let stateTree = state[reducername].tree || {}
+  let treeData = stateTree.data || {}
 
   // the view the app currently thinks it has
   // (i.e. are we currently editing a thing)
   let currentMode = editingItem ? 'edit' : 'children'
   let currentView = ownProps.currentView
   let triggerView = null
+  let urlparent = null
 
   if(currentView){
     let urlMode = currentView.view
+
+    urlMode = urlMode=='add' ? 'edit' : urlMode
 
     // we are currently looking at a different view
     // than the URL says we should
     if(urlMode!=currentMode){
       triggerView = currentView
     }
+
+    urlparent = treeData[currentView.id]
   }
 
   return {
     editingItem:editingItem,
     triggerView:triggerView,
     parent:parent,
+    urlparent:urlparent,
     mode:currentMode,
     snackbarOpen:state[reducername].snackbar.open,
     snackbarMessage:state[reducername].snackbar.message,
