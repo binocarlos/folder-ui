@@ -213,10 +213,10 @@ export default withRouter(Folders)
 
 A container that displays a toolbar and the children of an item
 
- * loadTree(done) - loads the data for the tree, in normal format (it will be passed via `tools.processTreeData`)
- * loadChildren(item, done) - load the children for an item
- * deleteItems(items, done) - delete some items
- * pasteItems(mode, parent, items, done) - paste items into a parent (mode is 'cut' or 'copy')
+ * loadTreeDB(done) - loads the data for the tree, in normal format (it will be passed via `tools.processTreeData`)
+ * loadChildrenDB(item, done) - load the children for an item
+ * deleteItemsDB(items, done) - delete some items
+ * pasteItemsDB(mode, parent, items, done) - paste items into a parent (mode is 'cut' or 'copy')
  * reducername - where to look in the state
  * updateView - a function that is run when the view of the container updates
  * currentView - an object representing the current view (pass in the value from updateView)
@@ -225,9 +225,9 @@ A container that displays a toolbar and the children of an item
 
 A container that displays a toolbar and biro form for an item.
 
- * loadChildren(item, done) - load the children for an item
- * saveItem(item, done) - save the data for an item
- * addItem(parent, item, done) - add an item to a parent
+ * loadChildrenDB(item, done) - load the children for an item
+ * saveItemDB(item, done) - save the data for an item
+ * addItemDB(parent, item, done) - add an item to a parent
  * getSchema(item) - get the form schema for an item
  * reducername - where to look in the state
 
@@ -235,7 +235,7 @@ A container that displays a toolbar and biro form for an item.
 
 A container that displays a tree.
 
- * loadTree(done) - loads the data for the tree, in normal format (it will be passed via `tools.processTreeData`)
+ * loadTreeDB(done) - loads the data for the tree, in normal format (it will be passed via `tools.processTreeData`)
  * onSelect(item) - run when a tree item is selected - used to trigger other behavior (like load children in the table)
  * reducername - where to look in the state
  * updateView - a function that is run when the view of the container updates
@@ -259,6 +259,52 @@ Renders a tree menu for navigating around folders.
  * styles - override styles for elements:
    * selected - the currently selected item
    * header - the tree header
+
+## FolderContainer
+
+Uses `react-router` to render a full tree, children and form container.
+
+ * db - a database object providing the async api
+ * reducername - where to look in the state
+ * getSchema(item) - get the form schema for an item
+ * width - the width of the tree sidebar
+ * splat - the '/*' part of the url
+
+To use this you must wrap your component with `react-router` and pass in the `splat`, `path` and `updateRoute` props:
+
+```javascript
+import React, { Component, PropTypes } from 'react'
+import FolderContainer from '../src/FolderContainer'
+import { withRouter } from 'react-router'
+
+import DB from './db'
+import { get_schema } from './schema'
+
+let db = DB()
+
+class Folders extends Component {
+
+  updateRoute(url) {
+    this.props.router.push(url)
+  }
+
+  render() {
+
+    return (
+      <FolderContainer
+        db={db}
+        width={250}
+        splat={this.props.params.splat}
+        path={this.props.route.path}
+        updateRoute={this.updateRoute.bind(this)}
+        getSchema={get_schema} />
+    )
+  }
+
+}
+
+export default withRouter(Folders)
+```
 
 #### `treedata`
 
