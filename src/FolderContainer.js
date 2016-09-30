@@ -3,8 +3,8 @@ import React, { Component, PropTypes } from 'react'
 
 import NavWrapper from 'kettle-ui/lib/NavWrapper'
 
-import TreeContainer from '../src/TreeContainer'
-import ContentContainer from '../src/ContentContainer'
+import TreeContainer from './TreeContainer'
+import ContentContainer from './ContentContainer'
 
 class FolderContainer extends Component {
 
