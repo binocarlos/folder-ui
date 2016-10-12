@@ -63,3 +63,4 @@ build
 build.js
 coverage
 lib
+yarn.lock
