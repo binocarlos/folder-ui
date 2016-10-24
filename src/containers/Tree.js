@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import Tree from '../components/Tree'
+import { dumpTreeData } from '../tools'
 
 export class TreeContainer extends Component {
 
@@ -15,9 +16,12 @@ export class TreeContainer extends Component {
   }
 }
 
-function mapStateToProps(state, ownProps) {
+function mapStateToProps(s, ownProps) {
+  const actions = ownProps.actions
+  const state = actions.getState(s)
+
   return {
-    data:[]
+    data:state.tree.db ? dumpTreeData(state.tree.db) : []
   }
 }
 
@@ -32,7 +36,7 @@ function mapDispatchToProps(dispatch, ownProps) {
       console.log('select')
       console.log(JSON.stringify(node, null, 4))
     },
-    selectNode:(node) => {
+    toggleNode:(node) => {
       console.log('-------------------------------------------');
       console.log('toggle')
       console.log(JSON.stringify(node, null, 4))

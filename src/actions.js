@@ -1,3 +1,5 @@
+import { processTreeData, processListData, getChildren, getAncestors } from './tools'
+
 export const FOLDERUI_TREE_DATA_LOADED = 'FOLDERUI_TREE_DATA_LOADED'
 
 export function tree_data_loaded(data) {
@@ -16,21 +18,27 @@ export function tree_data_error(error) {
   }
 }
 
-const ActionFactory = (name, db) => {
+const ActionFactory = (opts = {}, db) => {
 
-  if(!name || !db) throw new Error('ActionFactory requires a name and db')
+  if(typeof(opts)==='string') opts = {
+    name:opts
+  }
+
+  if(db) opts.db = db
+
+  if(!opts.name || !opts.db) throw new Error('ActionFactory requires a name and db options')
 
   // the reducer will use this to filter actions not for it
   const processAction = (action) => {
-    action._filter = name
+    action._filter = opts.name
     return action
   }
   
   return {
-    name,
+    name:opts.name,
     // return the correct part of the state tree based on the 'name'
     getState:(state) => {
-      return state[name]
+      return state[opts.name]
     },
 
     // request the tree data
@@ -38,7 +46,7 @@ const ActionFactory = (name, db) => {
       return (dispatch, getState) => {
         db.loadTree((err, data) => {
           if(err) return dispatch(tree_data_error(err))
-          dispatch(tree_data_loaded(data))
+          dispatch(processAction(tree_data_loaded(processTreeData(data))))
         })
       }
     }
