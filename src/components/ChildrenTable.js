@@ -8,16 +8,24 @@ import {
   TableRowColumn
 } from 'material-ui/Table'
 
-class ChildrenViewer extends Component {
+const getFieldTitle = (field = {}) => {
+  if(field.title) return field.title
+  return field.name ?
+    field.name.replace(/^\w/, (s) => s.toUpperCase()) :
+    null
+}
+
+class ChildrenTable extends Component {
 
   render() {
 
     const fields = this.props.fields || []
     const data = this.props.data || []
+    const selected = this.props.selected
     const renderfns = fields.map(field => {
       return field.render || function(data){
         return (
-          <div></div>
+          <div>{data}</div>
         )
       }
     })
@@ -37,7 +45,9 @@ class ChildrenViewer extends Component {
         >
           <TableRow>
             {fields.map( (field, index) => (
-              <TableHeaderColumn key={index}>{field.title}</TableHeaderColumn>
+              <TableHeaderColumn key={index}>
+                {getFieldTitle(field)}
+              </TableHeaderColumn>
             ))}
           </TableRow>
         </TableHeader>
@@ -63,12 +73,14 @@ class ChildrenViewer extends Component {
   }
 }
 
-ChildrenViewer.defaultProps = {
+ChildrenTable.defaultProps = {
   showCheckboxes: false,
   multiSelectable: false,
   selectable: true,
+  selected:[],
+  data:[],
   showHeader: true,
   selectedids: ''
 }
 
-export default ChildrenViewer
+export default ChildrenTable
