@@ -20,10 +20,11 @@ export function tree_data_error(error) {
 
 export const FOLDERUI_TREE_TOGGLE = 'FOLDERUI_TREE_TOGGLE'
 
-export function tree_toggle_node(id) {
+export function tree_toggle_node(id, open = null) {
   return {
     type: FOLDERUI_TREE_TOGGLE,
-    id
+    id,
+    open
   }
 }
 
@@ -51,17 +52,22 @@ const ActionFactory = (opts = {}, db) => {
     },
 
     // request the tree data
-    requestTreeData:() => {
+    requestTreeData:(done) => {
       return (dispatch, getState) => {
         db.loadTree((err, data) => {
-          if(err) return dispatch(tree_data_error(err))
+          if(err){
+            dispatch(tree_data_error(err))
+            done && done(err)
+            return
+          }
           dispatch(processAction(tree_data_loaded(processTreeData(data))))
+          done && done(null, data)
         })
       }
     },
 
-    toggleTreeNode:(id) => {
-      return processAction(tree_toggle_node(id))
+    toggleTreeNode:(id, open) => {
+      return processAction(tree_toggle_node(id, open))
     }
   }
 }

@@ -43,11 +43,14 @@ const ReducerFactory = (opts = {}) => {
 
       case FOLDERUI_TREE_TOGGLE:
 
+        const toggleValue = !(state.tree.open[action.id] ? true : false)
+        const useValue = typeof(action.open) == 'boolean' ? action.open : toggleValue
+
         return update(state, {
           tree:{
             open:{
               [action.id]:{
-                $set:!(state.tree.open[action.id] ? true : false)
+                $set: useValue
               }
             }
           }
