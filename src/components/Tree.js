@@ -40,6 +40,7 @@ class Tree extends Component {
   getTreeNode(data = {}, i = 0) {
 
     const children = data.children || []
+    const open = this.props.open || {}
     const name = data.name || 'no title'
     const use_icon = this.getIcon(data)
 
@@ -64,7 +65,7 @@ class Tree extends Component {
         onNestedListToggle={() => {
           this.props.toggleNode(data)
         }}
-        open={data.open ? true : false}
+        open={open[data.id] ? true : false}
         initiallyOpen={data.open ? true : false}
         nestedItems={children.map(this.getTreeNode.bind(this))} />
     )

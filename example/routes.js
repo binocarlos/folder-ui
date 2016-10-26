@@ -15,6 +15,11 @@ import { ContainerFactory } from '../src/tools'
 import DB from './db'
 import FolderActions from '../src/actions'
 
+// Wrap the left hand sidebar wrapper with a wider width
+const NavWrapper = ContainerFactory({
+  width:250
+})(TreeWrapper)
+
 // an object that maps action names onto functions
 // that return the URL to redirect to
 // if the handler is not 
@@ -40,7 +45,7 @@ const Routes = (opts = {}) => {
   return (
     <Route path="/" component={AppWrapper}>
       <IndexRoute component={Home} />
-      <Route component={TreeWrapper}>
+      <Route component={NavWrapper}>
         <Route path="products" 
           components={{
             sidebar: productContainers.tree,

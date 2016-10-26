@@ -124,20 +124,31 @@ All of the container components require `actions` and `handlers` properties.
 You can use the `ContainerFactory` function from `tools` to wrap the container components.  We also use the Wrapper components to contain the Tree on the left and the Toolbar above the main content.
 
 ```javascript
-// actions
-import { ContainerFactory } from 'folder-ui/lib/tools'
-import FolderActions from 'folder-ui/lib/actions'
-import DB1 from './db1'
+import React from 'react'
+import { Route, IndexRoute } from 'react-router'
 
-// wrapper components
-import TreeWrapper from 'folder-ui/lib/components/TreeWrapper'
-import ToolbarWrapper from 'folder-ui/lib/components/ToolbarWrapper'
+import AppWrapper from './AppWrapper'
+import Home from './Home'
 
-// container components
-import Tree from 'folder-ui/lib/containers/Tree'
-import ChildrenTable from 'folder-ui/lib/containers/ChildrenTable'
-import ChildrenToolbar from 'folder-ui/lib/containers/ChildrenToolbar'
+import TreeWrapper from '../src/components/TreeWrapper'
+import ToolbarWrapper from '../src/components/ToolbarWrapper'
 
+import Tree from '../src/containers/Tree'
+import ChildrenToolbar from '../src/containers/ChildrenToolbar'
+import ChildrenTable from '../src/containers/ChildrenTable'
+
+import { ContainerFactory } from '../src/tools'
+import DB from './db'
+import FolderActions from '../src/actions'
+
+// Wrap the left hand sidebar wrapper with a wider width
+const NavWrapper = ContainerFactory({
+  width:250
+})(TreeWrapper)
+
+// an object that maps action names onto functions
+// that return the URL to redirect to
+// if the handler is not 
 const standardHandlers = {
   // get the route to view an item
   open:(item) => {
@@ -145,35 +156,42 @@ const standardHandlers = {
   }
 }
 
-const productActions = FolderActions('products', DB1())
-const factory = ContainerFactory({
-  actions:productActions
+const productActions = FolderActions('products', DB())
+const productFactory = ContainerFactory({
+  actions:productActions,
+  handlers:standardHandlers
 })
+const productContainers = {
+  tree:productFactory(Tree),
+  childrenToolbar:productFactory(ChildrenToolbar),
+  childrenTable:productFactory(ChildrenTable)
+}
 
-// the tree wrapper splitting the side-bar and right-hand content
-<Route component={TreeWrapper}>
-  <Route path="products" 
-    components={{
-      // the tree on the side
-      sidebar: factory(Tree),
+const Routes = (opts = {}) => {
+  return (
+    <Route path="/" component={AppWrapper}>
+      <IndexRoute component={Home} />
+      <Route component={NavWrapper}>
+        <Route path="products" 
+          components={{
+            sidebar: productContainers.tree,
+            main: ToolbarWrapper
+          }}>
+          <IndexRoute components={{
+            toolbar: productContainers.childrenToolbar,
+            main: productContainers.childrenTable
+          }} />
+          <Route path="view/:id" components={{
+            toolbar: productContainers.childrenToolbar,
+            main: productContainers.childrenTable
+          }} />
+        </Route>
+      </Route>
+    </Route>
+  )
+}
 
-      // the toolbar wrapper splitting the top toolbar and bottom content
-      main: ToolbarWrapper
-    }}>
-    <IndexRoute components={{
-
-      // the toolbar above
-      toolbar: factory(ChildrenToolbar),
-
-      // the main content below
-      main: factory(ChildrenTable)
-    }} />
-    <Route path="view/:id" components={{
-      toolbar: factory(ChildrenToolbar),
-      main: factory(ChildrenTable)
-    }} />
-  </Route>
-</Route>
+export default Routes
 ```
 
 ## Display Components
@@ -189,6 +207,7 @@ Renders a tree menu for navigating around folders.
  * `title` (string) - the title of the tree (optional)
  * `data` (array of objects) - an array of top level tree objects
  * `selected` (string) - the id of the currently selected node
+ * `open` (object) - an object of ids with the open state of the node
  * `styles` (object) - override styles for elements:
    * selected - the currently selected item
    * header - the tree header

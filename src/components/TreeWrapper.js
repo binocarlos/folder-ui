@@ -9,7 +9,7 @@ class TreeWrapper extends Component {
 
     return (
       <NavWrapper
-        width={200}
+        width={this.props.width || 200}
         paperprops={{
           zDepth:1,
           rounded:false

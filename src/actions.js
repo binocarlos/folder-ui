@@ -18,6 +18,15 @@ export function tree_data_error(error) {
   }
 }
 
+export const FOLDERUI_TREE_TOGGLE = 'FOLDERUI_TREE_TOGGLE'
+
+export function tree_toggle_node(id) {
+  return {
+    type: FOLDERUI_TREE_TOGGLE,
+    id
+  }
+}
+
 const ActionFactory = (opts = {}, db) => {
 
   if(typeof(opts)==='string') opts = {
@@ -33,7 +42,7 @@ const ActionFactory = (opts = {}, db) => {
     action._filter = opts.name
     return action
   }
-  
+
   return {
     name:opts.name,
     // return the correct part of the state tree based on the 'name'
@@ -49,6 +58,10 @@ const ActionFactory = (opts = {}, db) => {
           dispatch(processAction(tree_data_loaded(processTreeData(data))))
         })
       }
+    },
+
+    toggleTreeNode:(id) => {
+      return processAction(tree_toggle_node(id))
     }
   }
 }

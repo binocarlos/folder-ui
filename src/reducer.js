@@ -1,7 +1,8 @@
 import update from 'react/lib/update'
 import {
   FOLDERUI_TREE_DATA_LOADED,
-  FOLDERUI_TREE_DATA_ERROR
+  FOLDERUI_TREE_DATA_ERROR,
+  FOLDERUI_TREE_TOGGLE
 } from './actions'
 
 const INITIAL_STATE = {
@@ -30,6 +31,7 @@ const ReducerFactory = (opts = {}) => {
     if(!filterAction(action)) return state
 
     switch (action.type) {
+
       case FOLDERUI_TREE_DATA_LOADED:
         return update(state, {
           tree:{
@@ -38,6 +40,19 @@ const ReducerFactory = (opts = {}) => {
             }
           }
         })
+
+      case FOLDERUI_TREE_TOGGLE:
+
+        return update(state, {
+          tree:{
+            open:{
+              [action.id]:{
+                $set:!(state.tree.open[action.id] ? true : false)
+              }
+            }
+          }
+        })
+
       default:
         return state
     }
