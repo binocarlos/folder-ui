@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 
 const TABLE_FIELDS = [{
   title:'name',
@@ -35,4 +36,4 @@ ChildrenTable.propTypes = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(ChildrenTable)
+)(withRouter(ChildrenTable))

@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react'
+import { withRouter } from 'react-router'
 
 /*
 
@@ -50,11 +51,11 @@ export const processTreeData = (rootnodes = []) => {
   is turned into a single array of objects each with a 'children' property
   
 */
-export const dumpTreeData = (tree = {}) => {
+export const dumpTreeData = (tree = {}, mapfn = (item) => item) => {
   const convertNode = (id) => {
     let ret = Object.assign({}, tree.data[id])
     ret.children = (tree.children[id] || []).map(convertNode)
-    return ret
+    return mapfn(ret)
   }
 
   return tree.rootids.map(convertNode)
@@ -219,21 +220,15 @@ export const getTableRows = (table) => {
   containers to use react-router this.props.route
   
 */
-export const ContainerFactory = (ComponentClass = Component, opts = {}) => {
-  class ContainerClass extends Component {
-    render() {
-      return <ComponentClass {...opts} />
+export const ContainerFactory = (opts = {}) => {
+  return (ComponentClass = Component) => {
+    return class ContainerClass extends Component {
+      render() {
+        const finalProps = Object.assign({}, this.props, opts)
+        return <ComponentClass {...finalProps} />
+      }
     }
   }
-
-  return ContainerClass
-}
-
-// a wrapper for ContainerFactory that injects this.props.actions
-export const ActionFactory = (ComponentClass = Component, actions = {}) => {
-  return ContainerFactory(ComponentClass, {
-    actions
-  })
 }
 
 /*

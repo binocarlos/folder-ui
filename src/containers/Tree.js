@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 import Tree from '../components/Tree'
 import { dumpTreeData } from '../tools'
 
@@ -21,7 +22,8 @@ function mapStateToProps(s, ownProps) {
   const state = actions.getState(s)
 
   return {
-    data:state.tree.db ? dumpTreeData(state.tree.db) : []
+    data:state.tree.db ? dumpTreeData(state.tree.db) : [],
+    selected:ownProps.params.id
   }
 }
 
@@ -51,4 +53,4 @@ TreeContainer.propTypes = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(TreeContainer)
+)(withRouter(TreeContainer))

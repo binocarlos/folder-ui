@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 
 export class ChildrenToolbar extends Component {
   render() {
@@ -29,4 +30,4 @@ ChildrenToolbar.propTypes = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(ChildrenToolbar)
+)(withRouter(ChildrenToolbar))

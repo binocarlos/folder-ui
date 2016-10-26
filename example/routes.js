@@ -11,18 +11,21 @@ import Tree from '../src/containers/Tree'
 import ChildrenToolbar from '../src/containers/ChildrenToolbar'
 import ChildrenTable from '../src/containers/ChildrenTable'
 
-import { ActionFactory } from '../src/tools'
+import { ContainerFactory } from '../src/tools'
 import DB from './db'
 import FolderActions from '../src/actions'
 
 const productActions = FolderActions('products', DB())
-
+const productFactory = ContainerFactory({
+  actions:productActions
+})
 const productContainers = {
-  tree:ActionFactory(Tree, productActions),
-  childrenToolbar:ActionFactory(ChildrenToolbar, productActions),
-  childrenTable:ActionFactory(ChildrenTable, productActions)
+  tree:productFactory(Tree),
+  childrenToolbar:productFactory(ChildrenToolbar),
+  childrenTable:productFactory(ChildrenTable)
 }
 
+console.dir(productContainers)
 const Routes = (opts = {}) => {
   return (
     <Route path="/" component={AppWrapper}>

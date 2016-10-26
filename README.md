@@ -56,12 +56,12 @@ import { routerReducer } from 'react-router-redux'
 import FolderReducer from 'folder-ui/lib/reducer'
 
 const PRODUCTS_NAME = 'products'
-const STORES_NAME = 'stores'
+const SHOPS_NAME = 'shops'
 
 const reducer = combineReducers({
   routing: routerReducer,
   products: FolderReducer('products'),
-  stores: FolderReducer('stores')
+  stores: FolderReducer('shops')
 })
 ```
 
@@ -83,7 +83,7 @@ import DB2 from './db2'
 const productActions = FolderActions('products', DB1())
 
 // DB2 is a REST api
-const storesActions = FolderActions('stores', DB2())
+const shopsActions = FolderActions('shops', DB2())
 ```
 
 Here - we have created 2 sets of actions, each hooked up to it's own reducer (using the name) and will consume the database instance we passed to it - one for each service.
@@ -111,9 +111,13 @@ import DB1 from './db1'
 
 // make some actions with a reducer name and database api
 const productActions = FolderActions('products', DB1())
-
+const factory = ContainerFactory({
+  // you must include an actions property
+  actions:productActions,
+  customProp:10
+})
 // create a route that will inject the productActions into the Tree container
-<Route path="products" components={ContainerFactory(Tree, productActions)} />
+<Route path="products" components={factory(Tree)} />
 ```
 
 ## Wrapper Components
@@ -139,13 +143,16 @@ import ChildrenTable from 'folder-ui/lib/containers/ChildrenTable'
 import ChildrenToolbar from 'folder-ui/lib/containers/ChildrenToolbar'
 
 const productActions = FolderActions('products', DB1())
+const factory = ContainerFactory({
+  actions:productActions
+})
 
 // the tree wrapper splitting the side-bar and right-hand content
 <Route component={TreeWrapper}>
   <Route path="products" 
     components={{
       // the tree on the side
-      sidebar: ContainerFactory(Tree, productActions),
+      sidebar: factory(Tree),
 
       // the toolbar wrapper splitting the top toolbar and bottom content
       main: ToolbarWrapper
@@ -153,14 +160,14 @@ const productActions = FolderActions('products', DB1())
     <IndexRoute components={{
 
       // the toolbar above
-      toolbar: ContainerFactory(ChildrenToolbar, productActions),
+      toolbar: factory(ChildrenToolbar),
 
       // the main content below
-      main: ContainerFactory(ChildrenTable, productActions)
+      main: factory(ChildrenTable)
     }} />
     <Route path="children/:id" components={{
-      toolbar: ContainerFactory(ChildrenToolbar, productActions),
-      main: ContainerFactory(ChildrenTable, productActions)
+      toolbar: factory(ChildrenToolbar),
+      main: factory(ChildrenTable)
     }} />
   </Route>
 </Route>
