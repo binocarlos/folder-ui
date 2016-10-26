@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { push } from 'react-router-redux'
 import Tree from '../components/Tree'
-import { dumpTreeData } from '../tools'
+import { dumpTreeData, getAncestors } from '../tools'
 
 export class TreeContainer extends Component {
 
@@ -21,11 +21,21 @@ export class TreeContainer extends Component {
 function mapStateToProps(s, ownProps) {
   const actions = ownProps.actions
   const state = actions.getState(s)
-  const open = state.tree.open || {}
   const data = state.tree.db ? dumpTreeData(state.tree.db) : []
+  let open = Object.assign({}, state.tree.open || {})
   let selected = ownProps.params.id
 
-  selected = !selected && data[0] ? data[0].id : selected
+  // select the root node if nothing is on the url
+  if(!selected && data[0]){
+    selected = data[0].id
+    open[data[0].id] = true
+  }
+  // open all ancestors for the selected node
+  else if(selected && state.tree.db){
+    getAncestors(state.tree.db, selected).forEach((ancestor) => {
+      open[ancestor.id] = true
+    })
+  }
 
   return {
     data,
