@@ -11,6 +11,12 @@ export class TreeContainer extends Component {
     this.props.requestTreeData()
   }
 
+  componentWillReceiveProps(nextProps) {
+    nextProps.openNodes.forEach((node) => {
+      this.props.toggleNode(node)
+    })
+  }
+
   render() {
     return (    
       <Tree {...this.props} />
@@ -25,6 +31,9 @@ function mapStateToProps(s, ownProps) {
   let open = Object.assign({}, state.tree.open || {})
   let selected = ownProps.params.id
 
+  // if we need to open ancestors
+  let openNodes = []
+
   // select the root node if nothing is on the url
   if(!selected && data[0]){
     selected = data[0].id
@@ -33,6 +42,9 @@ function mapStateToProps(s, ownProps) {
   // open all ancestors for the selected node
   else if(selected && state.tree.db){
     getAncestors(state.tree.db, selected).forEach((ancestor) => {
+      if(!open[ancestor.id]){
+        openNodes.push(ancestor)
+      }
       open[ancestor.id] = true
     })
   }
@@ -40,7 +52,8 @@ function mapStateToProps(s, ownProps) {
   return {
     data,
     open,
-    selected
+    selected,
+    openNodes
   }
 }
 
@@ -60,7 +73,7 @@ function mapDispatchToProps(dispatch, ownProps) {
     },
     toggleNode:(node) => {
       dispatch(actions.toggleTreeNode(node.id))
-    },
+    }
   }
 }
 
