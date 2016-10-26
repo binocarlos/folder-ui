@@ -47,6 +47,12 @@ function mapStateToProps(s, ownProps) {
       }
       open[ancestor.id] = true
     })
+
+    // also open the currently selected node
+    if(!open[selected]){
+      openNodes.push(state.tree.db.data[selected])
+      open[selected] = true
+    }
   }
 
   return {
