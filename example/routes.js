@@ -10,6 +10,8 @@ import ToolbarWrapper from '../src/components/ToolbarWrapper'
 import Tree from '../src/containers/Tree'
 import ChildrenToolbar from '../src/containers/ChildrenToolbar'
 import ChildrenTable from '../src/containers/ChildrenTable'
+import FormToolbar from '../src/containers/FormToolbar'
+import Form from '../src/containers/Form'
 
 import { ContainerFactory } from '../src/tools'
 import DB from './db'
@@ -55,6 +57,12 @@ const productContainers = {
     showCheckboxes:true,
     showHeader:false,
     multiSelectable:true
+  }),
+  formToolbar:productFactory(FormToolbar, {
+    
+  }),
+  form:productFactory(Form, {
+    getSchema:productSchema.getSchema
   })
 }
 const productViews = {
@@ -65,6 +73,10 @@ const productViews = {
   view:{
     toolbar: productContainers.childrenToolbar,
     main: productContainers.childrenTable
+  },
+  edit:{
+    toolbar: productContainers.formToolbar,
+    main: productContainers.form
   }
 }
 
@@ -76,6 +88,8 @@ const Routes = (opts = {}) => {
         <Route path="products" components={productViews.tree}>
           <IndexRoute components={productViews.view} />
           <Route path="view/:id" components={productViews.view} />
+          <Route path="edit/:id" components={productViews.edit} />
+          <Route path="edit/:parent/:id" components={productViews.edit} />
         </Route>
       </Route>
     </Route>

@@ -25,7 +25,12 @@ const INITIAL_STATE = {
     selected:{}
   },
   // the current clipboard array
-  clipboard:[]
+  clipboard:[],
+  // the currently editing item
+  editing:{
+    data:{},
+    meta:null
+  }
 }
 
 const ReducerFactory = (opts = {}) => {

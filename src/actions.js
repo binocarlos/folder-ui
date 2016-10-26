@@ -64,6 +64,16 @@ export function child_data_select(ids) {
   }
 }
 
+export const FOLDERUI_EDIT_UPDATE = 'FOLDERUI_EDIT_UPDATE'
+
+export function edit_update(data, meta) {
+  return {
+    type: FOLDERUI_EDIT_UPDATE,
+    data,
+    meta
+  }
+}
+
 const ActionFactory = (opts = {}, db) => {
 
   if(typeof(opts)==='string') opts = {
@@ -86,6 +96,12 @@ const ActionFactory = (opts = {}, db) => {
     getState:(state) => {
       return state[opts.name]
     },
+
+    /*
+    
+      async methods
+      
+    */
 
     // request the tree data
     requestTreeData:(done) => {
@@ -118,16 +134,34 @@ const ActionFactory = (opts = {}, db) => {
       }
     },
 
+    editNode:(id) => {
+
+    },
+
+    /*
+    
+      sync methods
+      
+    */
+
+    // tell the state about the currently selected tree node
     selectTreeNode:(node) => {
       return processAction(tree_select_node(node))
     },
 
+    // toggle the tree open state
     toggleTreeNode:(id, open) => {
       return processAction(tree_toggle_node(id, open))
     },
 
+    // an array of table selected ids
     selectChildNodes:(ids) => {
       return processAction(child_data_select(ids))
+    },
+
+    // the edit form has changed
+    updateEditNode:(data, meta) => {
+      return processAction(edit_update(data, meta))
     }
   }
 }
