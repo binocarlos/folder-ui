@@ -88,6 +88,27 @@ const shopsActions = FolderActions('shops', DB2())
 
 Here - we have created 2 sets of actions, each hooked up to it's own reducer (using the name) and will consume the database instance we passed to it - one for each service.
 
+## Handlers
+
+To hook together the various components into an app - we use [react-router](https://github.com/ReactTraining/react-router).
+
+To allow the customization of routes and what route is loaded when items are open - we need to define our `handlers`.
+
+These are functions that return react-router paths - there is a handler for the following operations:
+
+ * open - view an item (click on the tree or click open from the toolbar)
+ * edit - edit an item (click edit on the toolbar)
+
+
+```javascript
+const standardHandlers = {
+  // get the route to view an item
+  open:(item) => {
+    return 'view/' + item.id
+  }
+}
+```
+
 ## Container Components
 
 Container components link the reducer, actions and database and can be used either with [react-router](https://github.com/ReactTraining/react-router) or stand-alone inside your own containers.
@@ -98,36 +119,11 @@ Container components link the reducer, actions and database and can be used eith
  * FormToolbar
  * Tree
 
-All of the container components require an `actions` property to work with - this should have been created using a database API as shown above.
+All of the container components require `actions` and `handlers` properties.
 
-To make using the container components alongside react-router easier - you can use the `ContainerFactory` function from `tools`.
-
-```javascript
-import FolderActions from 'folder-ui/lib/actions'
-import { ContainerFactory } from 'folder-ui/lib/tools'
-import Tree from 'folder-ui/lib/containers/Tree'
-
-import DB1 from './db1'
-
-// make some actions with a reducer name and database api
-const productActions = FolderActions('products', DB1())
-const factory = ContainerFactory({
-  // you must include an actions property
-  actions:productActions,
-  customProp:10
-})
-// create a route that will inject the productActions into the Tree container
-<Route path="products" components={factory(Tree)} />
-```
-
-## Wrapper Components
-
-Wrapper components are used alongside react-router routes.
-
-Here is an example of some routes that use the `TreeWrapper` to split left and right and the `ToolbarWrapper` to add a toolbar above the main right-hand content:
+You can use the `ContainerFactory` function from `tools` to wrap the container components.  We also use the Wrapper components to contain the Tree on the left and the Toolbar above the main content.
 
 ```javascript
-
 // actions
 import { ContainerFactory } from 'folder-ui/lib/tools'
 import FolderActions from 'folder-ui/lib/actions'
@@ -141,6 +137,13 @@ import ToolbarWrapper from 'folder-ui/lib/components/ToolbarWrapper'
 import Tree from 'folder-ui/lib/containers/Tree'
 import ChildrenTable from 'folder-ui/lib/containers/ChildrenTable'
 import ChildrenToolbar from 'folder-ui/lib/containers/ChildrenToolbar'
+
+const standardHandlers = {
+  // get the route to view an item
+  open:(item) => {
+    return 'view/' + item.id
+  }
+}
 
 const productActions = FolderActions('products', DB1())
 const factory = ContainerFactory({
@@ -165,7 +168,7 @@ const factory = ContainerFactory({
       // the main content below
       main: factory(ChildrenTable)
     }} />
-    <Route path="children/:id" components={{
+    <Route path="view/:id" components={{
       toolbar: factory(ChildrenToolbar),
       main: factory(ChildrenTable)
     }} />

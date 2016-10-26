@@ -30,7 +30,8 @@ function mapDispatchToProps(dispatch, ownProps) {
 }
 
 ChildrenTable.propTypes = {
-  actions:React.PropTypes.object.isRequired
+  actions:React.PropTypes.object.isRequired,
+  handlers:React.PropTypes.object.isRequired
 }
 
 export default connect(

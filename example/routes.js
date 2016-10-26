@@ -15,9 +15,20 @@ import { ContainerFactory } from '../src/tools'
 import DB from './db'
 import FolderActions from '../src/actions'
 
+// an object that maps action names onto functions
+// that return the URL to redirect to
+// if the handler is not 
+const standardHandlers = {
+  // get the route to view an item
+  open:(item) => {
+    return 'view/' + item.id
+  }
+}
+
 const productActions = FolderActions('products', DB())
 const productFactory = ContainerFactory({
-  actions:productActions
+  actions:productActions,
+  handlers:standardHandlers
 })
 const productContainers = {
   tree:productFactory(Tree),
@@ -25,7 +36,6 @@ const productContainers = {
   childrenTable:productFactory(ChildrenTable)
 }
 
-console.dir(productContainers)
 const Routes = (opts = {}) => {
   return (
     <Route path="/" component={AppWrapper}>
