@@ -1,15 +1,21 @@
-const TYPES = {
-  folder:[{
-    name:'name'
-  }],
-  item:[{
-    name:'name'
-  },{
-    name:'comment'
-  }]
+export const PRODUCT_TYPES = {
+  folder:{
+    title:'Folder',
+    fields:[{
+      name:'name'
+    }]
+  },
+  item:{
+    title:'Item',
+    fields:[{
+      name:'name'
+    },{
+      name:'comment'
+    }]
+  }
 }
 
-export function get_schema(item){
-  let type = item.type || 'folder'
-  return TYPES[type]
-}
+export const PRODUCT_TABLE_FIELDS = [{
+  title:'name',
+  render:data => data.name
+}]

@@ -221,10 +221,10 @@ export const getTableRows = (table) => {
   
 */
 export const ContainerFactory = (opts = {}) => {
-  return (ComponentClass = Component) => {
+  return (ComponentClass = Component, inneropts = {}) => {
     return class ContainerClass extends Component {
       render() {
-        const finalProps = Object.assign({}, this.props, opts)
+        const finalProps = Object.assign({}, this.props, opts, inneropts)
         return <ComponentClass {...finalProps} />
       }
     }

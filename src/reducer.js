@@ -2,7 +2,11 @@ import update from 'react/lib/update'
 import {
   FOLDERUI_TREE_DATA_LOADED,
   FOLDERUI_TREE_DATA_ERROR,
-  FOLDERUI_TREE_TOGGLE
+  FOLDERUI_TREE_TOGGLE,
+  FOLDERUI_TREE_SELECT,
+  FOLDERUI_CHILD_DATA_LOADED,
+  FOLDERUI_CHILD_DATA_ERROR,
+  FOLDERUI_CHILD_DATA_SELECT
 } from './actions'
 
 const INITIAL_STATE = {
@@ -11,7 +15,17 @@ const INITIAL_STATE = {
     selected:null,
     open:{},
     error:null
-  }
+  },
+  // the current node being viewed
+  parent:null,
+  children:{
+    // the current list of data in the view
+    data:[],
+    // selected the ids of the selected children
+    selected:{}
+  },
+  // the current clipboard array
+  clipboard:[]
 }
 
 const ReducerFactory = (opts = {}) => {
@@ -53,6 +67,37 @@ const ReducerFactory = (opts = {}) => {
                 $set: useValue
               }
             }
+          }
+        })
+
+      case FOLDERUI_TREE_SELECT:
+
+        return update(state, {
+          parent:{
+            $set: action.data
+          }
+        })
+
+      case FOLDERUI_CHILD_DATA_LOADED:
+        return update(state, {
+          children:{
+            data:{
+              $set:action.data
+            },
+            selected:{
+              $set:{}
+            }
+          }
+        })
+
+      case FOLDERUI_CHILD_DATA_SELECT:
+        let ids = {}
+        action.ids.forEach((id) => {
+          ids[id] = true
+        })
+        return update(state, {
+          selected:{
+            $set:ids
           }
         })
 

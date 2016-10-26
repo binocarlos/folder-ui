@@ -8,9 +8,28 @@ import { dumpTreeData, getAncestors } from '../tools'
 export class TreeContainer extends Component {
 
   componentDidMount() {
-    this.props.requestTreeData((err, data) => {
-      this.props.openAncestors(getSelectedId(this.props.selected, data))
+
+    // the initial bootstrap
+    // first load the tree data
+    this.props.requestTreeData((err, tree) => {
+      if(err) return
+
+      // now check if we have a selected id from the url
+      // or pick the first root node
+      const selected = this.props.selected ? tree.data[this.props.selected] : tree.data[tree.rootids[0]]
+
+      // open the ancestors of the selected node
+      this.props.openAncestors(selected.id)
+
+      // now select it - this will redirect and open the node
+      this.props.selectNode(selected)
     })
+  }
+  
+  componentWillReceiveProps(nextProps) {
+    if(!nextProps.selected){
+      this.props.selectNode(nextProps.data[0]) 
+    }
   }
 
   render() {
@@ -20,17 +39,13 @@ export class TreeContainer extends Component {
   }
 }
 
-function getSelectedId(selected, data){
-  return selected || (data[0] ? data[0].id : null)
-}
-
 function mapStateToProps(s, ownProps) {
   const actions = ownProps.actions
   const state = actions.getState(s)
 
   const data = state.tree.db ? dumpTreeData(state.tree.db) : []
   const open = state.tree.open || {}
-  const selected = getSelectedId(ownProps.params.id, data)
+  const selected = ownProps.params.id
 
   return {
     // the tree structure data
@@ -52,9 +67,10 @@ function mapDispatchToProps(dispatch, ownProps) {
       dispatch(actions.requestTreeData(done))
     },
     selectNode:(node) => {
+      dispatch(actions.toggleTreeNode(node.id, true))
+      dispatch(actions.selectTreeNode(node))
       if(!handlers.open) return
       const url = [route.path, handlers.open(node)].filter(s => s).join('/')
-      dispatch(actions.toggleTreeNode(node.id, true))
       dispatch(push('/' + url))
     },
     toggleNode:(node) => {
@@ -67,7 +83,6 @@ function mapDispatchToProps(dispatch, ownProps) {
         getAncestors(state.tree.db, id).forEach((ancestor) => {
           dispatch(actions.toggleTreeNode(ancestor.id, true))
         })
-        dispatch(actions.toggleTreeNode(id, true))
       })
     }
   }

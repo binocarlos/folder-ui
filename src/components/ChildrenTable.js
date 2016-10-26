@@ -35,7 +35,11 @@ class ChildrenTable extends Component {
         height={this.props.height}
         selectable={this.props.selectable}
         multiSelectable={this.props.multiSelectable}
-        onRowSelection={this.props.onRowSelection}
+        onRowSelection={(indexes) => {
+          this.props.onRowSelection(indexes.map(index => {
+            return this.props.data[index].id
+          }))
+        }}
       >
       {this.props.showHeader ? (
         <TableHeader
@@ -57,7 +61,7 @@ class ChildrenTable extends Component {
           deselectOnClickaway={false}
         >
           {data.map( (row, index) => (
-            <TableRow key={index} selected={row._selected}>
+            <TableRow key={index} selected={this.props.selected[row.id]}>
               {fields.map( (field, index) => {
                 const render = renderfns[index]
                 const content = render(row)
@@ -77,10 +81,9 @@ ChildrenTable.defaultProps = {
   showCheckboxes: false,
   multiSelectable: false,
   selectable: true,
-  selected:[],
+  selected:{},
   data:[],
-  showHeader: true,
-  selectedids: ''
+  showHeader: true
 }
 
 export default ChildrenTable

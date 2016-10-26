@@ -54,8 +54,8 @@ export default function memorydb(opts = {}){
       })
       done(null, items)
     },
-    loadChildren:(item, done) => {
-      done(null, serialize(getChildren(tree, item.id)))
+    loadChildren:(id, done) => {
+      done(null, serialize(getChildren(tree, id)))
     },
     loadTree:(done) => {
       done(null, serialize(dumpTreeData(tree)))

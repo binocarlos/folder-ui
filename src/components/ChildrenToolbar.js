@@ -3,18 +3,13 @@ import Toolbar from 'kettle-ui/lib/Toolbar'
 
 export default class ChildrenToolbar extends Component {
 
-  getAddButton() {
+  getAddButton(parent) {
     return {
       id:'add',
       type:'dropdown',
       title:'Add',
-      items:[{
-        type:'folder',
-        title:'Folder'
-      },{
-        type:'item',
-        title:'Item'
-      }]
+      items:this.props.getChildTypes(parent)
+        
     }
   }
 
@@ -25,22 +20,22 @@ export default class ChildrenToolbar extends Component {
     const selected = this.props.selected || []
 
     if(selected.length==0){
-      let addButton = getAddButton(parent)
+      let addButton = this.getAddButton(this.props.node)
       leftbuttons.push(addButton)
       actions.push({
         id:'edit',
         title:'Edit',
         handler:() => {
-          this.props.onEdit && this.props.onEdit(parent)
+          this.props.onEdit && this.props.onEdit(this.props.node)
         }
       })
 
-      if(clipboard.length>0){
+      if(this.props.clipboard.length>0){
         actions.push({
           id:'paste',
           title:'Paste',
           handler:() => {
-            this.props.onPaste && this.props.onPaste(clipboard)
+            this.props.onPaste && this.props.onPaste(this.props.clipboard)
           }
         })
       }
@@ -109,8 +104,11 @@ export default class ChildrenToolbar extends Component {
 
   render() {
 
+    const newProps = Object.assign({}, this.props, {
+      leftbuttons:this.getLeftButtons()
+    })
     return (
-      <div>children toolbar</div>
+      <Toolbar {...newProps} />
     )
   }
 

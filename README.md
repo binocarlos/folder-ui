@@ -42,7 +42,7 @@ If you are working with external state and want `folder-ui` to handle redux stat
  * `addItem(parent, item, done)` - add an item to a parent
  * `pasteItems(mode, parent, items, done)` - paste items, mode is {copy,cut}
  * `deleteItems(items, done)` - delete items from a parent
- * `loadChildren(item, done)` - load the children for an item
+ * `loadChildren(id, done)` - load the children for an item
  * `loadTree(done)` - load the tree data
 
 In all cases the callback `done` takes the following signature: `done(err, data)` (i.e. standard node callback style)
@@ -153,6 +153,13 @@ const standardHandlers = {
   // get the route to view an item
   open:(item) => {
     return 'view/' + item.id
+  },
+  // edit is in the context of a parent
+  edit:(parent, item) => {
+    return 'edit/' + parent.id + '/' + item.id
+  },
+  add:(descriptor) => {
+    return 'add/' + item.id + '/' + descriptor.type
   }
 }
 
@@ -166,25 +173,25 @@ const productContainers = {
   childrenToolbar:productFactory(ChildrenToolbar),
   childrenTable:productFactory(ChildrenTable)
 }
+const productViews = {
+  tree:{
+    sidebar: productContainers.tree,
+    main: ToolbarWrapper
+  },
+  view:{
+    toolbar: productContainers.childrenToolbar,
+    main: productContainers.childrenTable
+  }
+}
 
 const Routes = (opts = {}) => {
   return (
     <Route path="/" component={AppWrapper}>
       <IndexRoute component={Home} />
       <Route component={NavWrapper}>
-        <Route path="products" 
-          components={{
-            sidebar: productContainers.tree,
-            main: ToolbarWrapper
-          }}>
-          <IndexRoute components={{
-            toolbar: productContainers.childrenToolbar,
-            main: productContainers.childrenTable
-          }} />
-          <Route path="view/:id" components={{
-            toolbar: productContainers.childrenToolbar,
-            main: productContainers.childrenTable
-          }} />
+        <Route path="products" components={productViews}>
+          <IndexRoute components={productViews.view} />
+          <Route path="view/:id" components={productViews.view} />
         </Route>
       </Route>
     </Route>
@@ -267,6 +274,7 @@ A table to display the children of an item
 
  * `fields` (array of objects) - an array of columns to display
  * `data` (array of objects) - the data to display
+ * `selected` (object) - an object of ids with the selected state of the node
  * `selectable` (boolean:true) - allow rows to be selected
  * `multiSelectable` (boolean:false) - allow multiple selections
  * `showCheckboxes` (boolean:false) - display the checkboxes for row selection
@@ -302,7 +310,6 @@ A toolbar to be used above the `ChildrenViewer` component.
  * `onEdit(node)` - the edit button handler
  * `onPaste(nodes)` - the paste button handler
  * `onOpen(node)` - view a node's children
- * `onEdit(node)` - edit the given node
  * `onDelete(nodes)` - delete the given nodes
  * `onCopy(nodes)` - copy the given nodes to the clipboard
  * `onCut(nodes)` - cut the given nodes to the clipboard
@@ -316,8 +323,6 @@ Tell the toolbar if the given `node` can have children.  If this returns `false`
 Return an array of descriptor objects each describing a thing that could be added to the given node.
 
 Each descriptor can contain any fields you like (the descriptor is passed to the `onAdd` function if clicked) - the only pre-requisite is it has a `title` property.
-
-
 
 
 

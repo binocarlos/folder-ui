@@ -13,6 +13,8 @@ import ChildrenTable from '../src/containers/ChildrenTable'
 
 import { ContainerFactory } from '../src/tools'
 import DB from './db'
+import Schema from '../src/schema'
+import { PRODUCT_TYPES, PRODUCT_TABLE_FIELDS } from './schema'
 import FolderActions from '../src/actions'
 
 // Wrap the left hand sidebar wrapper with a wider width
@@ -27,18 +29,43 @@ const standardHandlers = {
   // get the route to view an item
   open:(item) => {
     return 'view/' + item.id
+  },
+  // edit is in the context of a parent
+  edit:(parent, item) => {
+    return 'edit/' + parent.id + '/' + item.id
+  },
+  add:(descriptor) => {
+    return 'add/' + item.id + '/' + descriptor.type
   }
 }
 
 const productActions = FolderActions('products', DB())
+const productSchema = Schema(PRODUCT_TYPES, PRODUCT_TABLE_FIELDS)
 const productFactory = ContainerFactory({
   actions:productActions,
   handlers:standardHandlers
 })
 const productContainers = {
   tree:productFactory(Tree),
-  childrenToolbar:productFactory(ChildrenToolbar),
-  childrenTable:productFactory(ChildrenTable)
+  childrenToolbar:productFactory(ChildrenToolbar, {
+    getChildTypes:productSchema.getChildTypes
+  }),
+  childrenTable:productFactory(ChildrenTable, {
+    fields:productSchema.getTableFields(),
+    showCheckboxes:true,
+    showHeader:false,
+    multiSelectable:true
+  })
+}
+const productViews = {
+  tree:{
+    sidebar: productContainers.tree,
+    main: ToolbarWrapper
+  },
+  view:{
+    toolbar: productContainers.childrenToolbar,
+    main: productContainers.childrenTable
+  }
 }
 
 const Routes = (opts = {}) => {
@@ -46,19 +73,9 @@ const Routes = (opts = {}) => {
     <Route path="/" component={AppWrapper}>
       <IndexRoute component={Home} />
       <Route component={NavWrapper}>
-        <Route path="products" 
-          components={{
-            sidebar: productContainers.tree,
-            main: ToolbarWrapper
-          }}>
-          <IndexRoute components={{
-            toolbar: productContainers.childrenToolbar,
-            main: productContainers.childrenTable
-          }} />
-          <Route path="view/:id" components={{
-            toolbar: productContainers.childrenToolbar,
-            main: productContainers.childrenTable
-          }} />
+        <Route path="products" components={productViews.tree}>
+          <IndexRoute components={productViews.view} />
+          <Route path="view/:id" components={productViews.view} />
         </Route>
       </Route>
     </Route>
