@@ -14,26 +14,29 @@ export class TreeContainer extends Component {
     this.props.requestTreeData((err, tree) => {
       if(err) return
 
-      // now check if we have a selected id from the url
-      // or pick the first root node
-      const selected = this.props.selected ? tree.data[this.props.selected] : tree.data[tree.rootids[0]]
+      // redirect to the first root node
+      if(!this.props.selected){
+        this.props.selectNode(tree.data[tree.rootids[0]])
+      }
+      // activate the selected node
+      else {
+        this.props.activateNode(tree.data[this.props.selected])
+      }
 
-      // open the ancestors of the selected node
-      this.props.openAncestors(selected.id)
-
-      // now select it - this will redirect and open the node
-      this.props.selectNode(selected)
     })
   }
   
   componentWillReceiveProps(nextProps) {
-    if(!nextProps.selected){
-      this.props.selectNode(nextProps.data[0]) 
+    if(!nextProps.selectedNode) return
+
+    // activate the selected node on first load
+    if(nextProps.selected!=this.props.selected){
+      this.props.activateNode(nextProps.selectedNode)
     }
   }
 
   render() {
-    return (    
+    return (
       <Tree {...this.props} />
     )
   }
@@ -46,6 +49,7 @@ function mapStateToProps(s, ownProps) {
   const data = state.tree.db ? dumpTreeData(state.tree.db) : []
   const open = state.tree.open || {}
   const selected = ownProps.params.id
+  const selectedNode = state.tree.db ? state.tree.db.data[selected] : null
 
   return {
     // the tree structure data
@@ -53,7 +57,8 @@ function mapStateToProps(s, ownProps) {
     // object of ids -> open state
     open,
     // the id of the currently selected node (comes from the url)
-    selected
+    selected,
+    selectedNode
   }
 }
 
@@ -66,24 +71,23 @@ function mapDispatchToProps(dispatch, ownProps) {
     requestTreeData:(done) => {
       dispatch(actions.requestTreeData(done))
     },
+    activateNode:(node) => {
+      dispatch((dispatch, getState) => {
+        dispatch(actions.toggleTreeNode(node.id, true))
+        dispatch(actions.selectTreeNode(node))
+        const state = actions.getState(getState())
+        getAncestors(state.tree.db, node.id).forEach((ancestor) => {
+          dispatch(actions.toggleTreeNode(ancestor.id, true))
+        })
+      })
+    },
     selectNode:(node) => {
-      dispatch(actions.toggleTreeNode(node.id, true))
-      dispatch(actions.selectTreeNode(node))
       if(!handlers.open) return
       const url = [route.path, handlers.open(node)].filter(s => s).join('/')
       dispatch(push('/' + url))
     },
     toggleNode:(node) => {
       dispatch(actions.toggleTreeNode(node.id))
-    },
-    // open ancestors after the initial page load
-    openAncestors:(id) => {
-      dispatch((dispatch, getState) => {
-        const state = actions.getState(getState())
-        getAncestors(state.tree.db, id).forEach((ancestor) => {
-          dispatch(actions.toggleTreeNode(ancestor.id, true))
-        })
-      })
     }
   }
 }
