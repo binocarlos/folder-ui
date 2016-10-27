@@ -52,19 +52,13 @@ export default class ChildrenToolbar extends Component {
     }
     else if(selected.length==1){
 
-      let canOpen = true
-
-      canOpen = this.props.isLeaf ? !this.props.isLeaf(selected[0]) : canOpen
-      // lets check that we can open the single item
-      if(canOpen){
-        actions.push({
-          id:'open',
-          title:'Open',
-          handler:() => {
-            this.props.onOpen && this.props.onOpen(selected[0])
-          }
-        })
-      }
+      actions.push({
+        id:'open',
+        title:'Open',
+        handler:() => {
+          this.props.onOpen && this.props.onOpen(selected[0])
+        }
+      })
 
       actions.push({
         id:'edit',

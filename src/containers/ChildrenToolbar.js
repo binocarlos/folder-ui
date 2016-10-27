@@ -42,8 +42,7 @@ function mapStateToProps(s, ownProps) {
     selected,
     clipboard,
     deleting,
-    message,
-    isLeaf:() => true
+    message
   }
 }
 
@@ -63,7 +62,8 @@ function mapDispatchToProps(dispatch, ownProps) {
 
     },
     onOpen:(node) => {
-
+      if(!handlers.open && !node) return
+      dispatch(push(handlers.open(node)))
     },
     onDelete:(nodes) => {
       dispatch(actions.deleteSelection())
