@@ -79,7 +79,6 @@ function mapDispatchToProps(dispatch, ownProps) {
     activateNode:(node) => {
       dispatch((dispatch, getState) => {
         dispatch(actions.toggleTreeNode(node.id, true))
-        dispatch(actions.selectTreeNode(node))
         const state = actions.getState(getState())
         getAncestors(state.tree.db, node.id).forEach((ancestor) => {
           dispatch(actions.toggleTreeNode(ancestor.id, true))

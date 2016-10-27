@@ -22,6 +22,7 @@ function mapStateToProps(s, ownProps) {
 
   const formInfo = info.form ? info.form(ownProps) : {}
   const data = state.editing.data || {}
+  const meta = state.editing.meta || {}
   const originalData = state.editing.originalData || {}
 
   const type = formInfo.mode == 'edit' ? data.type : formInfo.type
@@ -32,7 +33,9 @@ function mapStateToProps(s, ownProps) {
 
   return {
     title,
-    parentNode
+    parentNode,
+    data,
+    meta
   }
 }
 
@@ -46,8 +49,26 @@ function mapDispatchToProps(dispatch, ownProps) {
   const formInfo = info.form ? info.form(ownProps) : {}
 
   return {
-    save:() => {
-      
+    save:(data, meta, parentNode) => {
+      if(!meta.valid){
+        // TODO - display a message?
+        return
+      }
+      if(formInfo.mode=='add'){
+        dispatch(actions.requestAddItem(parentNode, data, (err) => {
+          if(!handlers.open && !parentNode) return
+          const schema = ownProps.getSchema(formInfo.type) || {}
+          dispatch(actions.showChildrenMessage(schema.title + ' added'))
+          dispatch(push(handlers.open(parentNode)))
+        }))
+      }
+      else if(formInfo.mode=='edit'){
+        dispatch(actions.requestSaveItem(parentNode, data, (err) => {
+          if(!handlers.open && !parentNode) return
+          dispatch(actions.showChildrenMessage(data.name + ' saved'))
+          dispatch(push(handlers.open(parentNode)))
+        }))
+      }
     },
     cancel:(parentNode) => {
       if(!handlers.open && !parentNode) return

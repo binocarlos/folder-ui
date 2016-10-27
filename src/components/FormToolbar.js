@@ -23,7 +23,7 @@ export default class FormToolbar extends Component {
         primary:true
       },
       handler:() => {
-        this.props.save()
+        this.props.save(this.props.data, this.props.meta, this.props.parentNode)
       }
     }]
   }

@@ -14,7 +14,11 @@ export class ChildrenToolbarContainer extends Component {
 
 function mapStateToProps(s, ownProps) {
   const actions = ownProps.actions
+  const info = ownProps.info
   const state = actions.getState(s)
+
+  const formInfo = info.tree ? info.tree(ownProps) : {}
+
   const children = state.children.data || []
   const deleting = state.children.deleting ? true : false
   const message = state.children.message
@@ -22,8 +26,9 @@ function mapStateToProps(s, ownProps) {
   const selected = children.filter((node) => {
     return state.children.selected[node.id]
   })
+  const parentNode = state.tree.db ? state.tree.db.data[formInfo.id] : null
   const title = selected.length == 0 ?
-    (state.parent || {}).name :
+    (parentNode || {}).name :
     (
       selected.length == 1 ? 
         selected[0].name :
@@ -32,7 +37,7 @@ function mapStateToProps(s, ownProps) {
   
   return {
     title,
-    node:state.parent,
+    node:parentNode,
     data:children,
     selected,
     clipboard,

@@ -22,7 +22,7 @@ const INITIAL_STATE = {
     open:{},
     error:null
   },
-  // the current node being viewed
+  // the id of the current node being viewed
   parent:null,
   children:{
     // the current list of data in the view

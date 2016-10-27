@@ -29,15 +29,6 @@ export function tree_toggle_node(id, open = null) {
   }
 }
 
-export const FOLDERUI_TREE_SELECT = 'FOLDERUI_TREE_SELECT'
-
-export function tree_select_node(data) {
-  return {
-    type: FOLDERUI_TREE_SELECT,
-    data
-  }
-}
-
 export const FOLDERUI_CHILD_DATA_LOADED = 'FOLDERUI_CHILD_DATA_LOADED'
 
 export function child_data_loaded(data) {
@@ -222,6 +213,68 @@ const ActionFactory = (opts = {}, db) => {
     }
   }
 
+  const requestAddItem = (parent, data, done) => {
+    return (dispatch, getState) => {
+
+      series([
+
+        (next) => {
+          db.addItem(parent, data, next)
+        },
+
+        // now reload the tree data
+        (next) => {
+          dispatch(requestTreeData(next))
+        },
+
+        // and the children
+        (next) => {
+          dispatch(requestChildren(parent.id, next))
+        }
+        
+      ], (err) => {
+        if(err){
+          // TODO: error handler
+          done && done(err)
+          return
+        }
+        done && done()
+      })
+
+    }
+  }
+
+  const requestSaveItem = (parent, data, done) => {
+    return (dispatch, getState) => {
+
+      series([
+
+        (next) => {
+          db.saveItem(data, next)
+        },
+
+        // now reload the tree data
+        (next) => {
+          dispatch(requestTreeData(next))
+        },
+
+        // and the children
+        (next) => {
+          dispatch(requestChildren(parent.id, next))
+        }
+        
+      ], (err) => {
+        if(err){
+          // TODO: error handler
+          done && done(err)
+          return
+        }
+        done && done()
+      })
+
+    }
+  }
+
   return {
     name:opts.name,
     // return the correct part of the state tree based on the 'name'
@@ -247,6 +300,12 @@ const ActionFactory = (opts = {}, db) => {
     // delete a collection of nodes
     requestDeleteNodes,
 
+    // add an item to a parent
+    requestAddItem,
+
+    // save an existing items data
+    requestSaveItem,
+
 
     /*
     
@@ -255,13 +314,8 @@ const ActionFactory = (opts = {}, db) => {
     */
 
     // inject the data for a single node (e.g. initial data for an add)
-    setNodeData:(data) => {
+    setEditData:(data) => {
       return processAction(edit_data_loaded(data))
-    },
-
-    // tell the state about the currently selected tree node
-    selectTreeNode:(node) => {
-      return processAction(tree_select_node(node))
     },
 
     // toggle the tree open state

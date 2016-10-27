@@ -67,7 +67,7 @@ function mapDispatchToProps(dispatch, ownProps) {
       dispatch(actions.requestNodeData(id))
     },
     setData:(data = {}) => {
-      dispatch(actions.setNodeData(data))
+      dispatch(actions.setEditData(data))
     }
   }
 }
