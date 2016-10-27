@@ -34,6 +34,7 @@
   },
   "homepage": "https://github.com/binocarlos/folder-ui",
   "dependencies": {
+    "async-series": "^0.0.1",
     "biro": "^3.1.4",
     "biro-material-ui": "^2.1.2",
     "kettle-ui": "^3.0.0",

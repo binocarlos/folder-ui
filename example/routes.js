@@ -26,7 +26,6 @@ const NavWrapper = ContainerFactory({
   width:250
 })(TreeWrapper)
 
-
 const productRoutes = RouteInfo({
   path:'products'
 })
@@ -82,6 +81,7 @@ const Routes = (opts = {}) => {
         <Route path="products" components={productViews.tree}>
           <IndexRoute components={productViews.view} />
           <Route path="view/:id" components={productViews.view} />
+          <Route path="delete/:parent/:ids" components={productViews.view} />
           <Route path="edit/:id" components={productViews.edit} />
           <Route path="edit/:parent/:id" components={productViews.edit} />
           <Route path="add/:parent/:type" components={productViews.edit} />

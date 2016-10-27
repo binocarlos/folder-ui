@@ -130,12 +130,12 @@ export const moveItem = (tree, itemid, toid) => {
   return tree
 }
 
-export const deleteItem = (tree, item) => {
-  let parentID = getParentId(tree, item.id)
+export const deleteItem = (tree, id) => {
+  let parentID = getParentId(tree, id)
 
-  delete(tree.data[item.id])
-  tree.children[parentID] = tree.children[parentID].filter(id => {
-    return id!=item.id
+  delete(tree.data[id])
+  tree.children[parentID] = tree.children[parentID].filter(cid => {
+    return id!=cid
   })
 }
 

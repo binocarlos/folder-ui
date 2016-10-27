@@ -41,7 +41,7 @@ If you are working with external state and want `folder-ui` to handle redux stat
  * `loadItem(id, done)` - load a single item
  * `addItem(parent, item, done)` - add an item to a parent
  * `pasteItems(mode, parent, items, done)` - paste items, mode is {copy,cut}
- * `deleteItems(items, done)` - delete items from a parent
+ * `deleteItem(id, done)` - delete an item from a parent
  * `loadChildren(id, done)` - load the children for an item
  * `loadTree(done)` - load the tree data
 
@@ -305,6 +305,8 @@ A toolbar to be used above the `ChildrenViewer` component.
  * `children` (array of objects) - the children of the current node
  * `selected` (array of objects) - the currently selected nodes
  * `clipboard` (array of objects) - nodes currently in the clipboard
+ * `snackbarMessage` (string) - a message to display in the snackbar
+ * `deleting` (boolean) - whether to display the delete dialog
  * `isLeaf(node)` - return a boolean if the given node can have children
  * `getChildTypes(node)` - return an array of descriptors for what can be added to the given node 
  * `onAdd(descriptor)` - add an instance of the given descriptor to the current node
@@ -335,9 +337,6 @@ A form to display fields for a single item
  * `schema` (array) an array of biro field schemas
  * `library` (object) collection of gui components for the schema
  * `update(data, meta)` - run when the form data updates
-
-### FormToolbar
-
 
 
 

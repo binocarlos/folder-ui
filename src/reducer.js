@@ -7,6 +7,8 @@ import {
   FOLDERUI_CHILD_DATA_LOADED,
   FOLDERUI_CHILD_DATA_ERROR,
   FOLDERUI_CHILD_DATA_SELECT,
+  FOLDERUI_CHILD_DATA_DELETE,
+  FOLDERUI_CHILD_DATA_MESSAGE,
   FOLDERUI_EDIT_UPDATE,
   FOLDERUI_EDIT_REVERT,
   FOLDERUI_EDIT_DATA_LOADED,
@@ -26,7 +28,11 @@ const INITIAL_STATE = {
     // the current list of data in the view
     data:[],
     // selected the ids of the selected children
-    selected:{}
+    selected:{},
+    // display confirmation message
+    message:null,
+    // are we currently deleting the selection
+    deleting:false
   },
   // the current clipboard array
   clipboard:[],
@@ -106,8 +112,28 @@ const ReducerFactory = (opts = {}) => {
           ids[id] = true
         })
         return update(state, {
-          selected:{
-            $set:ids
+          children:{
+            selected:{
+              $set:ids
+            }
+          }
+        })
+
+      case FOLDERUI_CHILD_DATA_DELETE:
+        return update(state, {
+          children:{
+            deleting:{
+              $set:action.deleting
+            }
+          }
+        })
+
+      case FOLDERUI_CHILD_DATA_MESSAGE:
+        return update(state, {
+          children:{
+            message:{
+              $set:action.message
+            }
           }
         })
 

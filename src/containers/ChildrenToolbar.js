@@ -16,6 +16,8 @@ function mapStateToProps(s, ownProps) {
   const actions = ownProps.actions
   const state = actions.getState(s)
   const children = state.children.data || []
+  const deleting = state.children.deleting ? true : false
+  const message = state.children.message
   const clipboard = state.clipboard || []
   const selected = children.filter((node) => {
     return state.children.selected[node.id]
@@ -34,6 +36,8 @@ function mapStateToProps(s, ownProps) {
     data:children,
     selected,
     clipboard,
+    deleting,
+    message,
     isLeaf:() => true
   }
 }
@@ -50,21 +54,39 @@ function mapDispatchToProps(dispatch, ownProps) {
       if(!handlers.edit || !parent) return
       dispatch(push(handlers.edit(parent, node)))
     },
-    onPaste:(nodes) => {
+    onPaste:(nodes) => { 
 
     },
     onOpen:(node) => {
 
     },
     onDelete:(nodes) => {
-
+      dispatch(actions.deleteSelection())
     },
     onCopy:(nodes) => {
 
     },
     onCut:(nodes) => {
 
+    },
+    onConfirmDelete:(parent, nodes) => {
+      dispatch(actions.requestDeleteNodes(parent.id, nodes.map((node) => node.id), (err) => {
+        if(err){
+          // TODO show an error message
+        }
+        else{
+          dispatch(actions.showChildrenMessage(nodes.length + ' item' + (nodes.length==1?'':'s') + ' deleted'))
+          dispatch(actions.cancelDeleteSelection())
+        }
+      }))
+    },
+    onCancelDelete:() => {
+      dispatch(actions.cancelDeleteSelection())
+    },
+    onCloseMessage:() => {
+      dispatch(actions.showChildrenMessage(null))
     }
+
   }
 }
 

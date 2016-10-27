@@ -48,11 +48,9 @@ export default function memorydb(opts = {}){
 
       done(null, serialize(newItems))
     },
-    deleteItems:(items, done) => {
-      items.forEach(item => {
-        deleteItem(tree, item)
-      })
-      done(null, items)
+    deleteItem:(id, done) => {
+      deleteItem(tree, id)
+      done(null)
     },
     loadChildren:(id, done) => {
       done(null, serialize(getChildren(tree, id)))

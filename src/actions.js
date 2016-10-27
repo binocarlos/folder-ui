@@ -1,3 +1,4 @@
+import series from 'async-series'
 import { processTreeData, processListData, getChildren, getAncestors } from './tools'
 
 export const FOLDERUI_TREE_DATA_LOADED = 'FOLDERUI_TREE_DATA_LOADED'
@@ -64,6 +65,33 @@ export function child_data_select(ids) {
   }
 }
 
+export const FOLDERUI_CHILD_DATA_MESSAGE = 'FOLDERUI_CHILD_DATA_MESSAGE'
+
+export function child_data_message(message) {
+  return {
+    type: FOLDERUI_CHILD_DATA_MESSAGE,
+    message
+  }
+}
+
+export const FOLDERUI_CHILD_DATA_DELETE = 'FOLDERUI_CHILD_DATA_DELETE'
+
+export function child_data_delete(deleting = true) {
+  return {
+    type: FOLDERUI_CHILD_DATA_DELETE,
+    deleting
+  }
+}
+
+export const FOLDERUI_CHILD_DATA_DELETE_ERROR = 'FOLDERUI_CHILD_DATA_DELETE_ERROR'
+
+export function child_data_delete_error(error) {
+  return {
+    type: FOLDERUI_CHILD_DATA_DELETE_ERROR,
+    error
+  }
+}
+
 export const FOLDERUI_EDIT_UPDATE = 'FOLDERUI_EDIT_UPDATE'
 
 export function edit_update(data, meta) {
@@ -116,6 +144,84 @@ const ActionFactory = (opts = {}, db) => {
     return action
   }
 
+  const requestTreeData = (done) => {
+    return (dispatch, getState) => {
+      db.loadTree((err, data) => {
+        if(err){
+          dispatch(processAction(tree_data_error(err)))
+          done && done(err)
+          return
+        }
+        data = processTreeData(data)
+        dispatch(processAction(tree_data_loaded(data)))
+        done && done(null, data)
+      })
+    }
+  }
+
+  const requestChildren = (id, done) => {
+    return (dispatch, getState) => {
+      db.loadChildren(id, (err, data) => {
+        if(err){
+          dispatch(processAction(child_data_error(err)))
+          done && done(err)
+          return
+        }
+        dispatch(processAction(child_data_loaded(data)))
+        done && done(null, data)
+      })
+    }
+  }
+
+  const requestNodeData = (id, done) => {
+    return (dispatch, getState) => {
+      db.loadItem(id, (err, data) => {
+        if(err){
+          dispatch(processAction(edit_data_error(err)))
+          done && done(err)
+          return
+        }
+        dispatch(processAction(edit_data_loaded(data)))
+        done && done(null, data)
+      })
+    }
+  }
+
+  const requestDeleteNodes = (parentid, ids, done) => {
+    return (dispatch, getState) => {
+
+      series([
+
+        // loop over each id and hit the database with it
+        (next) => {
+          series(ids.map((id) => {
+            return (nextitem) => {
+              db.deleteItem(id, nextitem)
+            }
+          }), next)
+        },
+
+        // now reload the tree data
+        (next) => {
+          dispatch(requestTreeData(next))
+        },
+
+        // and the children
+        (next) => {
+          dispatch(requestChildren(parentid, next))
+        }
+        
+      ], (err) => {
+        if(err){
+          dispatch(processAction(child_data_delete_error(err)))
+          done && done(err)
+          return
+        }
+        done && done()
+      })
+    }
+  }
+
   return {
     name:opts.name,
     // return the correct part of the state tree based on the 'name'
@@ -130,60 +236,28 @@ const ActionFactory = (opts = {}, db) => {
     */
 
     // request the tree data
-    requestTreeData:(done) => {
-      return (dispatch, getState) => {
-        db.loadTree((err, data) => {
-          if(err){
-            dispatch(processAction(tree_data_error(err)))
-            done && done(err)
-            return
-          }
-          data = processTreeData(data)
-          dispatch(processAction(tree_data_loaded(data)))
-          done && done(null, data)
-        })
-      }
-    },
+    requestTreeData,
 
     // request the children for a single node
-    requestChildren:(id, done) => {
-      return (dispatch, getState) => {
-        db.loadChildren(id, (err, data) => {
-          if(err){
-            dispatch(processAction(child_data_error(err)))
-            done && done(err)
-            return
-          }
-          dispatch(processAction(child_data_loaded(data)))
-          done && done(null, data)
-        })
-      }
-    },
+    requestChildren,
 
     // request the data for a single node
-    requestNodeData:(id, done) => {
-      return (dispatch, getState) => {
-        db.loadItem(id, (err, data) => {
-          if(err){
-            dispatch(processAction(edit_data_error(err)))
-            done && done(err)
-            return
-          }
-          dispatch(processAction(edit_data_loaded(data)))
-          done && done(null, data)
-        })
-      }
-    },
+    requestNodeData,
 
-    setNodeData:(data) => {
-      return processAction(edit_data_loaded(data))
-    },
+    // delete a collection of nodes
+    requestDeleteNodes,
+
 
     /*
     
       sync methods
       
     */
+
+    // inject the data for a single node (e.g. initial data for an add)
+    setNodeData:(data) => {
+      return processAction(edit_data_loaded(data))
+    },
 
     // tell the state about the currently selected tree node
     selectTreeNode:(node) => {
@@ -205,9 +279,26 @@ const ActionFactory = (opts = {}, db) => {
       return processAction(edit_update(data, meta))
     },
 
+    // replace the current data with the original data
     revertEditNode:() => {
       return processAction(edit_revert())
+    },
+
+    // flag the current selection to be deleted - will show a dialog
+    deleteSelection:() => {
+      return processAction(child_data_delete(true))
+    },
+
+    // cancel the delete dialog
+    cancelDeleteSelection:() => {
+      return processAction(child_data_delete(false))
+    },
+
+    // show a children snackbar
+    showChildrenMessage:(message) => {
+      return processAction(child_data_message(message))
     }
+
   }
 }
 

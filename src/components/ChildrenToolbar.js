@@ -1,5 +1,9 @@
 import React, { Component, PropTypes } from 'react'
 import Toolbar from 'kettle-ui/lib/Toolbar'
+import ConfirmDialog from 'kettle-ui/lib/ConfirmDialog'
+import Snackbar from 'material-ui/Snackbar'
+
+const SNACKBAR_AUTOHIDE = 5000
 
 export default class ChildrenToolbar extends Component {
 
@@ -66,7 +70,7 @@ export default class ChildrenToolbar extends Component {
         id:'edit',
         title:'Edit',
         handler:() => {
-          this.props.onEdit && this.props.onEdit(parent, selected[0])
+          this.props.onEdit && this.props.onEdit(this.props.node, selected[0])
         }
       })
 
@@ -113,8 +117,39 @@ export default class ChildrenToolbar extends Component {
     const newProps = Object.assign({}, this.props, {
       leftbuttons:this.getLeftButtons()
     })
+
+    const selected = this.props.selected || []
+
     return (
-      <Toolbar {...newProps} />
+      <div>
+        <Toolbar {...newProps} />
+        {
+          this.props.deleting ? 
+            (
+              <ConfirmDialog
+                confirmTitle="Delete"
+                isOpen={true}
+                isModal={true}
+                onConfirm={() => {
+                  this.props.onConfirmDelete(this.props.node, this.props.selected || [])
+                }}
+                onClose={this.props.onCancelDelete}
+                >
+                Are you sure you want to delete {this.props.selected.length} item{this.props.selected.length==1 ? '' : 's'}?
+              </ConfirmDialog>
+            ) : null
+        }
+        {
+          this.props.message ? 
+            (
+              <Snackbar 
+                open={true}
+                message={this.props.message}
+                autoHideDuration={SNACKBAR_AUTOHIDE}
+                onRequestClose={this.props.onCloseMessage} />
+            ) : null
+        }
+      </div>
     )
   }
 
