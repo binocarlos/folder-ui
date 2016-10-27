@@ -20,9 +20,6 @@ export class ChildrenTableContainer extends Component {
     if(nextProps.id != this.props.id){
       this.props.requestChildren(nextProps.id)
     }
-    else if(!this.props.id && nextProps.id){
-      this.props.requestChildren(nextProps.id)
-    }
   }
 
   render() {

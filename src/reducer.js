@@ -6,7 +6,8 @@ import {
   FOLDERUI_TREE_SELECT,
   FOLDERUI_CHILD_DATA_LOADED,
   FOLDERUI_CHILD_DATA_ERROR,
-  FOLDERUI_CHILD_DATA_SELECT
+  FOLDERUI_CHILD_DATA_SELECT,
+  FOLDERUI_EDIT_UPDATE
 } from './actions'
 
 const INITIAL_STATE = {
@@ -103,6 +104,18 @@ const ReducerFactory = (opts = {}) => {
         return update(state, {
           selected:{
             $set:ids
+          }
+        })
+
+      case FOLDERUI_EDIT_UPDATE:
+        return update(state, {
+          editing:{
+            data:{
+              $set:action.data
+            },
+            meta:{
+              $set:action.meta
+            }
           }
         })
 

@@ -1,9 +1,6 @@
 import React from 'react'
 import { Route, IndexRoute } from 'react-router'
 
-import AppWrapper from './AppWrapper'
-import Home from './Home'
-
 import TreeWrapper from '../src/components/TreeWrapper'
 import ToolbarWrapper from '../src/components/ToolbarWrapper'
 
@@ -14,10 +11,18 @@ import FormToolbar from '../src/containers/FormToolbar'
 import Form from '../src/containers/Form'
 
 import { ContainerFactory } from '../src/tools'
-import DB from './db'
 import Schema from '../src/schema'
-import { PRODUCT_TYPES, PRODUCT_TABLE_FIELDS } from './schema'
 import FolderActions from '../src/actions'
+
+
+
+import AppWrapper from './AppWrapper'
+import Home from './Home'
+
+import DB from './db'
+import { PRODUCT_TYPES, PRODUCT_TABLE_FIELDS } from './schema'
+
+
 
 // Wrap the left hand sidebar wrapper with a wider width
 const NavWrapper = ContainerFactory({
@@ -34,7 +39,7 @@ const standardHandlers = {
   },
   // edit is in the context of a parent
   edit:(parent, item) => {
-    return 'edit/' + parent.id + '/' + item.id
+    return item ? 'edit/' + parent.id + '/' + item.id : 'edit/' + parent.id
   },
   add:(descriptor) => {
     return 'add/' + item.id + '/' + descriptor.type
@@ -42,7 +47,10 @@ const standardHandlers = {
 }
 
 const productActions = FolderActions('products', DB())
-const productSchema = Schema(PRODUCT_TYPES, PRODUCT_TABLE_FIELDS)
+const productSchema = Schema({
+  types:PRODUCT_TYPES,
+  tableFields:PRODUCT_TABLE_FIELDS
+})
 const productFactory = ContainerFactory({
   actions:productActions,
   handlers:standardHandlers

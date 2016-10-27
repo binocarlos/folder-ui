@@ -4,7 +4,7 @@ import Toolbar from 'kettle-ui/lib/Toolbar'
 export default class FormToolbar extends Component {
 
   getLeftButtons() {
-    [{
+    return [{
       id:'cancel',
       type:'button',
       title:'Cancel',
@@ -35,6 +35,7 @@ export default class FormToolbar extends Component {
     const newProps = Object.assign({}, this.props, {
       leftbuttons:this.getLeftButtons()
     })
+
     return (
       <Toolbar {...newProps} />
     )
