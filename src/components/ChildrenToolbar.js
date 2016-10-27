@@ -45,7 +45,7 @@ export default class ChildrenToolbar extends Component {
           id:'paste',
           title:'Paste',
           handler:() => {
-            this.props.onPaste && this.props.onPaste(this.props.clipboard)
+            this.props.onPaste && this.props.onPaste(this.props.node, this.props.clipboardMode, this.props.clipboard)
           }
         })
       }

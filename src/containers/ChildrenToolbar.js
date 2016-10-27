@@ -22,7 +22,8 @@ function mapStateToProps(s, ownProps) {
   const children = state.children.data || []
   const deleting = state.children.deleting ? true : false
   const message = state.children.message
-  const clipboard = state.clipboard || []
+  const clipboard = state.clipboard.data || []
+  const clipboardMode = state.clipboard.mode
   const selected = children.filter((node) => {
     return state.children.selected[node.id]
   })
@@ -41,6 +42,7 @@ function mapStateToProps(s, ownProps) {
     data:children,
     selected,
     clipboard,
+    clipboardMode,
     deleting,
     message
   }
@@ -58,9 +60,6 @@ function mapDispatchToProps(dispatch, ownProps) {
       if(!handlers.edit || !parent) return
       dispatch(push(handlers.edit(parent, node)))
     },
-    onPaste:(nodes) => { 
-
-    },
     onOpen:(node) => {
       if(!handlers.open && !node) return
       dispatch(push(handlers.open(node)))
@@ -69,10 +68,22 @@ function mapDispatchToProps(dispatch, ownProps) {
       dispatch(actions.deleteSelection())
     },
     onCopy:(nodes) => {
-
+      dispatch(actions.setClipboard('copy', nodes))
+      dispatch(actions.showChildrenMessage('copied ' + nodes.length + ' item' + (nodes.length==1?'':'s') + ' to the clipboard'))
     },
     onCut:(nodes) => {
-
+      dispatch(actions.setClipboard('cut', nodes))
+      dispatch(actions.showChildrenMessage('cut ' + nodes.length + ' item' + (nodes.length==1?'':'s') + ' to the clipboard'))
+    },
+    onPaste:(parent, mode, nodes) => { 
+      dispatch(actions.requestPasteItems(parent, mode, nodes, (err) => {
+        if(err){
+          // TODO show an error message
+        }
+        else{
+          dispatch(actions.showChildrenMessage(nodes.length + ' item' + (nodes.length==1?'':'s') + ' ' + (mode=='copy' ? ' copied' : 'cut') + ' to ' + parent.name))
+        }
+      }))
     },
     onConfirmDelete:(parent, nodes) => {
       dispatch(actions.requestDeleteNodes(parent.id, nodes.map((node) => node.id), (err) => {

@@ -9,6 +9,7 @@ import {
   FOLDERUI_CHILD_DATA_SELECT,
   FOLDERUI_CHILD_DATA_DELETE,
   FOLDERUI_CHILD_DATA_MESSAGE,
+  FOLDERUI_CHILD_DATA_CLIPBOARD,
   FOLDERUI_EDIT_UPDATE,
   FOLDERUI_EDIT_REVERT,
   FOLDERUI_EDIT_DATA_LOADED,
@@ -35,7 +36,10 @@ const INITIAL_STATE = {
     deleting:false
   },
   // the current clipboard array
-  clipboard:[],
+  clipboard:{
+    data:[],
+    mode:null
+  },
   // the currently editing item
   editing:{
     data:{},
@@ -137,6 +141,18 @@ const ReducerFactory = (opts = {}) => {
           }
         })
 
+      case FOLDERUI_CHILD_DATA_CLIPBOARD:
+        return update(state, {
+          clipboard:{
+            data:{
+              $set:action.data
+            },
+            mode:{
+              $set:action.mode
+            }
+          }
+        })
+        
       case FOLDERUI_EDIT_DATA_LOADED:
         return update(state, {
           editing:{

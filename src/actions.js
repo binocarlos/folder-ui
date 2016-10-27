@@ -65,6 +65,16 @@ export function child_data_message(message) {
   }
 }
 
+export const FOLDERUI_CHILD_DATA_CLIPBOARD = 'FOLDERUI_CHILD_DATA_CLIPBOARD'
+
+export function child_data_clipboard(mode = null, data = []) {
+  return {
+    type: FOLDERUI_CHILD_DATA_CLIPBOARD,
+    mode,
+    data
+  }
+}
+
 export const FOLDERUI_CHILD_DATA_DELETE = 'FOLDERUI_CHILD_DATA_DELETE'
 
 export function child_data_delete(deleting = true) {
@@ -275,6 +285,37 @@ const ActionFactory = (opts = {}, db) => {
     }
   }
 
+  const requestPasteItems = (parent, mode, nodes, done) => {
+    return (dispatch, getState) => {
+
+      series([
+
+        (next) => {
+          db.pasteItems(mode, parent, nodes, next)
+        },
+
+        // now reload the tree data
+        (next) => {
+          dispatch(requestTreeData(next))
+        },
+
+        // and the children
+        (next) => {
+          dispatch(requestChildren(parent.id, next))
+        }
+        
+      ], (err) => {
+        if(err){
+          // TODO: error handler
+          done && done(err)
+          return
+        }
+        done && done()
+      })
+
+    }
+  }
+
   return {
     name:opts.name,
     // return the correct part of the state tree based on the 'name'
@@ -305,6 +346,9 @@ const ActionFactory = (opts = {}, db) => {
 
     // save an existing items data
     requestSaveItem,
+
+    // paste the clipboard
+    requestPasteItems,
 
 
     /*
@@ -351,6 +395,10 @@ const ActionFactory = (opts = {}, db) => {
     // show a children snackbar
     showChildrenMessage:(message) => {
       return processAction(child_data_message(message))
+    },
+
+    setClipboard:(mode, data) => {
+      return processAction(child_data_clipboard(mode, data))
     }
 
   }
