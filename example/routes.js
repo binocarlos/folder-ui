@@ -49,7 +49,7 @@ const productInfo = {
   tree:(props) => {
     const params = props.params
     return {
-      id:params.id
+      id:params.id || params.parent
     }
   },
 

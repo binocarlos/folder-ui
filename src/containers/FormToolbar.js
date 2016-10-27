@@ -38,6 +38,12 @@ function mapDispatchToProps(dispatch, ownProps) {
   }
 }
 
+FormToolbarContainer.propTypes = {
+  actions:React.PropTypes.object.isRequired,
+  info:React.PropTypes.object.isRequired,
+  handlers:React.PropTypes.object.isRequired
+}
+
 export default connect(
   mapStateToProps,
   mapDispatchToProps

@@ -65,7 +65,8 @@ function mapDispatchToProps(dispatch, ownProps) {
 
 ChildrenToolbarContainer.propTypes = {
   actions:React.PropTypes.object.isRequired,
-  routeInfo:React.PropTypes.object.isRequired
+  info:React.PropTypes.object.isRequired,
+  handlers:React.PropTypes.object.isRequired
 }
 
 export default connect(
