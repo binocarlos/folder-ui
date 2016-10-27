@@ -3,7 +3,10 @@ export const PRODUCT_TYPES = {
     title:'Folder',
     fields:[{
       name:'name'
-    }]
+    }],
+    initialData:{
+      
+    }
   },
   item:{
     title:'Item',
@@ -11,7 +14,10 @@ export const PRODUCT_TYPES = {
       name:'name'
     },{
       name:'comment'
-    }]
+    }],
+    initialData:{
+      
+    }
   }
 }
 

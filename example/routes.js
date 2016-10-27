@@ -14,15 +14,11 @@ import { ContainerFactory } from '../src/tools'
 import Schema from '../src/schema'
 import FolderActions from '../src/actions'
 
-
-
 import AppWrapper from './AppWrapper'
 import Home from './Home'
 
 import DB from './db'
 import { PRODUCT_TYPES, PRODUCT_TABLE_FIELDS } from './schema'
-
-
 
 // Wrap the left hand sidebar wrapper with a wider width
 const NavWrapper = ContainerFactory({
@@ -30,9 +26,8 @@ const NavWrapper = ContainerFactory({
 })(TreeWrapper)
 
 // an object that maps action names onto functions
-// that return the URL to redirect to
-// if the handler is not 
-const standardHandlers = {
+// each function will return a URL to redirect the app to
+const productHandlers = {
   // get the route to view an item
   open:(item) => {
     return 'view/' + item.id
@@ -46,6 +41,36 @@ const standardHandlers = {
   }
 }
 
+// extract the information from the current route
+// based on how we have configured react-router
+const productInfo = {
+
+  // /view/:id
+  tree:(props) => {
+    const params = props.params
+    return {
+      id:params.id
+    }
+  },
+
+  // /edit/:id
+  // /edit/:parent/:id
+  // /add/:parent/:type
+  form:(props) => {
+    const params = props.params
+    return {
+      // where we get the schema from
+      mode:params.type ? 'add' : 'edit',
+      // for add operations
+      type:params.type,
+      // where we return to
+      parent:params.parent || params.id,
+      // the thing we are actually editing
+      id:params.id
+    }
+  }
+}
+
 const productActions = FolderActions('products', DB())
 const productSchema = Schema({
   types:PRODUCT_TYPES,
@@ -53,7 +78,8 @@ const productSchema = Schema({
 })
 const productFactory = ContainerFactory({
   actions:productActions,
-  handlers:standardHandlers
+  handlers:productHandlers,
+  info:productInfo
 })
 const productContainers = {
   tree:productFactory(Tree),
@@ -98,6 +124,7 @@ const Routes = (opts = {}) => {
           <Route path="view/:id" components={productViews.view} />
           <Route path="edit/:id" components={productViews.edit} />
           <Route path="edit/:parent/:id" components={productViews.edit} />
+          <Route path="add/:parent/:type" components={productViews.edit} />
         </Route>
       </Route>
     </Route>

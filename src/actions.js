@@ -74,6 +74,24 @@ export function edit_update(data, meta) {
   }
 }
 
+export const FOLDERUI_EDIT_DATA_LOADED = 'FOLDERUI_EDIT_DATA_LOADED'
+
+export function edit_data_loaded(data) {
+  return {
+    type: FOLDERUI_EDIT_DATA_LOADED,
+    data
+  }
+}
+
+export const FOLDERUI_EDIT_DATA_ERROR = 'FOLDERUI_EDIT_DATA_ERROR'
+
+export function edit_data_error(error) {
+  return {
+    type: FOLDERUI_EDIT_DATA_ERROR,
+    error
+  }
+}
+
 const ActionFactory = (opts = {}, db) => {
 
   if(typeof(opts)==='string') opts = {
@@ -134,8 +152,19 @@ const ActionFactory = (opts = {}, db) => {
       }
     },
 
-    editNode:(id) => {
-
+    // request the data for a single node
+    requestNodeData:(id, done) => {
+      return (dispatch, getState) => {
+        db.loadItem(id, (err, data) => {
+          if(err){
+            dispatch(processAction(edit_data_error(err)))
+            done && done(err)
+            return
+          }
+          dispatch(processAction(edit_data_loaded(data)))
+          done && done(null, data)
+        })
+      }
     },
 
     /*

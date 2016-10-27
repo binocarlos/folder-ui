@@ -6,15 +6,22 @@ import Form from '../components/Form'
 
 export class FormContainer extends Component {
 
-  componentDidMount() {
-    if(this.props.id){
+  initializeData(id) {
+    if(this.props.mode=='edit'){
       this.props.requestData(this.props.id)
     }
+    else if(this.props.mode=='add'){
+      this.props.onUpdate(this.props.initialData, null)
+    }
+  }
+
+  componentDidMount() {
+    this.initializeData()
   }
 
   componentWillReceiveProps(nextProps) {
     if(nextProps.id != this.props.id){
-      this.props.requestData(nextProps.id)
+      this.initializeData()
     }
   }
 
@@ -28,19 +35,26 @@ export class FormContainer extends Component {
 function mapStateToProps(s, ownProps) {
 
   const actions = ownProps.actions
+  const info = ownProps.info
   const state = actions.getState(s)
+
+  const formInfo = info.form ? info.form(ownProps) : {}
 
   const data = state.editing.data || {}
   const meta = state.editing.meta || null
 
   const id = ownProps.params.id || ownProps.params.parent
-  const schema = ownProps.getSchema(data) || {}
+
+  const type = formInfo.mode == 'edit' ? data.type : formInfo.type
+  const schema = ownProps.getSchema(type) || {}
 
   return {
-    id,
+    id:formInfo.id,
+    mode:formInfo.mode,
     data,
     meta,
-    schema:schema.fields
+    schema:schema.fields || [],
+    initialData:schema.initialData || {}
   }
 }
 
@@ -51,7 +65,8 @@ function mapDispatchToProps(dispatch, ownProps) {
       dispatch(actions.updateEditNode(data, meta))
     },
     requestData:(id) => {
-      //dispatch(actions.loadEditNode(id))
+      if(!id) return
+      dispatch(actions.requestNodeData(id))
     }
   }
 }

@@ -14,8 +14,13 @@ export class FormToolbarContainer extends Component {
 }
 
 function mapStateToProps(s, ownProps) {
+
+  const actions = ownProps.actions
+  const state = actions.getState(s)
+
   return {
-    title:'My Toolbar'
+    title:'My Toolbar',
+
   }
 }
 

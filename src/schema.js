@@ -12,8 +12,7 @@ const factory = (opts = {}) => {
     return opts.tableFields
   }
 
-  const getSchema = (item) => {
-    const type = item.type || opts.defaultType
+  const getSchema = (type = opts.defaultType) => {
     return opts.types[type]
   }
 

@@ -44,11 +44,15 @@ export class TreeContainer extends Component {
 
 function mapStateToProps(s, ownProps) {
   const actions = ownProps.actions
+  const info = ownProps.info
   const state = actions.getState(s)
 
   const data = state.tree.db ? dumpTreeData(state.tree.db) : []
   const open = state.tree.open || {}
-  const selected = ownProps.params.id
+  const treeInfo = info.tree ? info.tree(ownProps) : {
+    id:ownProps.params.id
+  }
+  const selected = treeInfo.id
   const selectedNode = state.tree.db ? state.tree.db.data[selected] : null
 
   return {
@@ -64,7 +68,8 @@ function mapStateToProps(s, ownProps) {
 
 function mapDispatchToProps(dispatch, ownProps) {
   const actions = ownProps.actions
-  const handlers = ownProps.handlers || {}
+  const handlers = ownProps.handlers
+  
   const route = ownProps.route || {}
 
   return {
@@ -94,6 +99,7 @@ function mapDispatchToProps(dispatch, ownProps) {
 
 TreeContainer.propTypes = {
   actions:React.PropTypes.object.isRequired,
+  info:React.PropTypes.object.isRequired,
   handlers:React.PropTypes.object.isRequired
 }
 
