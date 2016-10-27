@@ -81,6 +81,7 @@ function mapDispatchToProps(dispatch, ownProps) {
           // TODO show an error message
         }
         else{
+          dispatch(actions.setClipboard(null, []))
           dispatch(actions.showChildrenMessage(nodes.length + ' item' + (nodes.length==1?'':'s') + ' ' + (mode=='copy' ? ' copied' : 'cut') + ' to ' + parent.name))
         }
       }))
