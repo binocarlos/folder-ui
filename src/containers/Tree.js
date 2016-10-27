@@ -87,9 +87,8 @@ function mapDispatchToProps(dispatch, ownProps) {
       })
     },
     selectNode:(node) => {
-      if(!handlers.open) return
-      const url = [route.path, handlers.open(node)].filter(s => s).join('/')
-      dispatch(push('/' + url))
+      if(!handlers.open || !node) return
+      dispatch(push(handlers.open(node)))
     },
     toggleNode:(node) => {
       dispatch(actions.toggleTreeNode(node.id))

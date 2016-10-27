@@ -74,6 +74,14 @@ export function edit_update(data, meta) {
   }
 }
 
+export const FOLDERUI_EDIT_REVERT = 'FOLDERUI_EDIT_REVERT'
+
+export function edit_revert() {
+  return {
+    type: FOLDERUI_EDIT_REVERT
+  }
+}
+
 export const FOLDERUI_EDIT_DATA_LOADED = 'FOLDERUI_EDIT_DATA_LOADED'
 
 export function edit_data_loaded(data) {
@@ -167,6 +175,10 @@ const ActionFactory = (opts = {}, db) => {
       }
     },
 
+    setNodeData:(data) => {
+      return processAction(edit_data_loaded(data))
+    },
+
     /*
     
       sync methods
@@ -191,6 +203,10 @@ const ActionFactory = (opts = {}, db) => {
     // the edit form has changed
     updateEditNode:(data, meta) => {
       return processAction(edit_update(data, meta))
+    },
+
+    revertEditNode:() => {
+      return processAction(edit_revert())
     }
   }
 }

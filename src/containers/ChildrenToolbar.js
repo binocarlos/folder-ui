@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
+import { push } from 'react-router-redux'
 import ChildrenToolbar from '../components/ChildrenToolbar'
 
 export class ChildrenToolbarContainer extends Component {
@@ -38,12 +39,16 @@ function mapStateToProps(s, ownProps) {
 }
 
 function mapDispatchToProps(dispatch, ownProps) {
+  const actions = ownProps.actions
+  const handlers = ownProps.handlers
   return {
-    onAdd:(decriptor) => {
-
+    onAdd:(parent, decriptor) => {
+      if(!handlers.add || !parent || !decriptor) return
+      dispatch(push(handlers.add(parent, decriptor)))
     },
-    onEdit:(node) => {
-
+    onEdit:(parent, node) => {
+      if(!handlers.edit || !parent) return
+      dispatch(push(handlers.edit(parent, node)))
     },
     onPaste:(nodes) => {
 

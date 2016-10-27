@@ -18,6 +18,7 @@ import AppWrapper from './AppWrapper'
 import Home from './Home'
 
 import DB from './db'
+import RouteInfo from './routeinfo'
 import { PRODUCT_TYPES, PRODUCT_TABLE_FIELDS } from './schema'
 
 // Wrap the left hand sidebar wrapper with a wider width
@@ -25,51 +26,10 @@ const NavWrapper = ContainerFactory({
   width:250
 })(TreeWrapper)
 
-// an object that maps action names onto functions
-// each function will return a URL to redirect the app to
-const productHandlers = {
-  // get the route to view an item
-  open:(item) => {
-    return 'view/' + item.id
-  },
-  // edit is in the context of a parent
-  edit:(parent, item) => {
-    return item ? 'edit/' + parent.id + '/' + item.id : 'edit/' + parent.id
-  },
-  add:(descriptor) => {
-    return 'add/' + item.id + '/' + descriptor.type
-  }
-}
 
-// extract the information from the current route
-// based on how we have configured react-router
-const productInfo = {
-
-  // /view/:id
-  tree:(props) => {
-    const params = props.params
-    return {
-      id:params.id || params.parent
-    }
-  },
-
-  // /edit/:id
-  // /edit/:parent/:id
-  // /add/:parent/:type
-  form:(props) => {
-    const params = props.params
-    return {
-      // where we get the schema from
-      mode:params.type ? 'add' : 'edit',
-      // for add operations
-      type:params.type,
-      // where we return to
-      parent:params.parent || params.id,
-      // the thing we are actually editing
-      id:params.id
-    }
-  }
-}
+const productRoutes = RouteInfo({
+  path:'products'
+})
 
 const productActions = FolderActions('products', DB())
 const productSchema = Schema({
@@ -78,8 +38,8 @@ const productSchema = Schema({
 })
 const productFactory = ContainerFactory({
   actions:productActions,
-  handlers:productHandlers,
-  info:productInfo
+  handlers:productRoutes.handlers,
+  info:productRoutes.info
 })
 const productContainers = {
   tree:productFactory(Tree),
@@ -93,7 +53,7 @@ const productContainers = {
     multiSelectable:true
   }),
   formToolbar:productFactory(FormToolbar, {
-    
+    getSchema:productSchema.getSchema
   }),
   form:productFactory(Form, {
     getSchema:productSchema.getSchema

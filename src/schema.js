@@ -19,7 +19,7 @@ const factory = (opts = {}) => {
   const getChildTypes = (parent) => {
     return Object.keys(opts.types || {}).map((key) => {
       return Object.assign({}, opts.types[key], {
-        id:key
+        type:key
       })
     })
   }

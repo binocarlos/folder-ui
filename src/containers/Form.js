@@ -11,7 +11,7 @@ export class FormContainer extends Component {
       this.props.requestData(this.props.id)
     }
     else if(this.props.mode=='add'){
-      this.props.onUpdate(this.props.initialData, null)
+      this.props.setData(this.props.initialData)
     }
   }
 
@@ -43,8 +43,6 @@ function mapStateToProps(s, ownProps) {
   const data = state.editing.data || {}
   const meta = state.editing.meta || null
 
-  const id = ownProps.params.id || ownProps.params.parent
-
   const type = formInfo.mode == 'edit' ? data.type : formInfo.type
   const schema = ownProps.getSchema(type) || {}
 
@@ -67,6 +65,9 @@ function mapDispatchToProps(dispatch, ownProps) {
     requestData:(id) => {
       if(!id) return
       dispatch(actions.requestNodeData(id))
+    },
+    setData:(data = {}) => {
+      dispatch(actions.setNodeData(data))
     }
   }
 }

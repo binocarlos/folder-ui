@@ -8,6 +8,7 @@ import {
   FOLDERUI_CHILD_DATA_ERROR,
   FOLDERUI_CHILD_DATA_SELECT,
   FOLDERUI_EDIT_UPDATE,
+  FOLDERUI_EDIT_REVERT,
   FOLDERUI_EDIT_DATA_LOADED,
   FOLDERUI_EDIT_DATA_ERROR
 } from './actions'
@@ -32,6 +33,7 @@ const INITIAL_STATE = {
   // the currently editing item
   editing:{
     data:{},
+    originalData:{},
     meta:null
   }
 }
@@ -115,6 +117,9 @@ const ReducerFactory = (opts = {}) => {
             data:{
               $set:action.data
             },
+            originalData:{
+              $set:action.data
+            },
             meta:{
               $set:null
             }
@@ -129,6 +134,18 @@ const ReducerFactory = (opts = {}) => {
             },
             meta:{
               $set:action.meta
+            }
+          }
+        })
+
+      case FOLDERUI_EDIT_REVERT:
+        return update(state, {
+          editing:{
+            data:{
+              $set:state.editing.originalData
+            },
+            meta:{
+              $set:null
             }
           }
         })

@@ -8,7 +8,13 @@ export default class ChildrenToolbar extends Component {
       id:'add',
       type:'dropdown',
       title:'Add',
-      items:this.props.getChildTypes(parent)
+      items:this.props.getChildTypes(parent).map((item) => {
+        return Object.assign({}, item, {
+          handler:() => {
+            this.props.onAdd(this.props.node, item)
+          }
+        })
+      })
         
     }
   }
@@ -60,7 +66,7 @@ export default class ChildrenToolbar extends Component {
         id:'edit',
         title:'Edit',
         handler:() => {
-          this.props.onEdit && this.props.onEdit(parent)
+          this.props.onEdit && this.props.onEdit(parent, selected[0])
         }
       })
 

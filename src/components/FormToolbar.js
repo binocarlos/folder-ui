@@ -6,21 +6,18 @@ export default class FormToolbar extends Component {
   getLeftButtons() {
     return [{
       id:'cancel',
-      type:'button',
       title:'Cancel',
       handler:() => {
-        this.props.cancel()
+        this.props.cancel(this.props.parentNode)
       }
     },{
       id:'revert',
-      type:'button',
       title:'Revert',
       handler:() => {
         this.props.revert()
       }
     },{
       id:'save',
-      type:'button',
       title:'Save',
       extraProps:{ 
         primary:true
