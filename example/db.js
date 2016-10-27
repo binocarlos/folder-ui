@@ -1,9 +1,8 @@
 import MemoryDB from '../src/memorydb'
 
-export default function db(opts = {}){
+export default function db(DEFAULT_DATA = ROOT_DATA){
   return MemoryDB({
-    data:ROOT_DATA,
-    ...opts
+    data:DEFAULT_DATA
   })
 }
 

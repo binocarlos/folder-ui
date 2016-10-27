@@ -1,4 +1,4 @@
-export const PRODUCT_TYPES = {
+export const TYPES = {
   folder:{
     title:'Folder',
     fields:[{
@@ -21,7 +21,9 @@ export const PRODUCT_TYPES = {
   }
 }
 
-export const PRODUCT_TABLE_FIELDS = [{
+export const TABLE_FIELDS = [{
   title:'name',
   render:data => data.name
 }]
+
+export const LIBRARY = {}

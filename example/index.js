@@ -19,7 +19,8 @@ const finalCreateStore = compose(
 
 const reducer = combineReducers({
   routing: routerReducer,
-  products:FolderReducer('products')
+  products:FolderReducer('products'),
+  shops:FolderReducer('shops')
 })
 
 const store = finalCreateStore(reducer)

@@ -1,5 +1,6 @@
 const DEFAULT_OPTS = {
   types:{},
+  library:{},
   tableFields:[],
   defaultType:'folder'
 }
@@ -16,6 +17,10 @@ const factory = (opts = {}) => {
     return opts.types[type]
   }
 
+  const getLibrary = (type = opts.defaultType) => {
+    return opts.library
+  }
+
   const getChildTypes = (parent) => {
     return Object.keys(opts.types || {}).map((key) => {
       return Object.assign({}, opts.types[key], {
@@ -27,6 +32,7 @@ const factory = (opts = {}) => {
   return {
     getTableFields,
     getSchema,
+    getLibrary,
     getChildTypes
   }
 
