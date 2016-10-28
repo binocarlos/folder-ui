@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { withRouter } from 'react-router'
+import hat from 'hat'
 
 /*
 
@@ -157,17 +158,11 @@ export const getParentId = (tree, itemid) => {
 
 /*
 
-  get the next available id from the tree items
+  return a new ID for a node
   
 */
-export const getNextId = (tree) => {
-  let highestID = 0
-  Object.keys(tree.data || {}).forEach(function(key){
-    if(tree.data[key].id>highestID){
-      highestID = tree.data[key].id
-    }
-  })
-  return highestID+1
+export const getNextId = () => {
+  return hat()
 }
 
 /*
@@ -176,7 +171,7 @@ export const getNextId = (tree) => {
   
 */
 export const addChild = (tree, parent, child) => {
-  if(!child.id) child.id = getNextId(tree)
+  if(!child.id) child.id = getNextId()
   tree.data[child.id] = child
   let existingChildren = tree.children[parent.id] || []
   existingChildren.push(child.id)
