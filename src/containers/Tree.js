@@ -14,15 +14,14 @@ export class TreeContainer extends Component {
     this.props.requestTreeData((err, tree) => {
       if(err) return
 
-      // redirect to the first root node
-      if(!this.props.selected){
-        this.props.selectNode(tree.data[tree.rootids[0]])
-      }
       // activate the selected node
-      else {
+      if(this.props.selected && tree.data[this.props.selected]){
         this.props.activateNode(tree.data[this.props.selected])
       }
-
+      // redirect to the first root node
+      else {
+        this.props.selectNode(tree.data[tree.rootids[0]])
+      }
     })
   }
   
