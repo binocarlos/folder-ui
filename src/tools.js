@@ -1,3 +1,6 @@
+import React, { Component, PropTypes } from 'react'
+import { withRouter } from 'react-router'
+
 /*
 
   updating node data in a tree structure is very
@@ -17,12 +20,12 @@
    * children
 
 */
-export function processTreeData(rootnodes = []){
+export const processTreeData = (rootnodes = []) => {
   let data = {}
   let map = {}
   let rootids = rootnodes.map(n => n.id)
 
-  function processNode(node){
+  const processNode = (node) => {
     let children = node.children || []
     node = Object.assign({}, node)
     delete(node.children)
@@ -48,11 +51,11 @@ export function processTreeData(rootnodes = []){
   is turned into a single array of objects each with a 'children' property
   
 */
-export function dumpTreeData(tree = {}){
-  function convertNode(id){
-    var ret = Object.assign({}, tree.data[id])
+export const dumpTreeData = (tree = {}, mapfn = (item) => item) => {
+  const convertNode = (id) => {
+    let ret = Object.assign({}, tree.data[id])
     ret.children = (tree.children[id] || []).map(convertNode)
-    return ret
+    return mapfn(ret)
   }
 
   return tree.rootids.map(convertNode)
@@ -68,7 +71,7 @@ export function dumpTreeData(tree = {}){
    * list - array of ids (the order of the table)
   
 */
-export function processListData(nodes = []){
+export const processListData = (nodes = []) => {
   let data = {}
   
   nodes.forEach(node => {
@@ -90,7 +93,7 @@ export function processListData(nodes = []){
   return an array of the children for a given id
   
 */
-export function getChildren(tree, id){
+export const getChildren = (tree, id) => {
   return (tree.children[id] || []).map(cid => tree.data[cid])
 }
 
@@ -99,10 +102,10 @@ export function getChildren(tree, id){
   return an array of ancestor objects for an item
   
 */
-export function getAncestors(tree, id){
-  var ret = []
-  var nextParentId = null
-  var currentId = id
+export const getAncestors = (tree, id) => {
+  let ret = []
+  let nextParentId = null
+  let currentId = id
   while(nextParentId = getParentId(tree, currentId)){
     ret.push(tree.data[nextParentId])
     currentId = nextParentId
@@ -115,7 +118,7 @@ export function getAncestors(tree, id){
   move an item in the tree
   
 */
-export function moveItem(tree, itemid, toid){
+export const moveItem = (tree, itemid, toid) => {
   let parentID = getParentId(tree, itemid)
 
   tree.children[parentID] = tree.children[parentID].filter(id => {
@@ -127,12 +130,12 @@ export function moveItem(tree, itemid, toid){
   return tree
 }
 
-export function deleteItem(tree, item){
-  let parentID = getParentId(tree, item.id)
+export const deleteItem = (tree, id) => {
+  let parentID = getParentId(tree, id)
 
-  delete(tree.data[item.id])
-  tree.children[parentID] = tree.children[parentID].filter(id => {
-    return id!=item.id
+  delete(tree.data[id])
+  tree.children[parentID] = tree.children[parentID].filter(cid => {
+    return id!=cid
   })
 }
 
@@ -141,7 +144,7 @@ export function deleteItem(tree, item){
   get the parentid of an item
   
 */
-export function getParentId(tree, itemid){
+export const getParentId = (tree, itemid) => {
   let ret = null
   Object.keys(tree.children || {}).forEach((parentid) => {
     let results = tree.children[parentid].filter(id => {
@@ -157,8 +160,8 @@ export function getParentId(tree, itemid){
   get the next available id from the tree items
   
 */
-export function getNextId(tree){
-  var highestID = 0
+export const getNextId = (tree) => {
+  let highestID = 0
   Object.keys(tree.data || {}).forEach(function(key){
     if(tree.data[key].id>highestID){
       highestID = tree.data[key].id
@@ -172,10 +175,10 @@ export function getNextId(tree){
   add a child item to a parent
   
 */
-export function addChild(tree, parent, child){
+export const addChild = (tree, parent, child) => {
   if(!child.id) child.id = getNextId(tree)
   tree.data[child.id] = child
-  var existingChildren = tree.children[parent.id] || []
+  let existingChildren = tree.children[parent.id] || []
   existingChildren.push(child.id)
   tree.children[parent.id] = existingChildren
   return tree
@@ -186,7 +189,7 @@ export function addChild(tree, parent, child){
   get the rows in a table that are selected
   
 */
-export function getSelectedTableRows(table){
+export const getSelectedTableRows = (table) => {
   table = table || {}
   return (table.list || []).filter(id => {
     return table.data[id]._selected
@@ -200,9 +203,44 @@ export function getSelectedTableRows(table){
   get the rows in a table
   
 */
-export function getTableRows(table){
+export const getTableRows = (table) => {
   table = table || {}
   return (table.list || []).map(id => {
     return table.data[id]
   })
+}
+
+
+/*
+
+  used to create closures for React components
+  this means we can use the folder-ui containers
+  directly from react-router without having
+  to create wrapper components or hard-code the
+  containers to use react-router this.props.route
+  
+*/
+export const ContainerFactory = (opts = {}) => {
+  return (ComponentClass = Component, inneropts = {}) => {
+    return class ContainerClass extends Component {
+      render() {
+        const finalProps = Object.assign({}, this.props, opts, inneropts)
+        return <ComponentClass {...finalProps} />
+      }
+    }
+  }
+}
+
+/*
+
+  the simplest component that includes the children
+  used for the nested-route setup we have
+  
+*/
+export class ChildrenWrapper extends Component {
+
+  render() {
+    return this.props.children
+  }
+
 }

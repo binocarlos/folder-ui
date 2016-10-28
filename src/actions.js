@@ -1,4 +1,5 @@
-import pluralise from 'pluralise'
+import series from 'async-series'
+import { processTreeData, processListData, getChildren, getAncestors } from './tools'
 
 export const FOLDERUI_TREE_DATA_LOADED = 'FOLDERUI_TREE_DATA_LOADED'
 
@@ -18,457 +19,389 @@ export function tree_data_error(error) {
   }
 }
 
-export const FOLDERUI_TABLE_DATA_LOADED = 'FOLDERUI_TABLE_DATA_LOADED'
+export const FOLDERUI_TREE_TOGGLE = 'FOLDERUI_TREE_TOGGLE'
 
-export function table_data_loaded(data) {
+export function tree_toggle_node(id, open = null) {
   return {
-    type: FOLDERUI_TABLE_DATA_LOADED,
+    type: FOLDERUI_TREE_TOGGLE,
+    id,
+    open
+  }
+}
+
+export const FOLDERUI_CHILD_DATA_LOADED = 'FOLDERUI_CHILD_DATA_LOADED'
+
+export function child_data_loaded(data) {
+  return {
+    type: FOLDERUI_CHILD_DATA_LOADED,
     data
   }
 }
 
-export const FOLDERUI_TABLE_DATA_ERROR = 'FOLDERUI_TABLE_DATA_ERROR'
+export const FOLDERUI_CHILD_DATA_ERROR = 'FOLDERUI_CHILD_DATA_ERROR'
 
-export function table_data_error(error) {
+export function child_data_error(error) {
   return {
-    type: FOLDERUI_TABLE_DATA_ERROR,
+    type: FOLDERUI_CHILD_DATA_ERROR,
     error
   }
 }
 
-export const FOLDERUI_TREE_SELECT_NODE = 'FOLDERUI_TREE_SELECT_NODE'
+export const FOLDERUI_CHILD_DATA_SELECT = 'FOLDERUI_CHILD_DATA_SELECT'
 
-export function tree_select_node(data) {
+export function child_data_select(ids) {
   return {
-    type: FOLDERUI_TREE_SELECT_NODE,
+    type: FOLDERUI_CHILD_DATA_SELECT,
+    ids
+  }
+}
+
+export const FOLDERUI_CHILD_DATA_MESSAGE = 'FOLDERUI_CHILD_DATA_MESSAGE'
+
+export function child_data_message(message) {
+  return {
+    type: FOLDERUI_CHILD_DATA_MESSAGE,
+    message
+  }
+}
+
+export const FOLDERUI_CHILD_DATA_CLIPBOARD = 'FOLDERUI_CHILD_DATA_CLIPBOARD'
+
+export function child_data_clipboard(mode = null, data = []) {
+  return {
+    type: FOLDERUI_CHILD_DATA_CLIPBOARD,
+    mode,
     data
   }
 }
 
-export const FOLDERUI_TREE_TOGGLE = 'FOLDERUI_TREE_TOGGLE'
+export const FOLDERUI_CHILD_DATA_DELETE = 'FOLDERUI_CHILD_DATA_DELETE'
 
-export function tree_toggle_node(id) {
+export function child_data_delete(deleting = true) {
   return {
-    type: FOLDERUI_TREE_TOGGLE,
-    id
+    type: FOLDERUI_CHILD_DATA_DELETE,
+    deleting
   }
 }
 
-export const FOLDERUI_TABLE_SELECT_NODES = 'FOLDERUI_TABLE_SELECT_NODES'
+export const FOLDERUI_CHILD_DATA_DELETE_ERROR = 'FOLDERUI_CHILD_DATA_DELETE_ERROR'
 
-export function table_select_nodes(data) {
+export function child_data_delete_error(error) {
   return {
-    type: FOLDERUI_TABLE_SELECT_NODES,
-    data
+    type: FOLDERUI_CHILD_DATA_DELETE_ERROR,
+    error
   }
 }
 
-export const FOLDERUI_CUT_ITEMS = 'FOLDERUI_CUT_ITEMS'
+export const FOLDERUI_EDIT_UPDATE = 'FOLDERUI_EDIT_UPDATE'
 
-export function cut_items(items) {
+export function edit_update(data, meta) {
   return {
-    type: FOLDERUI_CUT_ITEMS,
-    items:items.map(item => {
-      let ret = Object.assign({}, item)
-      delete(ret._selected)
-      return ret
-    })
-  }
-}
-
-export const FOLDERUI_COPY_ITEMS = 'FOLDERUI_COPY_ITEMS'
-
-export function copy_items(items) {
-  return {
-    type: FOLDERUI_COPY_ITEMS,
-    items:items.map(item => {
-      let ret = Object.assign({}, item)
-      delete(ret._selected)
-      return ret
-    })
-  }
-}
-
-export const FOLDERUI_PASTE_ITEMS = 'FOLDERUI_PASTE_ITEMS'
-
-// item is the parent we are pasting to
-export function paste_items(item) {
-  return {
-    type: FOLDERUI_PASTE_ITEMS,
-    item
-  }
-}
-
-export const FOLDERUI_ADD_ITEM = 'FOLDERUI_ADD_ITEM'
-
-export function add_item(parent, item) {
-  return {
-    type: FOLDERUI_ADD_ITEM,
-    parent,
-    item
-  }
-}
-
-export const FOLDERUI_EDIT_ITEM = 'FOLDERUI_EDIT_ITEM'
-
-export function edit_item(item) {
-  return {
-    type: FOLDERUI_EDIT_ITEM,
-    item
-  }
-}
-
-export const FOLDERUI_EDIT_ITEM_UPDATE = 'FOLDERUI_EDIT_ITEM_UPDATE'
-
-export function edit_item_update(data, meta) {
-  return {
-    type: FOLDERUI_EDIT_ITEM_UPDATE,
+    type: FOLDERUI_EDIT_UPDATE,
     data,
     meta
   }
 }
 
-export const FOLDERUI_EDIT_ITEM_REVERT = 'FOLDERUI_EDIT_ITEM_REVERT'
+export const FOLDERUI_EDIT_REVERT = 'FOLDERUI_EDIT_REVERT'
 
-export function edit_item_revert(item) {
+export function edit_revert() {
   return {
-    type: FOLDERUI_EDIT_ITEM_REVERT,
-    item
+    type: FOLDERUI_EDIT_REVERT
   }
 }
 
-export const FOLDERUI_EDIT_ITEM_CANCEL = 'FOLDERUI_EDIT_ITEM_CANCEL'
+export const FOLDERUI_EDIT_DATA_LOADED = 'FOLDERUI_EDIT_DATA_LOADED'
 
-export function edit_item_cancel() {
+export function edit_data_loaded(data) {
   return {
-    type: FOLDERUI_EDIT_ITEM_CANCEL
-  }
-}
-
-export const FOLDERUI_EDIT_ITEM_SAVE = 'FOLDERUI_EDIT_ITEM_SAVE'
-
-export function edit_item_save(item) {
-  return {
-    type: FOLDERUI_EDIT_ITEM_SAVE,
-    item
-  }
-}
-
-export const FOLDERUI_SNACKBAR_OPEN = 'FOLDERUI_SNACKBAR_OPEN'
-
-export function snackbar_open(message) {
-  return {
-    type: FOLDERUI_SNACKBAR_OPEN,
-    message
-  }
-}
-
-export const FOLDERUI_SNACKBAR_CLOSE = 'FOLDERUI_SNACKBAR_CLOSE'
-
-export function snackbar_close() {
-  return {
-    type: FOLDERUI_SNACKBAR_CLOSE
-  }
-}
-
-export const FOLDERUI_DIALOG_OPEN = 'FOLDERUI_DIALOG_OPEN'
-
-export function dialog_open(message, data) {
-  return {
-    type: FOLDERUI_DIALOG_OPEN,
-    message,
+    type: FOLDERUI_EDIT_DATA_LOADED,
     data
   }
 }
 
-export const FOLDERUI_DIALOG_CLOSE = 'FOLDERUI_DIALOG_CLOSE'
+export const FOLDERUI_EDIT_DATA_ERROR = 'FOLDERUI_EDIT_DATA_ERROR'
 
-export function dialog_close() {
+export function edit_data_error(error) {
   return {
-    type: FOLDERUI_DIALOG_CLOSE
+    type: FOLDERUI_EDIT_DATA_ERROR,
+    error
   }
 }
 
-/*
+const ActionFactory = (opts = {}, db) => {
 
-  used to load the children for one item
-  
-*/
-export function api_load_children(ownProps, item, done) {
-
-  let context = ownProps.context || {}
-
-  return function(dispatch, getState) {
-    if(!ownProps.loadChildrenDB) {
-      console.error('no loadChildrenDB method')
-      return
-    }
-
-    ownProps.loadChildrenDB(item, context, (err, children) => {
-      if(err) {
-        done && done(err)
-        return dispatch(snackbar_open('loadChildrenDB error: ' + err.toString()))
-      }
-      dispatch(table_data_loaded(children))
-      done && done()
-    })
-  } 
-}
-
-/*
-
-  used to load the overall tree data
-
-  if an item is passed it's children are loaded and it's selected in the tree
-  
-*/
-export function api_load_tree_data(ownProps, selectid, done) {
-  
-  let context = ownProps.context || {}
-
-  return function(dispatch, getState) {
-    if(!ownProps.loadTreeDB) {
-      console.error('no loadTreeDB method')
-      return
-    }
-
-    // call the external function to get the tree data
-    ownProps.loadTreeDB(context, (err, treedata) => {
-      if(err) {
-        done && done(err)
-        return dispatch(snackbar_open('loadTreeDB error: ' + err.toString()))
-      }
-
-      dispatch(tree_data_loaded(treedata))
-
-      var state = getState()
-      selectid = selectid || treedata[0].id
-      var selectitem = state.folderui.tree.data[selectid]
-
-      dispatch(api_select_node(ownProps, selectitem))
-
-      done && done()
-    })
+  if(typeof(opts)==='string') opts = {
+    name:opts
   }
-}
 
-/*
+  if(db) opts.db = db
 
-  use to load the children when a tree node is selected
-  
-*/
-export function api_select_node(ownProps, item, done) {
-  
-  return function(dispatch, getState) {
-    // tell the tree structure this item is open
-    dispatch(tree_select_node(item))
-    dispatch(api_load_children(ownProps, item, done))
+  if(!opts.name || !opts.db) throw new Error('ActionFactory requires a name and db options')
+
+  // the reducer will use this to filter actions not for it
+  const processAction = (action) => {
+    action._filter = opts.name
+    return action
   }
-}
 
-/*
-
-  handle a paste operation
-  
-*/
-export function api_paste_items(ownProps, mode, parent, items, done) {
-
-  let context = ownProps.context || {}
-
-  return function(dispatch, getState) {
-    if(!ownProps.pasteItemsDB){
-      console.error('no pasteItemsDB method')
-      return
-    }
-    // paste the items using the database api
-    ownProps.pasteItemsDB(mode, parent, items, context, (err, newItems) => {
-      if(err) {
-        done && done(err)
-        return dispatch(snackbar_open('pasteItemsDB error: ' + err.toString()))
-      }
-
-      dispatch(paste_items(parent))
-      
-      // now reload the tree because it has new items
-      dispatch(api_load_tree_data(ownProps, parent.id, (err) => {
-        if(err) {
+  const requestTreeData = (done) => {
+    return (dispatch, getState) => {
+      db.loadTree((err, data) => {
+        if(err){
+          dispatch(processAction(tree_data_error(err)))
           done && done(err)
           return
         }
-
-        dispatch(snackbar_open(items.length + ' ' + pluralise(items.length, 'item') + ' pasted into ' + parent.name))
-        done && done()
-      }))
-      
-    })
-  }
-}
-
-
-/*
-
-  handle an item edit
-
-   * load the item by id
-   * trigger the edit_item action
-  
-*/
-export function api_edit_item(ownProps, id, done){
-
-  let context = ownProps.context || {}
-
-  return function(dispatch, getState) {
-    if(!ownProps.loadItemDB){
-      console.error('no loadItemDB method')
-      return
-    }
-    // paste the items using the database api
-    ownProps.loadItemDB(id, context, (err, item) => {
-      if(err) {
-        done && done(err)
-        return dispatch(snackbar_open('loadItem error: ' + err.toString()))
-      }
-
-      dispatch(edit_item(item))
-      done && done()
-    })
-  }
-}
-/*
-
-  handle an item save
-  
-*/
-
-export function api_save_item(ownProps, parent, item, done) {
-
-  let context = ownProps.context || {}
-  let reducername = ownProps.reducername || 'folderui'
-
-  return function(dispatch, getState) {
-
-    // we are doing an ADD
-    if(parent){
-
-      // check we have the functions to handle the data in our own props
-      if(!ownProps.addItemDB) {
-        console.error('no addItemDB method')
-        return
-      }
-      if(!ownProps.loadChildrenDB) {
-        console.error('no loadChildrenDB method')
-        return
-      }
-
-      // add the item to the server
-      ownProps.addItemDB(parent, item, context, (err, newItem) => {
-
-        if(err){
-          done && done(err)
-          return dispatch(snackbar_open('addItemDB error: ' + err.toString()))
-        }
-
-        dispatch(api_load_children(ownProps, parent, (err) => {
-          if(err){
-            done && done(err)
-            return
-          }
-
-          // now reload the tree because it has new items
-          dispatch(api_load_tree_data(ownProps, parent.id, (err) => {
-            if(err) {
-              done && done(err)
-              return
-            }
-
-            dispatch(table_select_nodes([]))
-            dispatch(snackbar_open(newItem.name + ' added'))
-
-            // use the URL to save view state
-            if(ownProps.updateView){            
-              ownProps.updateView({
-                view:'children',
-                id:parent.id
-              })
-            }
-            else{
-              dispatch(edit_item_cancel())
-            }
-
-            done && done()
-          }))
-          
-          
-        }))    
+        data = processTreeData(data)
+        dispatch(processAction(tree_data_loaded(data)))
+        done && done(null, data)
       })
     }
-    // we are doing a normal SAVE
-    else{
-      if(!ownProps.saveItemDB) {
-        console.error('no saveItemDB method')
-        return
-      }
-      ownProps.saveItemDB(item, context, (err, newItem) => {
-        if(err) {
+  }
+
+  const requestChildren = (id, done) => {
+    return (dispatch, getState) => {
+      db.loadChildren(id, (err, data) => {
+        if(err){
+          dispatch(processAction(child_data_error(err)))
           done && done(err)
-          return dispatch(snackbar_open('saveItemDB error: ' + err.toString()))
+          return
         }
-        dispatch(edit_item_save(newItem))
-        dispatch(table_select_nodes([]))
-        dispatch(snackbar_open(newItem.name + ' saved'))  
+        dispatch(processAction(child_data_loaded(data)))
+        done && done(null, data)
+      })
+    }
+  }
 
-        let treeselected = getState()[reducername].treeselected
-
-        // use the URL to save view state
-        if(ownProps.updateView){            
-          ownProps.updateView({
-            view:'children',
-            id:treeselected.id
-          })
+  const requestNodeData = (id, done) => {
+    return (dispatch, getState) => {
+      db.loadItem(id, (err, data) => {
+        if(err){
+          dispatch(processAction(edit_data_error(err)))
+          done && done(err)
+          return
         }
-        else{
-          dispatch(edit_item_cancel())
-        }
+        dispatch(processAction(edit_data_loaded(data)))
+        done && done(null, data)
+      })
+    }
+  }
 
+  const requestDeleteNodes = (parentid, ids, done) => {
+    return (dispatch, getState) => {
+
+      series([
+
+        // loop over each id and hit the database with it
+        (next) => {
+          series(ids.map((id) => {
+            return (nextitem) => {
+              db.deleteItem(id, nextitem)
+            }
+          }), next)
+        },
+
+        // now reload the tree data
+        (next) => {
+          dispatch(requestTreeData(next))
+        },
+
+        // and the children
+        (next) => {
+          dispatch(requestChildren(parentid, next))
+        }
+        
+      ], (err) => {
+        if(err){
+          dispatch(processAction(child_data_delete_error(err)))
+          done && done(err)
+          return
+        }
         done && done()
       })
     }
   }
-}
 
-export function api_delete_items(ownProps, parent, items, done) {
+  const requestAddItem = (parent, data, done) => {
+    return (dispatch, getState) => {
 
-  let context = ownProps.context || {}
+      series([
 
-  return function(dispatch, getState) {
-    if(!ownProps.deleteItemsDB) {
-      console.error('no deleteItemsDB method')
-      return
-    }
+        (next) => {
+          db.addItem(parent, data, next)
+        },
 
-    ownProps.deleteItemsDB(items, context, (err, newItem) => {
-      if(err){
-        done && done(err)
-        return dispatch(snackbar_open('deleteItemsDB error: ' + err.toString()))
-      }
-      dispatch(api_load_children(ownProps, parent, (err) => {
+        // now reload the tree data
+        (next) => {
+          dispatch(requestTreeData(next))
+        },
+
+        // and the children
+        (next) => {
+          dispatch(requestChildren(parent.id, next))
+        }
+        
+      ], (err) => {
         if(err){
+          // TODO: error handler
           done && done(err)
           return
         }
-        dispatch(dialog_close())
-        dispatch(table_select_nodes([]))
+        done && done()
+      })
 
-        dispatch(api_load_tree_data(ownProps, parent.id, (err) => {
-          if(err) {
-            done && done(err)
-            return
-          }
+    }
+  }
 
-          dispatch(snackbar_open(items.length + ' ' + pluralise(items.length, 'item') + ' deleted'))
-          done && done()
-        }))
-      }))  
-    })
+  const requestSaveItem = (parent, data, done) => {
+    return (dispatch, getState) => {
+
+      series([
+
+        (next) => {
+          db.saveItem(data, next)
+        },
+
+        // now reload the tree data
+        (next) => {
+          dispatch(requestTreeData(next))
+        },
+
+        // and the children
+        (next) => {
+          dispatch(requestChildren(parent.id, next))
+        }
+        
+      ], (err) => {
+        if(err){
+          // TODO: error handler
+          done && done(err)
+          return
+        }
+        done && done()
+      })
+
+    }
+  }
+
+  const requestPasteItems = (parent, mode, nodes, done) => {
+    return (dispatch, getState) => {
+
+      series([
+
+        (next) => {
+          db.pasteItems(mode, parent, nodes, next)
+        },
+
+        // now reload the tree data
+        (next) => {
+          dispatch(requestTreeData(next))
+        },
+
+        // and the children
+        (next) => {
+          dispatch(requestChildren(parent.id, next))
+        }
+        
+      ], (err) => {
+        if(err){
+          // TODO: error handler
+          done && done(err)
+          return
+        }
+        done && done()
+      })
+
+    }
+  }
+
+  return {
+    name:opts.name,
+    // return the correct part of the state tree based on the 'name'
+    getState:(state) => {
+      return state[opts.name]
+    },
+
+    /*
+    
+      async methods
+      
+    */
+
+    // request the tree data
+    requestTreeData,
+
+    // request the children for a single node
+    requestChildren,
+
+    // request the data for a single node
+    requestNodeData,
+
+    // delete a collection of nodes
+    requestDeleteNodes,
+
+    // add an item to a parent
+    requestAddItem,
+
+    // save an existing items data
+    requestSaveItem,
+
+    // paste the clipboard
+    requestPasteItems,
+
+
+    /*
+    
+      sync methods
+      
+    */
+
+    // inject the data for a single node (e.g. initial data for an add)
+    setEditData:(data) => {
+      return processAction(edit_data_loaded(data))
+    },
+
+    // toggle the tree open state
+    toggleTreeNode:(id, open) => {
+      return processAction(tree_toggle_node(id, open))
+    },
+
+    // an array of table selected ids
+    selectChildNodes:(ids) => {
+      return processAction(child_data_select(ids))
+    },
+
+    // the edit form has changed
+    updateEditNode:(data, meta) => {
+      return processAction(edit_update(data, meta))
+    },
+
+    // replace the current data with the original data
+    revertEditNode:() => {
+      return processAction(edit_revert())
+    },
+
+    // flag the current selection to be deleted - will show a dialog
+    deleteSelection:() => {
+      return processAction(child_data_delete(true))
+    },
+
+    // cancel the delete dialog
+    cancelDeleteSelection:() => {
+      return processAction(child_data_delete(false))
+    },
+
+    // show a children snackbar
+    showChildrenMessage:(message) => {
+      return processAction(child_data_message(message))
+    },
+
+    setClipboard:(mode, data) => {
+      return processAction(child_data_clipboard(mode, data))
+    }
+
   }
 }
+
+export default ActionFactory

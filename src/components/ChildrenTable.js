@@ -8,16 +8,24 @@ import {
   TableRowColumn
 } from 'material-ui/Table'
 
-class ChildrenViewer extends Component {
+const getFieldTitle = (field = {}) => {
+  if(field.title) return field.title
+  return field.name ?
+    field.name.replace(/^\w/, (s) => s.toUpperCase()) :
+    null
+}
+
+class ChildrenTable extends Component {
 
   render() {
 
     const fields = this.props.fields || []
     const data = this.props.data || []
+    const selected = this.props.selected
     const renderfns = fields.map(field => {
       return field.render || function(data){
         return (
-          <div></div>
+          <div>{data}</div>
         )
       }
     })
@@ -27,7 +35,11 @@ class ChildrenViewer extends Component {
         height={this.props.height}
         selectable={this.props.selectable}
         multiSelectable={this.props.multiSelectable}
-        onRowSelection={this.props.onRowSelection}
+        onRowSelection={(indexes) => {
+          this.props.onRowSelection(indexes.map(index => {
+            return this.props.data[index].id
+          }))
+        }}
       >
       {this.props.showHeader ? (
         <TableHeader
@@ -37,7 +49,9 @@ class ChildrenViewer extends Component {
         >
           <TableRow>
             {fields.map( (field, index) => (
-              <TableHeaderColumn key={index}>{field.title}</TableHeaderColumn>
+              <TableHeaderColumn key={index}>
+                {getFieldTitle(field)}
+              </TableHeaderColumn>
             ))}
           </TableRow>
         </TableHeader>
@@ -47,7 +61,7 @@ class ChildrenViewer extends Component {
           deselectOnClickaway={false}
         >
           {data.map( (row, index) => (
-            <TableRow key={index} selected={row._selected}>
+            <TableRow key={index} selected={this.props.selected[row.id]}>
               {fields.map( (field, index) => {
                 const render = renderfns[index]
                 const content = render(row)
@@ -63,12 +77,13 @@ class ChildrenViewer extends Component {
   }
 }
 
-ChildrenViewer.defaultProps = {
+ChildrenTable.defaultProps = {
   showCheckboxes: false,
   multiSelectable: false,
   selectable: true,
-  showHeader: true,
-  selectedids: ''
+  selected:{},
+  data:[],
+  showHeader: true
 }
 
-export default ChildrenViewer
+export default ChildrenTable
