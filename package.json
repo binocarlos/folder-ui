@@ -39,6 +39,7 @@
     "biro-material-ui": "^2.1.2",
     "hat": "^0.0.3",
     "kettle-ui": "^3.0.0",
+    "local-storage": "^1.4.2",
     "material-ui": "^0.15.4",
     "pluralise": "^1.0.0",
     "react": "^15.3.1"

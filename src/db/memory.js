@@ -4,7 +4,7 @@
   
 */
 
-import { processTreeData, dumpTreeData, getChildren, addChild, moveItem, deleteItem } from './tools'
+import { processTreeData, dumpTreeData, getChildren, addChild, moveItem, deleteItem } from '../tools'
 
 function serialize(val){
   return JSON.parse(JSON.stringify(val))
@@ -22,6 +22,9 @@ export default function memorydb(opts = {}){
       return done(null, data)
     })
   }
+
+  // commit the initial data
+  commit(null, null, () => {})
 
   return {
     saveItem:(item, done) => {
