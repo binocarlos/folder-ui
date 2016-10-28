@@ -121,7 +121,7 @@ const templateFactory = (opts = {}) => {
 
   return (
     <Route component={NavWrapper}>
-      <Route path={opts.path} components={views.tree}>
+      <Route path={opts.path} components={views.tree} onEnter={opts.onEnter}>
         <IndexRoute components={views.view} />
         <Route path="view/:id" components={views.view} />
         <Route path="delete/:parent/:ids" components={views.view} />
