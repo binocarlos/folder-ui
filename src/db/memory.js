@@ -4,11 +4,7 @@
   
 */
 
-import { processTreeData, dumpTreeData, getChildren, addChild, moveItem, deleteItem } from '../tools'
-
-function serialize(val){
-  return JSON.parse(JSON.stringify(val))
-}
+import { serialize, processTreeData, dumpTreeData, getChildren, addChild, moveItem, deleteItem } from '../tools'
 
 export default function memorydb(opts = {}){
 
@@ -28,6 +24,7 @@ export default function memorydb(opts = {}){
 
   return {
     saveItem:(item, done) => {
+      item = serialize(item)
       let saveitem = tree.data[item.id]
       Object.keys(item || {}).forEach(function(key){
         saveitem[key] = item[key]
@@ -35,11 +32,16 @@ export default function memorydb(opts = {}){
       commit(null, serialize(saveitem), done)
     },
     addItem:(parent, item, done) => {
+      parent = serialize(parent)
+      item = serialize(item)
       tree = addChild(tree, parent, item)
       commit(null, serialize(item), done)
     },
     pasteItems:(mode, parent, items, done) => {
       let newItems = []
+
+      parent = serialize(parent)
+      items = serialize(items)
 
       if(mode=='copy'){
         newItems = items.map(item => {
