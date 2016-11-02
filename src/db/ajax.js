@@ -12,13 +12,18 @@ const DEFAULT_URLS = {
     return base + '/tree'
   },
   addItem:(base, id) => {
-    return base + '/add/:id'
+    return base + '/add' + (id ? '/' + id : '')
   }
 }
 
 export default function ajaxdb(opts = {}){
 
   const urls = Object.assign({}, DEFAULT_URLS, opts.urls)
+  const mapFns = Object.assign({}, opts.mapFns)
+
+  const filterResults = (type, data) => {
+    return mapFns[type] ? mapFns[type](data) : data
+  }
 
   return {
     saveItem:(item, done) => {
@@ -26,7 +31,7 @@ export default function ajaxdb(opts = {}){
     },
     addItem:(parent, item, done) => {
       superagent
-        .post(urls.addItem(opts.base, parent))
+        .post(urls.addItem(opts.base, parent ? parent.id : null))
         .send(JSON.stringify(item))
         .set('Accept', 'application/json')
         .end((err, res) => {
@@ -34,7 +39,7 @@ export default function ajaxdb(opts = {}){
             done && done(res.body)
           }
           else{
-            done && done(null, res.body)
+            done && done(null, filterResults('addItem', res.body))
           }
         })
     },
@@ -59,7 +64,7 @@ export default function ajaxdb(opts = {}){
             done && done(res.body)
           }
           else{
-            done && done(null, res.body)
+            done && done(null, filterResults('loadTree', res.body))
           }
         })
     }
