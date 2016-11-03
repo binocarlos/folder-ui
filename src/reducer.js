@@ -12,6 +12,7 @@ import {
   FOLDERUI_CHILD_DATA_CLIPBOARD,
   FOLDERUI_EDIT_UPDATE,
   FOLDERUI_EDIT_REVERT,
+  FOLDERUI_EDIT_RESET,
   FOLDERUI_EDIT_DATA_LOADED,
   FOLDERUI_EDIT_DATA_ERROR
 } from './actions'
@@ -188,6 +189,16 @@ const ReducerFactory = (opts = {}) => {
             },
             meta:{
               $set:null
+            }
+          }
+        })
+
+      case FOLDERUI_EDIT_RESET:
+        return update(state, {
+          editing:{
+            $set:{
+              data:null,
+              meta:null
             }
           }
         })

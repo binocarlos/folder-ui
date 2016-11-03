@@ -1,4 +1,4 @@
-import MemoryDB from '../src/memorydb'
+import MemoryDB from '../src/db/memory'
 
 export default function db(DEFAULT_DATA = ROOT_DATA){
   return MemoryDB({

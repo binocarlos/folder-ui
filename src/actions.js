@@ -111,6 +111,14 @@ export function edit_revert() {
   }
 }
 
+export const FOLDERUI_EDIT_RESET = 'FOLDERUI_EDIT_RESET'
+
+export function edit_reset() {
+  return {
+    type: FOLDERUI_EDIT_RESET
+  }
+}
+
 export const FOLDERUI_EDIT_DATA_LOADED = 'FOLDERUI_EDIT_DATA_LOADED'
 
 export function edit_data_loaded(data) {
@@ -149,6 +157,8 @@ const ActionFactory = (opts = {}, db) => {
     return (dispatch, getState) => {
       db.loadTree((err, data) => {
         if(err){
+          console.error('requestTreeData')
+          console.error(err)
           dispatch(processAction(tree_data_error(err)))
           done && done(err)
           return
@@ -164,6 +174,8 @@ const ActionFactory = (opts = {}, db) => {
     return (dispatch, getState) => {
       db.loadChildren(id, (err, data) => {
         if(err){
+          console.error('requestChildren: ' + id)
+          console.error(err)
           dispatch(processAction(child_data_error(err)))
           done && done(err)
           return
@@ -178,6 +190,8 @@ const ActionFactory = (opts = {}, db) => {
     return (dispatch, getState) => {
       db.loadItem(id, (err, data) => {
         if(err){
+          console.error('requestNodeData: ' + id)
+          console.error(err)
           dispatch(processAction(edit_data_error(err)))
           done && done(err)
           return
@@ -214,6 +228,8 @@ const ActionFactory = (opts = {}, db) => {
         
       ], (err) => {
         if(err){
+          console.error('requestDeleteNodes: ' + parentid + ' -> ' + ids)
+          console.error(err)
           dispatch(processAction(child_data_delete_error(err)))
           done && done(err)
           return
@@ -232,6 +248,11 @@ const ActionFactory = (opts = {}, db) => {
           db.addItem(parent, data, next)
         },
 
+        (next) => {
+          dispatch(edit_reset())
+          next()
+        },
+
         // now reload the tree data
         (next) => {
           dispatch(requestTreeData(next))
@@ -244,6 +265,8 @@ const ActionFactory = (opts = {}, db) => {
         
       ], (err) => {
         if(err){
+          console.error('requestAddItem:')
+          console.error(err)
           // TODO: error handler
           done && done(err)
           return
@@ -263,6 +286,11 @@ const ActionFactory = (opts = {}, db) => {
           db.saveItem(data, next)
         },
 
+        (next) => {
+          dispatch(edit_reset())
+          next()
+        },
+
         // now reload the tree data
         (next) => {
           dispatch(requestTreeData(next))
@@ -275,6 +303,8 @@ const ActionFactory = (opts = {}, db) => {
         
       ], (err) => {
         if(err){
+          console.error('requestSaveItem:')
+          console.error(err)
           // TODO: error handler
           done && done(err)
           return
@@ -306,6 +336,8 @@ const ActionFactory = (opts = {}, db) => {
         
       ], (err) => {
         if(err){
+          console.error('requestPasteItems:')
+          console.error(err)
           // TODO: error handler
           done && done(err)
           return

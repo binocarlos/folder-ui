@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { withRouter } from 'react-router'
+import hat from 'hat'
 
 /*
 
@@ -94,7 +95,8 @@ export const processListData = (nodes = []) => {
   
 */
 export const getChildren = (tree, id) => {
-  return (tree.children[id] || []).map(cid => tree.data[cid])
+  const childIds = id ? (tree.children[id] || []) : tree.rootids
+  return childIds.map(cid => tree.data[cid])
 }
 
 /*
@@ -104,6 +106,7 @@ export const getChildren = (tree, id) => {
 */
 export const getAncestors = (tree, id) => {
   let ret = []
+  if(!id) return ret
   let nextParentId = null
   let currentId = id
   while(nextParentId = getParentId(tree, currentId)){
@@ -121,22 +124,43 @@ export const getAncestors = (tree, id) => {
 export const moveItem = (tree, itemid, toid) => {
   let parentID = getParentId(tree, itemid)
 
-  tree.children[parentID] = tree.children[parentID].filter(id => {
-    return id!=itemid
-  })
-
-  tree.children[toid] = tree.children[toid] || []
-  tree.children[toid].push(itemid)
+  if(parentID){
+    tree.children[parentID] = tree.children[parentID].filter(id => {
+      return id!=itemid
+    })
+  }
+  else{
+    tree.rootids = tree.rootids.filter(id => {
+      return id!=itemid
+    })
+  }
+  
+  if(toid){
+    tree.children[toid] = tree.children[toid] || []
+    tree.children[toid].push(itemid)
+  }
+  else{
+    tree.rootids.push(itemid)
+  }
+  
   return tree
 }
 
 export const deleteItem = (tree, id) => {
+  delete(tree.data[id])
   let parentID = getParentId(tree, id)
 
-  delete(tree.data[id])
-  tree.children[parentID] = tree.children[parentID].filter(cid => {
-    return id!=cid
-  })
+  if(parentID){
+    tree.children[parentID] = tree.children[parentID].filter(cid => {
+      return id!=cid
+    })  
+  }
+  else{
+    tree.rootids = tree.rootids.filter((rootid) => {
+      return rootid != id
+    })
+  }
+  return tree
 }
 
 /*
@@ -146,6 +170,7 @@ export const deleteItem = (tree, id) => {
 */
 export const getParentId = (tree, itemid) => {
   let ret = null
+  if(!itemid) return ret
   Object.keys(tree.children || {}).forEach((parentid) => {
     let results = tree.children[parentid].filter(id => {
       return id==itemid
@@ -157,17 +182,11 @@ export const getParentId = (tree, itemid) => {
 
 /*
 
-  get the next available id from the tree items
+  return a new ID for a node
   
 */
-export const getNextId = (tree) => {
-  let highestID = 0
-  Object.keys(tree.data || {}).forEach(function(key){
-    if(tree.data[key].id>highestID){
-      highestID = tree.data[key].id
-    }
-  })
-  return highestID+1
+export const getNextId = () => {
+  return hat()
 }
 
 /*
@@ -176,11 +195,18 @@ export const getNextId = (tree) => {
   
 */
 export const addChild = (tree, parent, child) => {
-  if(!child.id) child.id = getNextId(tree)
+  if(!child.id) child.id = getNextId()
   tree.data[child.id] = child
-  let existingChildren = tree.children[parent.id] || []
-  existingChildren.push(child.id)
-  tree.children[parent.id] = existingChildren
+
+  if(!parent){
+    tree.rootids.push(child.id)
+  }
+  else{
+    let existingChildren = tree.children[parent.id] || []
+    existingChildren.push(child.id)
+    tree.children[parent.id] = existingChildren
+  }
+  
   return tree
 }
 
@@ -243,4 +269,8 @@ export class ChildrenWrapper extends Component {
     return this.props.children
   }
 
+}
+
+export const serialize = (val) => {
+  return JSON.parse(JSON.stringify(val))
 }
