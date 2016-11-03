@@ -23,6 +23,21 @@ export default function memorydb(opts = {}){
   commit(null, null, () => {})
 
   return {
+    loadTree:(done) => {
+      done(null, serialize(dumpTreeData(tree)))
+    },
+    loadChildren:(id, done) => {
+      done(null, serialize(getChildren(tree, id)))
+    },
+    loadItem:(id, done) => {
+      done(null, serialize(tree.data[id]))
+    },
+    addItem:(parent, item, done) => {
+      parent = serialize(parent)
+      item = serialize(item)
+      tree = addChild(tree, parent, item)
+      commit(null, serialize(item), done)
+    },
     saveItem:(item, done) => {
       item = serialize(item)
       let saveitem = tree.data[item.id]
@@ -31,11 +46,9 @@ export default function memorydb(opts = {}){
       })
       commit(null, serialize(saveitem), done)
     },
-    addItem:(parent, item, done) => {
-      parent = serialize(parent)
-      item = serialize(item)
-      tree = addChild(tree, parent, item)
-      commit(null, serialize(item), done)
+    deleteItem:(id, done) => {
+      deleteItem(tree, id)
+      commit(null, null, done)
     },
     pasteItems:(mode, parent, items, done) => {
       let newItems = []
@@ -58,19 +71,6 @@ export default function memorydb(opts = {}){
       }
 
       commit(null, serialize(newItems), done)
-    },
-    deleteItem:(id, done) => {
-      deleteItem(tree, id)
-      commit(null, null, done)
-    },
-    loadItem:(id, done) => {
-      done(null, serialize(tree.data[id]))
-    },
-    loadChildren:(id, done) => {
-      done(null, serialize(getChildren(tree, id)))
-    },
-    loadTree:(done) => {
-      done(null, serialize(dumpTreeData(tree)))
     }
   }
 }

@@ -53,7 +53,9 @@ const decode = (item) => {
   // because there are memory pointers into reducer state
   item = serialize(item)
   delete(item[CODEC_KEY])
-  item.id = decodeID(item.id)
+  if(item.id){
+    item.id = decodeID(item.id)  
+  }
   return item
 }
 
@@ -107,7 +109,7 @@ const codecFactory = (database) => {
     // the actual database gets passed null as the parent
     // if it's a root node
     parent = isRootID(parent.id) ? null : parent
-    database.db.addItem(decode(parent), item, (err, data) => {
+    database.db.addItem(decode(parent), decode(item), (err, data) => {
       if(err) return done(err)
       done(null, encode(data))
     })
