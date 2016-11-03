@@ -1,4 +1,4 @@
-import series from 'async-series'
+import async from 'async'
 import { processTreeData, processListData, getChildren, getAncestors } from './tools'
 
 export const FOLDERUI_TREE_DATA_LOADED = 'FOLDERUI_TREE_DATA_LOADED'
@@ -209,23 +209,27 @@ const ActionFactory = (opts = {}, db) => {
 
         // loop over each id and hit the database with it
         (next) => {
-          series(ids.map((id) => {
+          async.parallel(ids.map((id) => {
             return (nextitem) => {
               db.deleteItem(id, nextitem)
             }
           }), next)
         },
 
-        // now reload the tree data
         (next) => {
-          dispatch(requestTreeData(next))
-        },
+          async.parallel([
+            // now reload the tree data
+            (pnext) => {
+              dispatch(requestTreeData(pnext))
+            },
 
-        // and the children
-        (next) => {
-          dispatch(requestChildren(parentid, next))
+            // and the children
+            (pnext) => {
+              dispatch(requestChildren(parentid, pnext))
+            }
+          ], next)
         }
-        
+
       ], (err) => {
         if(err){
           console.error('requestDeleteNodes: ' + parentid + ' -> ' + ids)
@@ -242,7 +246,7 @@ const ActionFactory = (opts = {}, db) => {
   const requestAddItem = (parent, data, done) => {
     return (dispatch, getState) => {
 
-      series([
+      async.series([
 
         (next) => {
           db.addItem(parent, data, next)
@@ -253,16 +257,20 @@ const ActionFactory = (opts = {}, db) => {
           next()
         },
 
-        // now reload the tree data
         (next) => {
-          dispatch(requestTreeData(next))
-        },
+          async.parallel([
+            // now reload the tree data
+            (pnext) => {
+              dispatch(requestTreeData(pnext))
+            },
 
-        // and the children
-        (next) => {
-          dispatch(requestChildren(parent.id, next))
+            // and the children
+            (pnext) => {
+              dispatch(requestChildren(parent.id, pnext))
+            }
+          ], next)
         }
-        
+
       ], (err) => {
         if(err){
           console.error('requestAddItem:')
@@ -280,7 +288,7 @@ const ActionFactory = (opts = {}, db) => {
   const requestSaveItem = (parent, data, done) => {
     return (dispatch, getState) => {
 
-      series([
+      async.series([
 
         (next) => {
           db.saveItem(data, next)
@@ -291,15 +299,20 @@ const ActionFactory = (opts = {}, db) => {
           next()
         },
 
-        // now reload the tree data
         (next) => {
-          dispatch(requestTreeData(next))
-        },
+          async.parallel([
+            // now reload the tree data
+            (pnext) => {
+              dispatch(requestTreeData(pnext))
+            },
 
-        // and the children
-        (next) => {
-          dispatch(requestChildren(parent.id, next))
+            // and the children
+            (pnext) => {
+              dispatch(requestChildren(parent.id, pnext))
+            }
+          ], next)
         }
+
         
       ], (err) => {
         if(err){
@@ -318,21 +331,26 @@ const ActionFactory = (opts = {}, db) => {
   const requestPasteItems = (parent, mode, nodes, done) => {
     return (dispatch, getState) => {
 
-      series([
+      async.series([
 
         (next) => {
           db.pasteItems(mode, parent, nodes, next)
         },
 
-        // now reload the tree data
         (next) => {
-          dispatch(requestTreeData(next))
-        },
+          async.parallel([
+            // now reload the tree data
+            (pnext) => {
+              dispatch(requestTreeData(pnext))
+            },
 
-        // and the children
-        (next) => {
-          dispatch(requestChildren(parent.id, next))
+            // and the children
+            (pnext) => {
+              dispatch(requestChildren(parent.id, pnext))
+            }
+          ], next)
         }
+
         
       ], (err) => {
         if(err){
