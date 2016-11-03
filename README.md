@@ -37,13 +37,13 @@ If you already have state in your application that can be used to feed the visua
 
 If you are working with external state and want `folder-ui` to handle redux state, you need to provide a database library.  A folder-ui database library is an object with the following properties - all functions:
 
- * `saveItem(item, done)` - save an item
+ * `loadTree(done)` - load the tree data
+ * `loadChildren(id, done)` - load the children for an item
  * `loadItem(id, done)` - load a single item
  * `addItem(parent, item, done)` - add an item to a parent
- * `pasteItems(mode, parent, items, done)` - paste items, mode is {copy,cut}
+ * `saveItem(item, done)` - save an item
  * `deleteItem(id, done)` - delete an item from a parent
- * `loadChildren(id, done)` - load the children for an item
- * `loadTree(done)` - load the tree data
+ * `pasteItems(mode, parent, items, done)` - paste items, mode is {copy,cut}
 
 In all cases the callback `done` takes the following signature: `done(err, data)` (i.e. standard node callback style)
 
@@ -88,26 +88,6 @@ const shopsActions = FolderActions('shops', DB2())
 
 Here - we have created 2 sets of actions, each hooked up to it's own reducer (using the name) and will consume the database instance we passed to it - one for each service.
 
-## Handlers
-
-To hook together the various components into an app - we use [react-router](https://github.com/ReactTraining/react-router).
-
-To allow the customization of routes and what route is loaded when items are open - we need to define our `handlers`.
-
-These are functions that return react-router paths - there is a handler for the following operations:
-
- * open - view an item (click on the tree or click open from the toolbar)
- * edit - edit an item (click edit on the toolbar)
-
-
-```javascript
-const standardHandlers = {
-  // get the route to view an item
-  open:(item) => {
-    return 'view/' + item.id
-  }
-}
-```
 
 ## Container Components
 
