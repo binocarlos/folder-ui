@@ -1,4 +1,5 @@
-import async from 'async'
+import series from 'async/series'
+import parallel from 'async/parallel'
 import { processTreeData, processListData, getChildren, getAncestors } from './tools'
 
 export const FOLDERUI_TREE_DATA_LOADED = 'FOLDERUI_TREE_DATA_LOADED'
@@ -209,7 +210,7 @@ const ActionFactory = (opts = {}, db) => {
 
         // loop over each id and hit the database with it
         (next) => {
-          async.parallel(ids.map((id) => {
+          parallel(ids.map((id) => {
             return (nextitem) => {
               db.deleteItem(id, nextitem)
             }
@@ -217,7 +218,7 @@ const ActionFactory = (opts = {}, db) => {
         },
 
         (next) => {
-          async.parallel([
+          parallel([
             // now reload the tree data
             (pnext) => {
               dispatch(requestTreeData(pnext))
@@ -246,7 +247,7 @@ const ActionFactory = (opts = {}, db) => {
   const requestAddItem = (parent, data, done) => {
     return (dispatch, getState) => {
 
-      async.series([
+      series([
 
         (next) => {
           db.addItem(parent, data, next)
@@ -258,7 +259,7 @@ const ActionFactory = (opts = {}, db) => {
         },
 
         (next) => {
-          async.parallel([
+          parallel([
             // now reload the tree data
             (pnext) => {
               dispatch(requestTreeData(pnext))
@@ -288,7 +289,7 @@ const ActionFactory = (opts = {}, db) => {
   const requestSaveItem = (parent, data, done) => {
     return (dispatch, getState) => {
 
-      async.series([
+      series([
 
         (next) => {
           db.saveItem(data, next)
@@ -300,7 +301,7 @@ const ActionFactory = (opts = {}, db) => {
         },
 
         (next) => {
-          async.parallel([
+          parallel([
             // now reload the tree data
             (pnext) => {
               dispatch(requestTreeData(pnext))
@@ -331,14 +332,14 @@ const ActionFactory = (opts = {}, db) => {
   const requestPasteItems = (parent, mode, nodes, done) => {
     return (dispatch, getState) => {
 
-      async.series([
+      series([
 
         (next) => {
           db.pasteItems(mode, parent, nodes, next)
         },
 
         (next) => {
-          async.parallel([
+          parallel([
             // now reload the tree data
             (pnext) => {
               dispatch(requestTreeData(pnext))
