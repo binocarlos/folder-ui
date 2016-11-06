@@ -58,8 +58,7 @@ const templateFactory = (opts = {}) => {
     width:250,
     types:DEFAULT_TYPES,
     tableFields:DEFAULT_TABLE_FIELDS,
-    library:DEFAULT_LIBRARY,
-    sort:sortItems
+    library:DEFAULT_LIBRARY
   }, opts)
 
   REQUIRED_OPTIONS.forEach((name) => {
