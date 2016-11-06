@@ -50,19 +50,19 @@ function mapStateToProps(s, ownProps) {
 
 function mapDispatchToProps(dispatch, ownProps) {
   const actions = ownProps.actions
-  const handlers = ownProps.handlers
+  const routeHandlers = ownProps.handlers
   return {
     onAdd:(parent, decriptor) => {
-      if(!handlers.add || !parent || !decriptor) return
-      dispatch(push(handlers.add(parent, decriptor)))
+      if(!routeHandlers.add || !parent || !decriptor) return
+      dispatch(push(routeHandlers.add(parent, decriptor)))
     },
     onEdit:(parent, node) => {
-      if(!handlers.edit || !parent) return
-      dispatch(push(handlers.edit(parent, node)))
+      if(!routeHandlers.edit || !parent) return
+      dispatch(push(routeHandlers.edit(parent, node)))
     },
     onOpen:(node) => {
-      if(!handlers.open && !node) return
-      dispatch(push(handlers.open(node)))
+      if(!routeHandlers.open && !node) return
+      dispatch(push(routeHandlers.open(node)))
     },
     onDelete:(nodes) => {
       dispatch(actions.deleteSelection())

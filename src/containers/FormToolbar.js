@@ -41,7 +41,7 @@ function mapStateToProps(s, ownProps) {
 
 function mapDispatchToProps(dispatch, ownProps) {
   const actions = ownProps.actions
-  const handlers = ownProps.handlers
+  const routeHandlers = ownProps.handlers
 
   const route = ownProps.route || {}
 
@@ -56,23 +56,23 @@ function mapDispatchToProps(dispatch, ownProps) {
       }
       if(formInfo.mode=='add'){
         dispatch(actions.requestAddItem(parentNode, data, (err) => {
-          if(!handlers.open && !parentNode) return
+          if(!routeHandlers.open && !parentNode) return
           const schema = ownProps.getSchema(formInfo.type) || {}
           dispatch(actions.showChildrenMessage(schema.title + ' added'))
-          dispatch(push(handlers.open(parentNode)))
+          dispatch(push(routeHandlers.open(parentNode)))
         }))
       }
       else if(formInfo.mode=='edit'){
         dispatch(actions.requestSaveItem(parentNode, data, (err) => {
-          if(!handlers.open && !parentNode) return
+          if(!routeHandlers.open && !parentNode) return
           dispatch(actions.showChildrenMessage(data.name + ' saved'))
-          dispatch(push(handlers.open(parentNode)))
+          dispatch(push(routeHandlers.open(parentNode)))
         }))
       }
     },
     cancel:(parentNode) => {
-      if(!handlers.open && !parentNode) return
-      dispatch(push(handlers.open(parentNode)))
+      if(!routeHandlers.open && !parentNode) return
+      dispatch(push(routeHandlers.open(parentNode)))
     },
     revert:() => {
       dispatch(actions.revertEditNode())

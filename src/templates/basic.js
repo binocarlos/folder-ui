@@ -23,7 +23,7 @@ const DEFAULT_TYPES = {
       name:'name'
     }],
     initialData:{
-      
+      type:'folder'
     }
   },
   item:{
@@ -34,7 +34,7 @@ const DEFAULT_TYPES = {
       name:'comment'
     }],
     initialData:{
-      
+      type:'item'
     }
   }
 }
@@ -58,8 +58,6 @@ const sortByName = (a,b) => {
 
 // the default is to put folders before items then sort by name
 const sortItems = (a,b) => {
-  console.log(JSON.stringify(a, null, 4))
-  console.log(JSON.stringify(b, null, 4))
   if(a.type=='folder' && b.type!='folder') return -1
   if(b.type=='folder' && a.type!='folder') return 1
   return sortByName(a.name, b.name)
@@ -96,8 +94,8 @@ const templateFactory = (opts = {}) => {
   })
   const factory = ContainerFactory({
     actions:actions,
-    handlers:routes.handlers,
-    info:routes.info
+    handlers:routes.routeHandlers,
+    info:routes.routeInfo
   })
   const containers = {
     tree:factory(Tree, {

@@ -7,7 +7,7 @@ const factory = (opts = {}) => {
 
   // an object that maps action names onto functions
   // each function will return a URL to redirect the app to
-  const handlers = {
+  const routeHandlers = {
     // get the route to view an item
     open:(item = {}) => {
       return getUrl(['view', item.id])
@@ -23,7 +23,7 @@ const factory = (opts = {}) => {
 
   // extract the information from the current route
   // based on how we have configured react-router
-  const info = {
+  const routeInfo = {
 
     // /view/:id
     tree:(props) => {
@@ -52,8 +52,8 @@ const factory = (opts = {}) => {
   }
 
   return {
-    handlers,
-    info
+    routeHandlers,
+    routeInfo
   }
 }
 

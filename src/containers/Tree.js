@@ -67,7 +67,7 @@ function mapStateToProps(s, ownProps) {
 
 function mapDispatchToProps(dispatch, ownProps) {
   const actions = ownProps.actions
-  const handlers = ownProps.handlers
+  const routeHandlers = ownProps.handlers
   
   const route = ownProps.route || {}
 
@@ -85,8 +85,8 @@ function mapDispatchToProps(dispatch, ownProps) {
       })
     },
     selectNode:(node) => {
-      if(!handlers.open || !node) return
-      dispatch(push(handlers.open(node)))
+      if(!routeHandlers.open || !node) return
+      dispatch(push(routeHandlers.open(node)))
     },
     toggleNode:(node) => {
       dispatch(actions.toggleTreeNode(node.id))
