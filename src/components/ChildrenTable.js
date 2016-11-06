@@ -30,6 +30,12 @@ class ChildrenTable extends Component {
       }
     })
 
+    let sortedData = data
+    if(this.props.sort){
+      sortedData = [].concat(sortedData)
+      sortedData.sort(this.props.sort)
+    }
+
     return (
       <Table
         height={this.props.height}
@@ -60,7 +66,7 @@ class ChildrenTable extends Component {
           displayRowCheckbox={this.props.showCheckboxes}
           deselectOnClickaway={false}
         >
-          {data.map( (row, index) => (
+          {sortedData.map( (row, index) => (
             <TableRow key={index} selected={this.props.selected[row.id]}>
               {fields.map( (field, index) => {
                 const render = renderfns[index]

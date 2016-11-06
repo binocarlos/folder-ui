@@ -37,6 +37,15 @@ class Tree extends Component {
       null
   }
 
+  sortData(data) {
+    let sortedData = data
+    if(this.props.sort){
+      sortedData = [].concat(sortedData)
+      sortedData.sort(this.props.sort)
+    }
+    return sortedData
+  }
+
   getTreeNode(data = {}, i = 0) {
 
     const children = data.children || []
@@ -67,14 +76,14 @@ class Tree extends Component {
         }}
         open={open[data.id] ? true : false}
         initiallyOpen={data.open ? true : false}
-        nestedItems={children.map(this.getTreeNode.bind(this))} />
+        nestedItems={this.sortData(children).map(this.getTreeNode.bind(this))} />
     )
   }
 
   render() {
    
     const styles = this.getStyles()
-    const data = this.props.data || []
+    const data = this.sortData(this.props.data || [])
 
     return (
       <List>

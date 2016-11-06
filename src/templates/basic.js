@@ -52,6 +52,19 @@ const REQUIRED_OPTIONS = [
   'db'
 ]
 
+const sortByName = (a,b) => {
+  return a>b ? 1 : -1
+}
+
+// the default is to put folders before items then sort by name
+const sortItems = (a,b) => {
+  console.log(JSON.stringify(a, null, 4))
+  console.log(JSON.stringify(b, null, 4))
+  if(a.type=='folder' && b.type!='folder') return -1
+  if(b.type=='folder' && a.type!='folder') return 1
+  return sortByName(a.name, b.name)
+}
+
 const templateFactory = (opts = {}) => {
 
   opts = Object.assign({}, {
@@ -59,6 +72,7 @@ const templateFactory = (opts = {}) => {
     types:DEFAULT_TYPES,
     tableFields:DEFAULT_TABLE_FIELDS,
     library:DEFAULT_LIBRARY,
+    sort:sortItems
   }, opts)
 
   REQUIRED_OPTIONS.forEach((name) => {
@@ -86,7 +100,9 @@ const templateFactory = (opts = {}) => {
     info:routes.info
   })
   const containers = {
-    tree:factory(Tree),
+    tree:factory(Tree, {
+      sort:opts.sort
+    }),
     childrenToolbar:factory(ChildrenToolbar, {
       getChildTypes:schema.getChildTypes
     }),
@@ -94,7 +110,8 @@ const templateFactory = (opts = {}) => {
       fields:schema.getTableFields(),
       showCheckboxes:true,
       showHeader:false,
-      multiSelectable:true
+      multiSelectable:true,
+      sort:opts.sort
     }),
     formToolbar:factory(FormToolbar, {
       getSchema:schema.getSchema
