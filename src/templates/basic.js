@@ -86,21 +86,25 @@ const templateFactory = (opts = {}) => {
     path:opts.path
   })
 
-  const actions = FolderActions(opts.name, opts.db)
+  const actions = FolderActions({
+    name:opts.name,
+    sort:opts.sort
+  }, opts.db)
+
   const schema = Schema({
     types:opts.types,
     tableFields:opts.tableFields,
     library:opts.library
   })
+
   const factory = ContainerFactory({
     actions:actions,
     handlers:routes.routeHandlers,
     info:routes.routeInfo
   })
+
   const containers = {
-    tree:factory(Tree, {
-      sort:opts.sort
-    }),
+    tree:factory(Tree),
     childrenToolbar:factory(ChildrenToolbar, {
       getChildTypes:schema.getChildTypes
     }),
@@ -108,8 +112,7 @@ const templateFactory = (opts = {}) => {
       fields:schema.getTableFields(),
       showCheckboxes:true,
       showHeader:false,
-      multiSelectable:true,
-      sort:opts.sort
+      multiSelectable:true
     }),
     formToolbar:factory(FormToolbar, {
       getSchema:schema.getSchema
