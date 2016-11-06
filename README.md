@@ -83,10 +83,18 @@ import DB2 from './db2'
 const productActions = FolderActions('products', DB1())
 
 // DB2 is a REST api
-const shopsActions = FolderActions('shops', DB2())
+const shopsActions = FolderActions({
+  name:'shops',
+  sort:(a,b) => a.price > b.price ? 1 : -1
+}, DB2())
 ```
 
 Here - we have created 2 sets of actions, each hooked up to it's own reducer (using the name) and will consume the database instance we passed to it - one for each service.
+
+The options object has the following fields (if you pass a string it means the name):
+
+ * name - a unique name for this group of components
+ * sort(a,b) - a function used to sort the results in tree and childrentable
 
 
 ## Container Components

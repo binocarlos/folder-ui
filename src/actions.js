@@ -138,6 +138,22 @@ export function edit_data_error(error) {
   }
 }
 
+const sortByName = (a = {}, b = {}) => {
+  return a.name>b.name ? 1 : -1
+}
+
+
+
+/*
+
+  let sortedData = data
+    if(this.props.sort){
+      sortedData = [].concat(sortedData)
+      sortedData.sort(this.props.sort)
+    }
+  
+*/
+
 const ActionFactory = (opts = {}, db) => {
 
   if(typeof(opts)==='string') opts = {
@@ -147,6 +163,22 @@ const ActionFactory = (opts = {}, db) => {
   if(db) opts.db = db
 
   if(!opts.name || !opts.db) throw new Error('ActionFactory requires a name and db options')
+
+  // the default is sort by the 'name' field
+  const sort = opts.sort || sortByName
+
+  const sortChildren = (data = []) => {
+    return data.sort(sort)
+  }
+
+  const sortTreeChildren = (item) => {
+    item.children = (item.children || []).map(sortTreeChildren).sort(sort)
+    return item
+  }
+
+  const sortTreeItems = (data = []) => {
+    return data.map(sortTreeChildren).sort(sort)
+  }
 
   // the reducer will use this to filter actions not for it
   const processAction = (action) => {
@@ -164,6 +196,7 @@ const ActionFactory = (opts = {}, db) => {
           done && done(err)
           return
         }
+        data = sortTreeItems(data)
         data = processTreeData(data)
         dispatch(processAction(tree_data_loaded(data)))
         done && done(null, data)
@@ -181,6 +214,7 @@ const ActionFactory = (opts = {}, db) => {
           done && done(err)
           return
         }
+        data = sortChildren(data)
         dispatch(processAction(child_data_loaded(data)))
         done && done(null, data)
       })
