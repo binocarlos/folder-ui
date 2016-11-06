@@ -52,7 +52,7 @@ function mapStateToProps(s, ownProps) {
     data,
     meta,
     schema:schema.fields || [],
-    initialData:schema.initialData || {}
+    initialData:JSON.parse(JSON.stringify(schema.initialData || {}))
   }
 }
 
