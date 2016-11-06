@@ -142,18 +142,6 @@ const sortByName = (a = {}, b = {}) => {
   return a.name>b.name ? 1 : -1
 }
 
-
-
-/*
-
-  let sortedData = data
-    if(this.props.sort){
-      sortedData = [].concat(sortedData)
-      sortedData.sort(this.props.sort)
-    }
-
-*/
-
 const ActionFactory = (opts = {}, db) => {
 
   if(typeof(opts)==='string') opts = {

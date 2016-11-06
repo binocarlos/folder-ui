@@ -52,17 +52,6 @@ const REQUIRED_OPTIONS = [
   'db'
 ]
 
-const sortByName = (a,b) => {
-  return a>b ? 1 : -1
-}
-
-// the default is to put folders before items then sort by name
-const sortItems = (a,b) => {
-  if(a.type=='folder' && b.type!='folder') return -1
-  if(b.type=='folder' && a.type!='folder') return 1
-  return sortByName(a.name, b.name)
-}
-
 const templateFactory = (opts = {}) => {
 
   opts = Object.assign({}, {
