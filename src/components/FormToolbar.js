@@ -18,7 +18,7 @@ export default class FormToolbar extends Component {
       }
     },{
       id:'save',
-      title:'Save',
+      title:this.props.saveTitle || 'Save',
       extraProps:{ 
         primary:true
       },

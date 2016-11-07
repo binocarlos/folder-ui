@@ -36,7 +36,8 @@ function mapStateToProps(s, ownProps) {
     title,
     parentNode,
     data,
-    meta
+    meta,
+    saveTitle:formInfo.mode == 'edit' ? 'Save' : 'Add'
   }
 }
 
