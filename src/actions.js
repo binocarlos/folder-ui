@@ -1,6 +1,7 @@
 import series from 'async/series'
 import parallel from 'async/parallel'
 import { processTreeData, processListData, getChildren, getAncestors } from './tools'
+import DBFactory from './db'
 
 export const FOLDERUI_TREE_DATA_LOADED = 'FOLDERUI_TREE_DATA_LOADED'
 
@@ -148,9 +149,9 @@ const ActionFactory = (opts = {}, db) => {
     name:opts
   }
 
-  if(db) opts.db = db
+  if(!opts.name || !db) throw new Error('ActionFactory requires a name and db options')
 
-  if(!opts.name || !opts.db) throw new Error('ActionFactory requires a name and db options')
+  db = DBFactory(db)
 
   // a flag that decides if we are actually interested in loading any tree data
   const enableTree = typeof(opts.enableTree) == 'boolean' ? opts.enableTree : true
@@ -317,13 +318,13 @@ const ActionFactory = (opts = {}, db) => {
     }
   }
 
-  const requestSaveItem = (context, parent, data, done) => {
+  const requestSaveItem = (context, parent, item, done) => {
     return (dispatch, getState) => {
 
       series([
 
         (next) => {
-          db.saveItem(getDatabaseContext(context, getState), data, next)
+          db.saveItem(getDatabaseContext(context, getState), item.id, item, next)
         },
 
         (next) => {
