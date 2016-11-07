@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { push } from 'react-router-redux'
 import Tree from '../components/Tree'
-import { dumpTreeData, getAncestors } from '../tools'
+import { dumpTreeData, getAncestors, getDatabaseContext } from '../tools'
 
 export class TreeContainer extends Component {
 
@@ -68,12 +68,13 @@ function mapStateToProps(s, ownProps) {
 function mapDispatchToProps(dispatch, ownProps) {
   const actions = ownProps.actions
   const routeHandlers = ownProps.handlers
-  
+  const context = getDatabaseContext(ownProps)
+
   const route = ownProps.route || {}
 
   return {
     requestTreeData:(done) => {
-      dispatch(actions.requestTreeData(done))
+      dispatch(actions.requestTreeData(context, done))
     },
     activateNode:(node) => {
       dispatch((dispatch, getState) => {

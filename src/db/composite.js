@@ -88,8 +88,8 @@ const codecFactory = (database) => {
   }
   // this is loadTree but we return a single node that
   // the async.parallel maps onto the root data array
-  const getRootNode = (done) => {
-    database.db.loadTree((err, data) => {
+  const loadTree = (context, done) => {
+    database.db.loadTree(context, (err, data) => {
       if(err) return done(err)
       const rootNode = rootNodeFactory({
         children:data || []
@@ -98,40 +98,22 @@ const codecFactory = (database) => {
     })
   }
 
-  const saveItem = (item, done) => {
-    database.db.saveItem(decode(item), (err, data) => {
+  const loadChildren = (context, id, done) => {
+    id = isRootID(id) ? null : id
+    database.db.loadChildren(context, decode(id), (err, data = []) => {
       if(err) return done(err)
-      done(null, encode(data))
+      done(null, data.map(encode))
     })
   }
 
-  const addItem = (parent, item, done) => {
-    // the actual database gets passed null as the parent
-    // if it's a root node
-    parent = isRootID(parent.id) ? null : parent
-    database.db.addItem(decode(parent), decode(item), (err, data) => {
-      if(err) return done(err)
-      done(null, encode(data))
-    })
-  }
-
-  const pasteItems = (mode, parent, items, done) => {
-    parent = isRootID(parent.id) ? null : parent
-    database.db.pasteItems(mode, decode(parent), items.map(decode), done)
-  }
-
-  const deleteItem = (id, done) => {
-    database.db.deleteItem(decodeID(id), done)
-  }
-
-  const loadItem = (id, done) => {
+  const loadItem = (context, id, done) => {
     id = isRootID(id) ? null : id
 
     if(isRootID(id)){
       done(null, encode(rootNodeFactory()))
     }
     else{
-      database.db.loadItem(decodeID(id), (err, data) => {
+      database.db.loadItem(context, decodeID(id), (err, data) => {
         if(err) return done(err)
         done(null, encode(data))
       })
@@ -139,12 +121,30 @@ const codecFactory = (database) => {
     
   }
 
-  const loadChildren = (id, done) => {
-    id = isRootID(id) ? null : id
-    database.db.loadChildren(decode(id), (err, data = []) => {
+  const saveItem = (context, item, done) => {
+    database.db.saveItem(context, decode(item), (err, data) => {
       if(err) return done(err)
-      done(null, data.map(encode))
+      done(null, encode(data))
     })
+  }
+
+  const addItem = (context, parent, item, done) => {
+    // the actual database gets passed null as the parent
+    // if it's a root node
+    parent = isRootID(parent.id) ? null : parent
+    database.db.addItem(context, decode(parent), decode(item), (err, data) => {
+      if(err) return done(err)
+      done(null, encode(data))
+    })
+  }
+
+  const pasteItems = (context, mode, parent, items, done) => {
+    parent = isRootID(parent.id) ? null : parent
+    database.db.pasteItems(context, mode, decode(parent), items.map(decode), done)
+  }
+
+  const deleteItem = (context, id, done) => {
+    database.db.deleteItem(context, decodeID(id), done)
   }
 
   return {
@@ -152,13 +152,13 @@ const codecFactory = (database) => {
     database,
     encode,
     decode,
-    getRootNode,
+    loadTree,
+    loadChildren,
+    loadItem,
     saveItem,
     addItem,
     pasteItems,
-    deleteItem,
-    loadItem,
-    loadChildren
+    deleteItem
   }
 }
 
@@ -183,46 +183,46 @@ export default function compositedb(databases = []){
   }
 
   return {
-    saveItem:(item, done) => {
-      const codec = getItemCodec(item)
-      if(!codec) return done('no codec found for: ' + getItemCodecId(item))
-      codec.saveItem(item, done)
-    },
-    addItem:(parent, item, done) => {
-      const codec = getItemCodec(parent)
-      if(!codec) return done('no codec found for: ' + getItemCodecId(parent))
-      codec.addItem(parent, item, done)
-    },
-    pasteItems:(mode, parent, items, done) => {
-      const codec = getItemCodec(parent)
-      if(!codec) return done('no codec found for: ' + getItemCodecId(parent))
-      codec.pasteItems(mode, parent, items, done)
-    },
-    deleteItem:(id, done) => {
-      const codec = getItemCodec(id)
-      if(!codec) return done('no codec found for: ' + getItemCodecId(id))
-      codec.deleteItem(id, done)
-    },
-    loadItem:(id, done) => {
-      const codec = getItemCodec(id)
-      if(!codec) return done('no codec found for: ' + getItemCodecId(id))
-      codec.loadItem(id, done)
-    },
-    loadChildren:(id, done) => {
-      const codec = getItemCodec(id)
-      if(!codec) return done('no codec found for: ' + getItemCodecId(id))
-      codec.loadChildren(id, done)
-    },
-    loadTree:(done) => {
+    loadTree:(context, done) => {
       // load each of the databases answers
       // then filter each node with a tag for that db
       async.parallel(databases.map((database) => {
         return (next) => {
           const codec = codecs[database.id]
-          codec.getRootNode(next)
+          codec.loadTree(context, next)
         }
       }), done)
 
+    },
+    loadChildren:(context, id, done) => {
+      const codec = getItemCodec(id)
+      if(!codec) return done('no codec found for: ' + getItemCodecId(id))
+      codec.loadChildren(context, id, done)
+    },
+    loadItem:(context, id, done) => {
+      const codec = getItemCodec(id)
+      if(!codec) return done('no codec found for: ' + getItemCodecId(id))
+      codec.loadItem(context, id, done)
+    },
+    saveItem:(context, item, done) => {
+      const codec = getItemCodec(item)
+      if(!codec) return done('no codec found for: ' + getItemCodecId(item))
+      codec.saveItem(context, item, done)
+    },
+    addItem:(context, parent, item, done) => {
+      const codec = getItemCodec(parent)
+      if(!codec) return done('no codec found for: ' + getItemCodecId(parent))
+      codec.addItem(context, parent, item, done)
+    },
+    pasteItems:(context, mode, parent, items, done) => {
+      const codec = getItemCodec(parent)
+      if(!codec) return done('no codec found for: ' + getItemCodecId(parent))
+      codec.pasteItems(context, mode, parent, items, done)
+    },
+    deleteItem:(context, id, done) => {
+      const codec = getItemCodec(id)
+      if(!codec) return done('no codec found for: ' + getItemCodecId(id))
+      codec.deleteItem(context, id, done)
     }
   }
 }

@@ -4,6 +4,7 @@ import { withRouter } from 'react-router'
 import { push } from 'react-router-redux'
 
 import Toolbar from '../components/FormToolbar'
+import { getDatabaseContext } from '../tools'
 
 export class FormToolbarContainer extends Component {
 
@@ -42,6 +43,7 @@ function mapStateToProps(s, ownProps) {
 function mapDispatchToProps(dispatch, ownProps) {
   const actions = ownProps.actions
   const routeHandlers = ownProps.handlers
+  const context = getDatabaseContext(ownProps)
 
   const route = ownProps.route || {}
 
@@ -55,7 +57,7 @@ function mapDispatchToProps(dispatch, ownProps) {
         return
       }
       if(formInfo.mode=='add'){
-        dispatch(actions.requestAddItem(parentNode, data, (err) => {
+        dispatch(actions.requestAddItem(context, parentNode, data, (err) => {
           if(!routeHandlers.open && !parentNode) return
           const schema = ownProps.getSchema(formInfo.type) || {}
           dispatch(actions.showChildrenMessage(schema.title + ' added'))
@@ -63,7 +65,7 @@ function mapDispatchToProps(dispatch, ownProps) {
         }))
       }
       else if(formInfo.mode=='edit'){
-        dispatch(actions.requestSaveItem(parentNode, data, (err) => {
+        dispatch(actions.requestSaveItem(context, parentNode, data, (err) => {
           if(!routeHandlers.open && !parentNode) return
           dispatch(actions.showChildrenMessage(data.name + ' saved'))
           dispatch(push(routeHandlers.open(parentNode)))

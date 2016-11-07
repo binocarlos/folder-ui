@@ -174,9 +174,16 @@ const ActionFactory = (opts = {}, db) => {
     return action
   }
 
-  const requestTreeData = (done) => {
+  // inject the state into the database context so it can see the user
+  const getDatabaseContext = (context, getState) => {
+    return Object.assign({}, context, {
+      state:getState()
+    })
+  }
+
+  const requestTreeData = (context, done) => {
     return (dispatch, getState) => {
-      db.loadTree((err, data) => {
+      db.loadTree(getDatabaseContext(context, getState), (err, data) => {
         if(err){
           console.error('requestTreeData')
           console.error(err)
@@ -192,9 +199,9 @@ const ActionFactory = (opts = {}, db) => {
     }
   }
 
-  const requestChildren = (id, done) => {
+  const requestChildren = (context, id, done) => {
     return (dispatch, getState) => {
-      db.loadChildren(id, (err, data) => {
+      db.loadChildren(getDatabaseContext(context, getState), id, (err, data) => {
         if(err){
           console.error('requestChildren: ' + id)
           console.error(err)
@@ -209,9 +216,9 @@ const ActionFactory = (opts = {}, db) => {
     }
   }
 
-  const requestNodeData = (id, done) => {
+  const requestNodeData = (context, id, done) => {
     return (dispatch, getState) => {
-      db.loadItem(id, (err, data) => {
+      db.loadItem(getDatabaseContext(context, getState), id, (err, data) => {
         if(err){
           console.error('requestNodeData: ' + id)
           console.error(err)
@@ -225,7 +232,7 @@ const ActionFactory = (opts = {}, db) => {
     }
   }
 
-  const requestDeleteNodes = (parentid, ids, done) => {
+  const requestDeleteNodes = (context, parentid, ids, done) => {
     return (dispatch, getState) => {
 
       series([
@@ -234,7 +241,7 @@ const ActionFactory = (opts = {}, db) => {
         (next) => {
           parallel(ids.map((id) => {
             return (nextitem) => {
-              db.deleteItem(id, nextitem)
+              db.deleteItem(getDatabaseContext(context, getState), id, nextitem)
             }
           }), next)
         },
@@ -243,12 +250,12 @@ const ActionFactory = (opts = {}, db) => {
           parallel([
             // now reload the tree data
             (pnext) => {
-              dispatch(requestTreeData(pnext))
+              dispatch(requestTreeData(context, pnext))
             },
 
             // and the children
             (pnext) => {
-              dispatch(requestChildren(parentid, pnext))
+              dispatch(requestChildren(context, parentid, pnext))
             }
           ], next)
         }
@@ -266,13 +273,13 @@ const ActionFactory = (opts = {}, db) => {
     }
   }
 
-  const requestAddItem = (parent, data, done) => {
+  const requestAddItem = (context, parent, data, done) => {
     return (dispatch, getState) => {
 
       series([
 
         (next) => {
-          db.addItem(parent, data, next)
+          db.addItem(getDatabaseContext(context, getState), parent, data, next)
         },
 
         (next) => {
@@ -284,12 +291,12 @@ const ActionFactory = (opts = {}, db) => {
           parallel([
             // now reload the tree data
             (pnext) => {
-              dispatch(requestTreeData(pnext))
+              dispatch(requestTreeData(context, pnext))
             },
 
             // and the children
             (pnext) => {
-              dispatch(requestChildren(parent.id, pnext))
+              dispatch(requestChildren(context, parent.id, pnext))
             }
           ], next)
         }
@@ -308,13 +315,13 @@ const ActionFactory = (opts = {}, db) => {
     }
   }
 
-  const requestSaveItem = (parent, data, done) => {
+  const requestSaveItem = (context, parent, data, done) => {
     return (dispatch, getState) => {
 
       series([
 
         (next) => {
-          db.saveItem(data, next)
+          db.saveItem(getDatabaseContext(context, getState), data, next)
         },
 
         (next) => {
@@ -326,12 +333,12 @@ const ActionFactory = (opts = {}, db) => {
           parallel([
             // now reload the tree data
             (pnext) => {
-              dispatch(requestTreeData(pnext))
+              dispatch(requestTreeData(context, pnext))
             },
 
             // and the children
             (pnext) => {
-              dispatch(requestChildren(parent.id, pnext))
+              dispatch(requestChildren(context, parent.id, pnext))
             }
           ], next)
         }
@@ -351,25 +358,25 @@ const ActionFactory = (opts = {}, db) => {
     }
   }
 
-  const requestPasteItems = (parent, mode, nodes, done) => {
+  const requestPasteItems = (context, parent, mode, nodes, done) => {
     return (dispatch, getState) => {
 
       series([
 
         (next) => {
-          db.pasteItems(mode, parent, nodes, next)
+          db.pasteItems(getDatabaseContext(context, getState), mode, parent, nodes, next)
         },
 
         (next) => {
           parallel([
             // now reload the tree data
             (pnext) => {
-              dispatch(requestTreeData(pnext))
+              dispatch(requestTreeData(context, pnext))
             },
 
             // and the children
             (pnext) => {
-              dispatch(requestChildren(parent.id, pnext))
+              dispatch(requestChildren(context, parent.id, pnext))
             }
           ], next)
         }
@@ -393,6 +400,9 @@ const ActionFactory = (opts = {}, db) => {
     name:opts.name,
     // return the correct part of the state tree based on the 'name'
     getState:(state) => {
+      console.log('-------------------------------------------');
+      console.log('get state')
+      console.log(opts.name)
       return state[opts.name]
     },
 

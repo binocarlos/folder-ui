@@ -23,22 +23,22 @@ export default function memorydb(opts = {}){
   commit(null, null, () => {})
 
   return {
-    loadTree:(done) => {
+    loadTree:(context, done) => {
       done(null, serialize(dumpTreeData(tree)))
     },
-    loadChildren:(id, done) => {
+    loadChildren:(context, id, done) => {
       done(null, serialize(getChildren(tree, id)))
     },
-    loadItem:(id, done) => {
+    loadItem:(context, id, done) => {
       done(null, serialize(tree.data[id]))
     },
-    addItem:(parent, item, done) => {
+    addItem:(context, parent, item, done) => {
       parent = serialize(parent)
       item = serialize(item)
       tree = addChild(tree, parent, item)
       commit(null, serialize(item), done)
     },
-    saveItem:(item, done) => {
+    saveItem:(context, item, done) => {
       item = serialize(item)
       let saveitem = tree.data[item.id]
       Object.keys(item || {}).forEach(function(key){
@@ -46,11 +46,11 @@ export default function memorydb(opts = {}){
       })
       commit(null, serialize(saveitem), done)
     },
-    deleteItem:(id, done) => {
+    deleteItem:(context, id, done) => {
       deleteItem(tree, id)
       commit(null, null, done)
     },
-    pasteItems:(mode, parent, items, done) => {
+    pasteItems:(context, mode, parent, items, done) => {
       let newItems = []
 
       parent = serialize(parent)

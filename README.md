@@ -37,15 +37,17 @@ If you already have state in your application that can be used to feed the visua
 
 If you are working with external state and want `folder-ui` to handle redux state, you need to provide a database library.  A folder-ui database library is an object with the following properties - all functions:
 
- * `loadTree(done)` - load the tree data
- * `loadChildren(id, done)` - load the children for an item
- * `loadItem(id, done)` - load a single item
- * `addItem(parent, item, done)` - add an item to a parent
- * `saveItem(item, done)` - save an item
- * `deleteItem(id, done)` - delete an item from a parent
- * `pasteItems(mode, parent, items, done)` - paste items, mode is {copy,cut}
+ * `loadTree(context, done)` - load the tree data
+ * `loadChildren(context, id, done)` - load the children for an item
+ * `loadItem(context, id, done)` - load a single item
+ * `addItem(context, parent, item, done)` - add an item to a parent
+ * `saveItem(context, item, done)` - save an item
+ * `deleteItem(context, id, done)` - delete an item from a parent
+ * `pasteItems(context, mode, parent, items, done)` - paste items, mode is {copy,cut}
 
 In all cases the callback `done` takes the following signature: `done(err, data)` (i.e. standard node callback style)
+
+The `context` object is passed in by the container and will contain the route params amoungst other things.
 
 ## FolderReducer
 

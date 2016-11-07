@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { push } from 'react-router-redux'
 import ChildrenToolbar from '../components/ChildrenToolbar'
+import { getDatabaseContext } from '../tools'
 
 export class ChildrenToolbarContainer extends Component {
   render() {
@@ -51,6 +52,7 @@ function mapStateToProps(s, ownProps) {
 function mapDispatchToProps(dispatch, ownProps) {
   const actions = ownProps.actions
   const routeHandlers = ownProps.handlers
+  const context = getDatabaseContext(ownProps)
   return {
     onAdd:(parent, decriptor) => {
       if(!routeHandlers.add || !parent || !decriptor) return
@@ -76,7 +78,7 @@ function mapDispatchToProps(dispatch, ownProps) {
       dispatch(actions.showChildrenMessage('cut ' + nodes.length + ' item' + (nodes.length==1?'':'s') + ' to the clipboard'))
     },
     onPaste:(parent, mode, nodes) => { 
-      dispatch(actions.requestPasteItems(parent, mode, nodes, (err) => {
+      dispatch(actions.requestPasteItems(context, parent, mode, nodes, (err) => {
         if(err){
           // TODO show an error message
         }
@@ -87,7 +89,7 @@ function mapDispatchToProps(dispatch, ownProps) {
       }))
     },
     onConfirmDelete:(parent, nodes) => {
-      dispatch(actions.requestDeleteNodes(parent.id, nodes.map((node) => node.id), (err) => {
+      dispatch(actions.requestDeleteNodes(context, parent.id, nodes.map((node) => node.id), (err) => {
         if(err){
           // TODO show an error message
         }

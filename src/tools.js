@@ -274,3 +274,16 @@ export class ChildrenWrapper extends Component {
 export const serialize = (val) => {
   return JSON.parse(JSON.stringify(val))
 }
+
+/*
+
+  get the context for the database based on the route
+  
+*/
+export const getDatabaseContext = (ownProps) => {
+  return {
+    route:ownProps.route.path,
+    url:ownProps.location.pathname,
+    params:ownProps.params
+  }
+}
