@@ -21,7 +21,7 @@ function mapStateToProps(s, ownProps) {
   const info = ownProps.info
   const state = actions.getState(s)
 
-  const formInfo = info.form ? info.form(ownProps) : {}
+  const formInfo = info.form ? info.form(ownProps.params) : {}
   const data = state.editing.data || {}
   const meta = state.editing.meta || {}
   const originalData = state.editing.originalData || {}
@@ -75,12 +75,6 @@ function mapDispatchToProps(dispatch, ownProps) {
     },
     cancel:(parentNode) => {
       if(!routeHandlers.open && !parentNode) return
-        console.log('-------------------------------------------');
-      console.log('-------------------------------------------');
-      console.log('parasm')
-      console.dir(params)
-      console.log('parentNode')
-      console.dir(parentNode)
       dispatch(push(routeHandlers.open(parentNode, params)))
     },
     revert:() => {

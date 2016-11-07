@@ -18,7 +18,6 @@ const factory = (opts = {}) => {
       .filter(part => part)
       .join('/')
 
-    console.log(ret)
     return ret
   }
 

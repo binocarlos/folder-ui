@@ -210,8 +210,6 @@ export default function compositedb(databases = []){
       codec.saveItem(context, item, done)
     },
     addItem:(context, parent, item, done) => {
-      console.log('-------------------------------------------');
-      console.dir(parent)
       const codec = getItemCodec(parent)
       if(!codec) return done('no codec found for: ' + getItemCodecId(parent))
       codec.addItem(context, parent, item, done)
