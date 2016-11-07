@@ -1,7 +1,28 @@
 const factory = (opts = {}) => {
 
-  const getUrl = (parts = []) => {
-    parts = [opts.path].concat(parts)
+  const basePath = opts.path || ''
+  // the overall 'get a frontend' URL functions
+  // 
+  const getBasePath = (params = {}) => {
+
+    // split by slash
+    // map by replacing ':xxx' with params.xxx
+    // filter empty values
+    // join by slash
+    var ret = basePath.split('/')
+      .map(part => {
+        return part.charAt(0) == ':' ?
+          params[part.substring(1)] :
+          part
+      })
+      .filter(part => part)
+      .join('/')
+
+    return ret
+  }
+
+  const getUrl = (parts = [], params) => {
+    parts = [getBasePath(params)].concat(parts)
     return '/' + parts.filter(part => '' + part).join('/')
   }
 
@@ -9,15 +30,15 @@ const factory = (opts = {}) => {
   // each function will return a URL to redirect the app to
   const routeHandlers = {
     // get the route to view an item
-    open:(item = {}) => {
-      return getUrl(['view', item.id])
+    open:(item = {}, params = {}) => {
+      return getUrl(['view', item.id], params)
     },
     // edit is in the context of a parent
-    edit:(parent = {}, item = {}) => {
-      return getUrl(['edit', parent.id, item.id])
+    edit:(parent = {}, item = {}, params = {}) => {
+      return getUrl(['edit', parent.id, item.id], params)
     },
-    add:(parent = {}, descriptor = {}) => {
-      return getUrl(['add', parent.id, descriptor.type])
+    add:(parent = {}, descriptor = {}, params = {}) => {
+      return getUrl(['add', parent.id, descriptor.type], params)
     }
   }
 
@@ -26,8 +47,7 @@ const factory = (opts = {}) => {
   const routeInfo = {
 
     // /view/:id
-    tree:(props) => {
-      const params = props.params
+    tree:(params = {}) => {
       return {
         id:params.id || params.parent
       }
@@ -36,8 +56,7 @@ const factory = (opts = {}) => {
     // /edit/:id
     // /edit/:parent/:id
     // /add/:parent/:type
-    form:(props) => {
-      const params = props.params
+    form:(params = {}) => {
       return {
         // where we get the schema from
         mode:params.type ? 'add' : 'edit',

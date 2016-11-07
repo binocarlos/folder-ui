@@ -21,7 +21,7 @@ function mapStateToProps(s, ownProps) {
   const info = ownProps.info
   const state = actions.getState(s)
 
-  const formInfo = info.form ? info.form(ownProps) : {}
+  const formInfo = info.form ? info.form(ownProps.params) : {}
   const data = state.editing.data || {}
   const meta = state.editing.meta || {}
   const originalData = state.editing.originalData || {}
@@ -36,7 +36,8 @@ function mapStateToProps(s, ownProps) {
     title,
     parentNode,
     data,
-    meta
+    meta,
+    saveTitle:formInfo.mode == 'edit' ? 'Save' : 'Add'
   }
 }
 
@@ -44,11 +45,12 @@ function mapDispatchToProps(dispatch, ownProps) {
   const actions = ownProps.actions
   const routeHandlers = ownProps.handlers
   const context = getDatabaseContext(ownProps)
+  const params = ownProps.params
 
   const route = ownProps.route || {}
 
   const info = ownProps.info
-  const formInfo = info.form ? info.form(ownProps) : {}
+  const formInfo = info.form ? info.form(ownProps.params) : {}
 
   return {
     save:(data, meta, parentNode) => {
@@ -61,20 +63,20 @@ function mapDispatchToProps(dispatch, ownProps) {
           if(!routeHandlers.open && !parentNode) return
           const schema = ownProps.getSchema(formInfo.type) || {}
           dispatch(actions.showChildrenMessage(schema.title + ' added'))
-          dispatch(push(routeHandlers.open(parentNode)))
+          dispatch(push(routeHandlers.open(parentNode, params)))
         }))
       }
       else if(formInfo.mode=='edit'){
         dispatch(actions.requestSaveItem(context, parentNode, data, (err) => {
           if(!routeHandlers.open && !parentNode) return
           dispatch(actions.showChildrenMessage(data.name + ' saved'))
-          dispatch(push(routeHandlers.open(parentNode)))
+          dispatch(push(routeHandlers.open(parentNode, params)))
         }))
       }
     },
     cancel:(parentNode) => {
       if(!routeHandlers.open && !parentNode) return
-      dispatch(push(routeHandlers.open(parentNode)))
+      dispatch(push(routeHandlers.open(parentNode, params)))
     },
     revert:() => {
       dispatch(actions.revertEditNode())

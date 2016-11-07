@@ -39,7 +39,7 @@ function mapStateToProps(s, ownProps) {
   const info = ownProps.info
   const state = actions.getState(s)
 
-  const formInfo = info.form ? info.form(ownProps) : {}
+  const formInfo = info.form ? info.form(ownProps.params) : {}
 
   const data = state.editing.data || {}
   const meta = state.editing.meta || null
