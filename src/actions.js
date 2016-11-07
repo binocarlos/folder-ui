@@ -152,6 +152,9 @@ const ActionFactory = (opts = {}, db) => {
 
   if(!opts.name || !opts.db) throw new Error('ActionFactory requires a name and db options')
 
+  // a flag that decides if we are actually interested in loading any tree data
+  const enableTree = typeof(opts.enableTree) == 'boolean' ? opts.enableTree : true
+
   // the default is sort by the 'name' field
   const sort = opts.sort || sortByName
 
@@ -179,6 +182,25 @@ const ActionFactory = (opts = {}, db) => {
     return Object.assign({}, context, {
       state:getState()
     })
+  }
+
+  // used to refresh the view once the database is changed
+  // we look at the cofig to decide whether we refresh the tree or not
+  const requestRefreshView = (context, parentid, done) => {
+    return (dispatch, getState) => {
+      parallel([
+        // now reload the tree data (if we are setup to do so)
+        (next) => {
+          if(!enableTree) return next()
+          dispatch(requestTreeData(context, next))
+        },
+
+        // and the children
+        (next) => {
+          dispatch(requestChildren(context, parentid, next))
+        }
+      ], done)
+    }
   }
 
   const requestTreeData = (context, done) => {
@@ -247,17 +269,7 @@ const ActionFactory = (opts = {}, db) => {
         },
 
         (next) => {
-          parallel([
-            // now reload the tree data
-            (pnext) => {
-              dispatch(requestTreeData(context, pnext))
-            },
-
-            // and the children
-            (pnext) => {
-              dispatch(requestChildren(context, parentid, pnext))
-            }
-          ], next)
+          dispatch(requestRefreshView(context, parentid, next))
         }
 
       ], (err) => {
@@ -288,17 +300,7 @@ const ActionFactory = (opts = {}, db) => {
         },
 
         (next) => {
-          parallel([
-            // now reload the tree data
-            (pnext) => {
-              dispatch(requestTreeData(context, pnext))
-            },
-
-            // and the children
-            (pnext) => {
-              dispatch(requestChildren(context, parent.id, pnext))
-            }
-          ], next)
+          dispatch(requestRefreshView(context, parent.id, next))
         }
 
       ], (err) => {
@@ -330,17 +332,7 @@ const ActionFactory = (opts = {}, db) => {
         },
 
         (next) => {
-          parallel([
-            // now reload the tree data
-            (pnext) => {
-              dispatch(requestTreeData(context, pnext))
-            },
-
-            // and the children
-            (pnext) => {
-              dispatch(requestChildren(context, parent.id, pnext))
-            }
-          ], next)
+          dispatch(requestRefreshView(context, parent.id, next))
         }
 
         
@@ -368,17 +360,7 @@ const ActionFactory = (opts = {}, db) => {
         },
 
         (next) => {
-          parallel([
-            // now reload the tree data
-            (pnext) => {
-              dispatch(requestTreeData(context, pnext))
-            },
-
-            // and the children
-            (pnext) => {
-              dispatch(requestChildren(context, parent.id, pnext))
-            }
-          ], next)
+          dispatch(requestRefreshView(context, parent.id, next))
         }
 
         
