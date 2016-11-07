@@ -44,11 +44,12 @@ function mapDispatchToProps(dispatch, ownProps) {
   const actions = ownProps.actions
   const routeHandlers = ownProps.handlers
   const context = getDatabaseContext(ownProps)
+  const params = ownProps.params
 
   const route = ownProps.route || {}
 
   const info = ownProps.info
-  const formInfo = info.form ? info.form(ownProps) : {}
+  const formInfo = info.form ? info.form(ownProps.params) : {}
 
   return {
     save:(data, meta, parentNode) => {
@@ -61,20 +62,26 @@ function mapDispatchToProps(dispatch, ownProps) {
           if(!routeHandlers.open && !parentNode) return
           const schema = ownProps.getSchema(formInfo.type) || {}
           dispatch(actions.showChildrenMessage(schema.title + ' added'))
-          dispatch(push(routeHandlers.open(parentNode)))
+          dispatch(push(routeHandlers.open(parentNode, params)))
         }))
       }
       else if(formInfo.mode=='edit'){
         dispatch(actions.requestSaveItem(context, parentNode, data, (err) => {
           if(!routeHandlers.open && !parentNode) return
           dispatch(actions.showChildrenMessage(data.name + ' saved'))
-          dispatch(push(routeHandlers.open(parentNode)))
+          dispatch(push(routeHandlers.open(parentNode, params)))
         }))
       }
     },
     cancel:(parentNode) => {
       if(!routeHandlers.open && !parentNode) return
-      dispatch(push(routeHandlers.open(parentNode)))
+        console.log('-------------------------------------------');
+      console.log('-------------------------------------------');
+      console.log('parasm')
+      console.dir(params)
+      console.log('parentNode')
+      console.dir(parentNode)
+      dispatch(push(routeHandlers.open(parentNode, params)))
     },
     revert:() => {
       dispatch(actions.revertEditNode())

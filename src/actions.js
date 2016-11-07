@@ -400,9 +400,6 @@ const ActionFactory = (opts = {}, db) => {
     name:opts.name,
     // return the correct part of the state tree based on the 'name'
     getState:(state) => {
-      console.log('-------------------------------------------');
-      console.log('get state')
-      console.log(opts.name)
       return state[opts.name]
     },
 

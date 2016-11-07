@@ -7,6 +7,12 @@
 
 import superagent from 'superagent'
 
+
+/*
+
+  get the BACKEND urls representing each endpoint
+  
+*/
 const getUrl = (base, path, id) => {
   return base + path + (id ? '/' + id : '')
 }

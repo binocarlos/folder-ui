@@ -1,20 +1,20 @@
 import React from 'react'
 import { Route, IndexRoute } from 'react-router'
 
-import TreeWrapper from '../components/TreeWrapper'
-import ToolbarWrapper from '../components/ToolbarWrapper'
+import TreeWrapper from '../../components/TreeWrapper'
+import ToolbarWrapper from '../../components/ToolbarWrapper'
 
-import Tree from '../containers/Tree'
-import ChildrenToolbar from '../containers/ChildrenToolbar'
-import ChildrenTable from '../containers/ChildrenTable'
-import FormToolbar from '../containers/FormToolbar'
-import Form from '../containers/Form'
+import Tree from '../../containers/Tree'
+import ChildrenToolbar from '../../containers/ChildrenToolbar'
+import ChildrenTable from '../../containers/ChildrenTable'
+import FormToolbar from '../../containers/FormToolbar'
+import Form from '../../containers/Form'
 
-import { ContainerFactory } from '../tools'
-import Schema from '../schema'
-import FolderActions from '../actions'
+import { ContainerFactory } from '../../tools'
+import Schema from '../../schema'
+import FolderActions from '../../actions'
 
-import Routes from './routes'
+import RouteHandlers from './routehandlers'
 
 const DEFAULT_TYPES = {
   folder:{
@@ -70,7 +70,7 @@ const templateFactory = (opts = {}) => {
     width:opts.width
   })(TreeWrapper)
 
-  const routes = Routes({
+  const routes = RouteHandlers({
     path:opts.path
   })
 
@@ -129,6 +129,7 @@ const templateFactory = (opts = {}) => {
     <Route component={NavWrapper}>
       <Route path={opts.path} components={views.tree} onEnter={opts.onEnter}>
         <IndexRoute components={views.view} />
+        <Route path="view" components={views.view} />
         <Route path="view/:id" components={views.view} />
         <Route path="delete/:parent/:ids" components={views.view} />
         <Route path="edit/:id" components={views.edit} />

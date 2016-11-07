@@ -48,7 +48,7 @@ function mapStateToProps(s, ownProps) {
 
   const data = state.tree.db ? dumpTreeData(state.tree.db) : []
   const open = state.tree.open || {}
-  const treeInfo = info.tree ? info.tree(ownProps) : {
+  const treeInfo = info.tree ? info.tree(ownProps.params) : {
     id:ownProps.params.id
   }
   const selected = treeInfo.id
@@ -69,7 +69,7 @@ function mapDispatchToProps(dispatch, ownProps) {
   const actions = ownProps.actions
   const routeHandlers = ownProps.handlers
   const context = getDatabaseContext(ownProps)
-
+  const params = ownProps.params
   const route = ownProps.route || {}
 
   return {
@@ -87,7 +87,7 @@ function mapDispatchToProps(dispatch, ownProps) {
     },
     selectNode:(node) => {
       if(!routeHandlers.open || !node) return
-      dispatch(push(routeHandlers.open(node)))
+      dispatch(push(routeHandlers.open(node, params)))
     },
     toggleNode:(node) => {
       dispatch(actions.toggleTreeNode(node.id))

@@ -18,7 +18,7 @@ function mapStateToProps(s, ownProps) {
   const info = ownProps.info
   const state = actions.getState(s)
 
-  const formInfo = info.tree ? info.tree(ownProps) : {}
+  const formInfo = info.tree ? info.tree(ownProps.params) : {}
 
   const children = state.children.data || []
   const deleting = state.children.deleting ? true : false
@@ -53,18 +53,19 @@ function mapDispatchToProps(dispatch, ownProps) {
   const actions = ownProps.actions
   const routeHandlers = ownProps.handlers
   const context = getDatabaseContext(ownProps)
+  const params = ownProps.params
   return {
     onAdd:(parent, decriptor) => {
       if(!routeHandlers.add || !parent || !decriptor) return
-      dispatch(push(routeHandlers.add(parent, decriptor)))
+      dispatch(push(routeHandlers.add(parent, decriptor, params)))
     },
     onEdit:(parent, node) => {
       if(!routeHandlers.edit || !parent) return
-      dispatch(push(routeHandlers.edit(parent, node)))
+      dispatch(push(routeHandlers.edit(parent, node, params)))
     },
     onOpen:(node) => {
       if(!routeHandlers.open && !node) return
-      dispatch(push(routeHandlers.open(node)))
+      dispatch(push(routeHandlers.open(node, params)))
     },
     onDelete:(nodes) => {
       dispatch(actions.deleteSelection())

@@ -212,6 +212,76 @@ const Routes = (opts = {}) => {
 export default Routes
 ```
 
+The `routeinfo.js` file contains 2 objects:
+
+ * routeHandlers - functions that return react-router paths that match the routes you use
+ * routeInfo - functions that extract the required params from the current route
+
+You can provide your own handlers or override any of the existing functions:
+
+```javascript
+const factory = (opts = {}) => {
+
+  // the overall 'get a frontend' URL function
+  // 
+  const getUrl = (parts = []) => {
+    parts = [opts.path].concat(parts)
+    return '/' + parts.filter(part => '' + part).join('/')
+  }
+
+  // an object that maps action names onto functions
+  // each function will return a URL to redirect the app to
+  const routeHandlers = {
+    // get the route to view an item
+    open:(item = {}, params = {}) => {
+      return getUrl(['view', item.id])
+    },
+    // edit is in the context of a parent
+    edit:(parent = {}, item = {}, params = {}) => {
+      return getUrl(['edit', parent.id, item.id])
+    },
+    add:(parent = {}, descriptor = {}, params = {}) => {
+      return getUrl(['add', parent.id, descriptor.type])
+    }
+  }
+
+  // extract the information from the current route
+  // based on how we have configured react-router
+  const routeInfo = {
+
+    // /view/:id
+    tree:(params = {}) => {
+      return {
+        id:params.id || params.parent
+      }
+    },
+
+    // /edit/:id
+    // /edit/:parent/:id
+    // /add/:parent/:type
+    form:(props = {}) => {
+      return {
+        // where we get the schema from
+        mode:params.type ? 'add' : 'edit',
+        // for add operations
+        type:params.type,
+        // where we return to
+        parent:params.parent || params.id,
+        // the thing we are actually editing
+        id:params.id
+      }
+    }
+  }
+
+  return {
+    routeHandlers,
+    routeInfo
+  }
+}
+
+export default factory
+```
+
 ## Templates
 
 The whole of the above setup is wrapped up in a template which you can use as follows:
