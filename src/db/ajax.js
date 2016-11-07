@@ -121,6 +121,7 @@ export default function ajaxdb(opts = {}){
         })
     },
     addItem:(context, parent, item, done) => {
+      if(opts.readOnly) return done('this database is readonly')
       superagent
         .post(urls.addItem(getBaseUrl(context), parent ? parent.id : null))
         .send(JSON.stringify(item))
@@ -135,6 +136,7 @@ export default function ajaxdb(opts = {}){
         })
     },
     saveItem:(context, id, data, done) => {
+      if(opts.readOnly) return done('this database is readonly')
       superagent
         .put(urls.saveItem(getBaseUrl(context), id))
         .send(JSON.stringify(data))
@@ -150,6 +152,7 @@ export default function ajaxdb(opts = {}){
     },
     
     deleteItem:(context, id, done) => {
+      if(opts.readOnly) return done('this database is readonly')
       superagent
         .delete(urls.deleteItem(getBaseUrl(context), id))
         .set('Accept', 'application/json')
