@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 
 import Form from '../components/Form'
+import { getDatabaseContext } from '../tools'
 
 export class FormContainer extends Component {
 
@@ -58,13 +59,14 @@ function mapStateToProps(s, ownProps) {
 
 function mapDispatchToProps(dispatch, ownProps) {
   const actions = ownProps.actions
+  const context = getDatabaseContext(ownProps)
   return {
     onUpdate:(data, meta) => {
       dispatch(actions.updateEditNode(data, meta))
     },
     requestData:(id) => {
       if(!id) return
-      dispatch(actions.requestNodeData(id))
+      dispatch(actions.requestNodeData(context, id))
     },
     setData:(data = {}) => {
       dispatch(actions.setEditData(data))

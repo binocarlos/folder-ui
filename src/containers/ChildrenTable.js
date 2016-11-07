@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import ChildrenTable from '../components/ChildrenTable'
+import { getDatabaseContext } from '../tools'
 
 const TABLE_FIELDS = [{
   title:'name',
@@ -47,9 +48,10 @@ function mapStateToProps(s, ownProps) {
 
 function mapDispatchToProps(dispatch, ownProps) {
   const actions = ownProps.actions
+  const context = getDatabaseContext(ownProps)
   return {
     requestChildren:(id, done) => {
-      dispatch(actions.requestChildren(id, done))
+      dispatch(actions.requestChildren(context, id, done))
     },
     onRowSelection:(ids = []) => {
       dispatch(actions.selectChildNodes(ids))
