@@ -4,7 +4,7 @@
   
 */
 
-import { serialize, processTreeData, dumpTreeData, getChildren, addChild, moveItem, deleteItem } from '../tools'
+import { serialize, processTreeData, dumpTreeData, getChildren, getDeepChildren, addChild, moveItem, deleteItem } from '../tools'
 
 export default function memorydb(opts = {}){
 
@@ -29,6 +29,9 @@ export default function memorydb(opts = {}){
     loadChildren:(context, id, done) => {
       done(null, serialize(getChildren(tree, id)))
     },
+    loadDeepChildren:(context, id, done) => {
+      done(null, serialize(getDeepChildren(tree, id)))
+    },
     loadItem:(context, id, done) => {
       done(null, serialize(tree.data[id]))
     },
@@ -38,11 +41,11 @@ export default function memorydb(opts = {}){
       tree = addChild(tree, parent, item)
       commit(null, serialize(item), done)
     },
-    saveItem:(context, item, done) => {
-      item = serialize(item)
-      let saveitem = tree.data[item.id]
-      Object.keys(item || {}).forEach(function(key){
-        saveitem[key] = item[key]
+    saveItem:(context, id, data, done) => {
+      data = serialize(data)
+      let saveitem = tree.data[id]
+      Object.keys(data || {}).forEach(function(key){
+        saveitem[key] = data[key]
       })
       commit(null, serialize(saveitem), done)
     },
@@ -50,27 +53,8 @@ export default function memorydb(opts = {}){
       deleteItem(tree, id)
       commit(null, null, done)
     },
-    pasteItems:(context, mode, parent, items, done) => {
-      let newItems = []
-
-      parent = serialize(parent)
-      items = serialize(items)
-
-      if(mode=='copy'){
-        newItems = items.map(item => {
-          delete(item.id)
-          tree = addChild(tree, parent, item)
-          return item
-        })
-      }
-      else if(mode=='cut'){
-        items.forEach(item => {
-          tree = moveItem(tree, item.id, parent.id)
-        })
-        newItems = items
-      }
-
-      commit(null, serialize(newItems), done)
+    filterPaste:(mode, item) => {
+      return item
     }
   }
 }

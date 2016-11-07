@@ -101,6 +101,21 @@ export const getChildren = (tree, id) => {
 
 /*
 
+  return an array of the children for a given id
+  each child has it's own 'children' array filled in
+  
+*/
+export const getDeepChildren = (tree, id) => {
+  const childIds = id ? (tree.children[id] || []) : tree.rootids
+  return childIds.map(cid => {
+    return Object.assign({}, tree.data[cid], {
+      children:getChildren(tree, cid)
+    })
+  })
+}
+
+/*
+
   return an array of ancestor objects for an item
   
 */
@@ -206,6 +221,10 @@ export const addChild = (tree, parent, child) => {
     existingChildren.push(child.id)
     tree.children[parent.id] = existingChildren
   }
+
+  (child.children || []).forEach(subchild => {
+    addChild(tree, child, subchild)
+  })
   
   return tree
 }

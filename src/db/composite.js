@@ -106,6 +106,14 @@ const codecFactory = (database) => {
     })
   }
 
+  const loadDeepChildren = (context, id, done) => {
+    id = isRootID(id) ? null : id
+    database.db.loadDeepChildren(context, decode(id), (err, data = []) => {
+      if(err) return done(err)
+      done(null, data.map(encode))
+    })
+  }
+
   const loadItem = (context, id, done) => {
     id = isRootID(id) ? null : id
 
@@ -121,8 +129,8 @@ const codecFactory = (database) => {
     
   }
 
-  const saveItem = (context, item, done) => {
-    database.db.saveItem(context, decode(item), (err, data) => {
+  const saveItem = (context, id, data, done) => {
+    database.db.saveItem(context, decodeID(id), decode(data), (err, data) => {
       if(err) return done(err)
       done(null, encode(data))
     })
@@ -138,13 +146,12 @@ const codecFactory = (database) => {
     })
   }
 
-  const pasteItems = (context, mode, parent, items, done) => {
-    parent = isRootID(parent.id) ? null : parent
-    database.db.pasteItems(context, mode, decode(parent), items.map(decode), done)
-  }
-
   const deleteItem = (context, id, done) => {
     database.db.deleteItem(context, decodeID(id), done)
+  }
+
+  const filterPaste = (mode, item) => {
+    return database.db.filterPaste(mode, item)
   }
 
   return {
@@ -154,11 +161,12 @@ const codecFactory = (database) => {
     decode,
     loadTree,
     loadChildren,
+    loadDeepChildren,
     loadItem,
     saveItem,
     addItem,
-    pasteItems,
-    deleteItem
+    deleteItem,
+    filterPaste
   }
 }
 
@@ -171,6 +179,8 @@ export default function compositedb(databases = []){
     codecs[database.id] = codecFactory(database)
   })
 
+  // we either have an object with a [CODEC_KEY]
+  // or we have a string from the route
   const getItemCodecId = (item) => {
     return typeof(item) == 'string' ?
       extractCodecFromId(item) :
@@ -199,30 +209,52 @@ export default function compositedb(databases = []){
       if(!codec) return done('no codec found for: ' + getItemCodecId(id))
       codec.loadChildren(context, id, done)
     },
+    loadDeepChildren:(context, id, done) => {
+      const codec = getItemCodec(id)
+      if(!codec) return done('no codec found for: ' + getItemCodecId(id))
+      codec.loadDeepChildren(context, id, done)
+    },
     loadItem:(context, id, done) => {
       const codec = getItemCodec(id)
       if(!codec) return done('no codec found for: ' + getItemCodecId(id))
       codec.loadItem(context, id, done)
     },
-    saveItem:(context, item, done) => {
-      const codec = getItemCodec(item)
-      if(!codec) return done('no codec found for: ' + getItemCodecId(item))
-      codec.saveItem(context, item, done)
+    saveItem:(context, id, data, done) => {
+      const codec = getItemCodec(id)
+      if(!codec) return done('no codec found for: ' + getItemCodecId(id))
+      codec.saveItem(context, id, data, done)
     },
     addItem:(context, parent, item, done) => {
       const codec = getItemCodec(parent)
       if(!codec) return done('no codec found for: ' + getItemCodecId(parent))
       codec.addItem(context, parent, item, done)
     },
-    pasteItems:(context, mode, parent, items, done) => {
-      const codec = getItemCodec(parent)
-      if(!codec) return done('no codec found for: ' + getItemCodecId(parent))
-      codec.pasteItems(context, mode, parent, items, done)
-    },
     deleteItem:(context, id, done) => {
       const codec = getItemCodec(id)
       if(!codec) return done('no codec found for: ' + getItemCodecId(id))
       codec.deleteItem(context, id, done)
+    },
+    // the wrapper for pasteItems that checks if the paste items are from
+    // the same codec source as the parent
+    pasteItems:(handler) => {
+      return (context, mode, parent, items, done) => {
+        const parentCodec = getItemCodec(parent.id)
+        const differentOrigin = items.filter(item => {
+          const itemCodec = getItemCodec(item.id)
+          return itemCodec.id != parentCodec.id
+        }).length > 0
+
+        // this forces the mode to 'copy' if the origins are different
+        mode = differentOrigin ? 'copy' : mode
+        handler(context, mode, parent, items, done)
+      }
+    },
+    // loop over each item - get it's codec then use that to map the paste data
+    filterPaste:(mode, item) => {
+      const codec = getItemCodec(item.id)
+      if(!codec) return done('no codec found for: ' + getItemCodecId(item.id))
+      return codec.filterPaste(mode, item)
     }
+
   }
 }

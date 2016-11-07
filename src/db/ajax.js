@@ -26,6 +26,9 @@ const DEFAULT_URLS = {
   loadChildren:(base, id) => {
     return getUrl(base, '/children', id)
   },
+  loadDeepChildren:(base, id) => {
+    return getUrl(base, '/deepchildren', id)
+  },
   pasteItems:(base, id) => {
     return getUrl(base, '/paste', id)
   },
@@ -74,7 +77,7 @@ export default function ajaxdb(opts = {}){
             done && done(res.body)
           }
           else{
-            done && done(null, filterData('loadTree', res.body))
+            done && done(null, res.body)
           }
         })
     },
@@ -87,7 +90,20 @@ export default function ajaxdb(opts = {}){
             done && done(res.body)
           }
           else{
-            done && done(null, filterData('loadChildren', res.body))
+            done && done(null, res.body)
+          }
+        })
+    },
+    loadDeepChildren:(context, id, done) => {
+      superagent
+        .get(urls.loadDeepChildren(getBaseUrl(context), id))
+        .set('Accept', 'application/json')
+        .end((err, res) => {
+          if(res.status>=400){
+            done && done(res.body)
+          }
+          else{
+            done && done(null, res.body)
           }
         })
     },
@@ -100,12 +116,11 @@ export default function ajaxdb(opts = {}){
             done && done(res.body)
           }
           else{
-            done && done(null, filterData('loadItem', res.body))
+            done && done(null, res.body)
           }
         })
     },
     addItem:(context, parent, item, done) => {
-      item = filterData('addItem', item)
       superagent
         .post(urls.addItem(getBaseUrl(context), parent ? parent.id : null))
         .send(JSON.stringify(item))
@@ -119,9 +134,7 @@ export default function ajaxdb(opts = {}){
           }
         })
     },
-    saveItem:(context, item, done) => {
-      const id = item.id
-      const data = filterData('saveItem', item)
+    saveItem:(context, id, data, done) => {
       superagent
         .put(urls.saveItem(getBaseUrl(context), id))
         .send(JSON.stringify(data))
@@ -150,23 +163,8 @@ export default function ajaxdb(opts = {}){
         })
     },
 
-    pasteItems:(context, mode, parent, items, done) => {
-      const data = filterData('pasteItems', items)
-      superagent
-        .post(urls.pasteItems(getBaseUrl(context), parent ? parent.id : null))
-        .send(JSON.stringify({
-          mode:mode,
-          data:data
-        }))
-        .set('Accept', 'application/json')
-        .end((err, res) => {
-          if(res.status>=400){
-            done && done(res.body)
-          }
-          else{
-            done && done(null, res.body)
-          }
-        })
+    filterPaste:(mode, item) => {
+      return item
     }
     
   }

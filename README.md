@@ -39,11 +39,12 @@ If you are working with external state and want `folder-ui` to handle redux stat
 
  * `loadTree(context, done)` - load the tree data
  * `loadChildren(context, id, done)` - load the children for an item
+ * `loadDeepChildren(context, id, done)` - load the children and sub-trees for an item
  * `loadItem(context, id, done)` - load a single item
  * `addItem(context, parent, item, done)` - add an item to a parent
- * `saveItem(context, item, done)` - save an item
+ * `saveItem(context, id, data, done)` - save an item
  * `deleteItem(context, id, done)` - delete an item from a parent
- * `pasteItems(context, mode, parent, items, done)` - paste items, mode is {copy,cut}
+ * `filterPaste(mode, item)` - filter item data before it is pasted
 
 In all cases the callback `done` takes the following signature: `done(err, data)` (i.e. standard node callback style)
 
