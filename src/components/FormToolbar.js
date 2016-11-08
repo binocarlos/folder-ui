@@ -49,7 +49,10 @@ export default class FormToolbar extends Component {
       item:this.props.item,
       parent:this.props.parentNode,
       schema:this.props.schema,
-      mode:this.props.mode
+      mode:this.props.mode,
+      getState:this.props.getState,
+      dispatch:this.props.dispatch,
+      actions:this.props.actions
     }
   }
 

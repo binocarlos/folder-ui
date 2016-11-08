@@ -49,7 +49,8 @@ function mapStateToProps(s, ownProps) {
     schema,
     item,
     mode:formInfo.mode,
-    saveTitle:formInfo.mode == 'edit' ? 'Save' : 'Add'
+    saveTitle:formInfo.mode == 'edit' ? 'Save' : 'Add',
+    getState:() => s
   }
 }
 
@@ -65,6 +66,7 @@ function mapDispatchToProps(dispatch, ownProps) {
   const formInfo = info.form ? info.form(ownProps.params) : {}
 
   return {
+    dispatch,
     save:(data, meta, parentNode) => {
       if(!meta.valid){
         // TODO - display a message?

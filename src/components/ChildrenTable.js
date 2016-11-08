@@ -1,4 +1,5 @@
 import React, { PropTypes, Component } from 'react'
+import muiThemeable from 'material-ui/styles/muiThemeable'
 import {
   Table, 
   TableBody, 
@@ -17,9 +18,23 @@ const getFieldTitle = (field = {}) => {
 
 class ChildrenTable extends Component {
 
+  // the info we pass to functions
+  getContext() {
+    return {
+      parent:this.props.parent,
+      children:this.props.data,
+      getState:this.props.getState,
+      dispatch:this.props.dispatch,
+      actions:this.props.actions,
+      theme:this.props.muiTheme
+    }
+  }
+
   render() {
 
-    const fields = this.props.fields || []
+    const fields = this.props.getFields ?
+      this.props.getFields(this.getContext()) :
+      []
     const data = this.props.data || []
     const selected = this.props.selected
     const renderfns = fields.map(field => {
@@ -48,11 +63,13 @@ class ChildrenTable extends Component {
           enableSelectAll={false}
         >
           <TableRow>
-            {fields.map( (field, index) => (
-              <TableHeaderColumn key={index}>
-                {getFieldTitle(field)}
-              </TableHeaderColumn>
-            ))}
+            {fields.map( (field, index) => {
+              return (
+                <TableHeaderColumn key={index} style={field.style}>
+                  {getFieldTitle(field)}
+                </TableHeaderColumn>
+              )
+            })}
           </TableRow>
         </TableHeader>
       ) : null}
@@ -65,8 +82,20 @@ class ChildrenTable extends Component {
               {fields.map( (field, index) => {
                 const render = renderfns[index]
                 const content = render(row)
+
+                const wrappedContent = field.preventRowSelection ?
+                  (
+                    <div onClick={e => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                    }}>
+                      {content}
+                    </div>
+                  ) :
+                  content
+
                 return (
-                  <TableRowColumn key={index}>{content}</TableRowColumn>
+                  <TableRowColumn key={index} style={field.style}>{wrappedContent}</TableRowColumn>
                 )
               })}
             </TableRow>
@@ -86,4 +115,4 @@ ChildrenTable.defaultProps = {
   showHeader: true
 }
 
-export default ChildrenTable
+export default muiThemeable()(ChildrenTable)

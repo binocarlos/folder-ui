@@ -46,7 +46,8 @@ function mapStateToProps(s, ownProps) {
     clipboard,
     clipboardMode,
     deleting,
-    message
+    message,
+    getState:() => s
   }
 }
 
@@ -56,6 +57,7 @@ function mapDispatchToProps(dispatch, ownProps) {
   const context = getDatabaseContext(ownProps)
   const params = ownProps.params
   return {
+    dispatch,
     onAdd:(parent, decriptor) => {
       if(!routeHandlers.add || !parent || !decriptor) return
       dispatch(push(routeHandlers.add(parent, decriptor, params)))
