@@ -40,6 +40,7 @@ function mapStateToProps(s, ownProps) {
   return {
     title,
     node:parentNode,
+    parentId:formInfo.id,
     data:children,
     selected,
     clipboard,

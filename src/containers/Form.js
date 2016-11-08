@@ -12,7 +12,7 @@ export class FormContainer extends Component {
       this.props.requestData(this.props.id)
     }
     else if(this.props.mode=='add'){
-      this.props.setData(this.props.initialData)
+      this.props.setInitialData(this.props.parentNode, this.props.descriptor)
     }
   }
 
@@ -46,14 +46,31 @@ function mapStateToProps(s, ownProps) {
 
   const type = formInfo.mode == 'edit' ? data.type : formInfo.type
   const schema = ownProps.getSchema(type) || {}
+  const parentNode = state.tree.db ? state.tree.db.data[formInfo.parent] : null
+
+  let schemaFields = schema.fields || []
+
+  // turn the schema into read-only if the item is not editable
+  if(formInfo.mode == 'edit' && ownProps.isEditable){
+    const item = state.tree.db ? state.tree.db.data[formInfo.id] : null
+    if(!ownProps.isEditable(item)){
+      schemaFields = schemaFields.map(field => {
+        return Object.assign({}, field, {
+          readonly:true
+        })
+      })
+    }
+  }
 
   return {
     id:formInfo.id,
     mode:formInfo.mode,
     data,
     meta,
-    schema:schema.fields || [],
-    initialData:JSON.parse(JSON.stringify(schema.initialData || {}))
+    schema:schemaFields,
+    descriptor:schema,
+    parentNode
+    
   }
 }
 
@@ -70,6 +87,18 @@ function mapDispatchToProps(dispatch, ownProps) {
     },
     setData:(data = {}) => {
       dispatch(actions.setEditData(data))
+    },
+    // initialize the form data with the `initialData`
+    // property of the schema descriptor
+    // if we have been given a 'getNewItem' prop
+    // use it to get the data instead
+    setInitialData:(parent, descriptor = {}) => {
+
+      const newItem = ownProps.getNewItem ?
+        ownProps.getNewItem(parent, descriptor) :
+        descriptor.initialData
+
+      dispatch(actions.setEditData(JSON.stringify(JSON.parse(newItem || {}))))
     }
   }
 }

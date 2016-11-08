@@ -37,7 +37,15 @@ const extractCodecFromId = (id) => {
   return idParts.shift()
 }
 
-const decodeID = (id) => {
+// we either have an object with a [CODEC_KEY]
+// or we have a string from the route
+export const getItemCodecId = (item) => {
+  return typeof(item) == 'string' ?
+    extractCodecFromId(item) :
+    item[CODEC_KEY]
+}
+
+export const decodeID = (id) => {
   let idParts = id.split(CODEC_DELIMITER)
   idParts.shift()
   return idParts.join(CODEC_DELIMITER)
@@ -170,7 +178,7 @@ const codecFactory = (database) => {
   }
 }
 
-export default function compositedb(databases = []){
+const compositedb = (databases = []) => {
 
   // map database name onto codec for it
   // (the codec contains a ref to the original db for storage)
@@ -179,13 +187,6 @@ export default function compositedb(databases = []){
     codecs[database.id] = codecFactory(database)
   })
 
-  // we either have an object with a [CODEC_KEY]
-  // or we have a string from the route
-  const getItemCodecId = (item) => {
-    return typeof(item) == 'string' ?
-      extractCodecFromId(item) :
-      item[CODEC_KEY]
-  }
   // use the encoded field to find out what database
   // originated the given item
   const getItemCodec = (item) => {
@@ -258,3 +259,5 @@ export default function compositedb(databases = []){
 
   }
 }
+
+export default compositedb

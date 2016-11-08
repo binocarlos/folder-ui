@@ -38,7 +38,8 @@ const factory = (opts = {}) => {
       return getUrl(['edit', parent.id, item.id], params)
     },
     add:(parent = {}, descriptor = {}, params = {}) => {
-      return getUrl(['add', parent.id, descriptor.type], params)
+      if(!descriptor.id) throw new Error('the passed descriptor has no id')
+      return getUrl(['add', parent.id, descriptor.id], params)
     }
   }
 
