@@ -92,7 +92,9 @@ const templateFactory = (opts = {}) => {
   })
 
   const containers = {
-    tree:factory(Tree),
+    tree:factory(Tree, {
+      getIcon:opts.getIcon
+    }),
     childrenToolbar:factory(ChildrenToolbar, {
       getDescriptors:schema.getDescriptors,
       filterActions:schema.filterActions,
