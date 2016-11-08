@@ -43,13 +43,29 @@ export default class FormToolbar extends Component {
       ]
   }
 
+  // the info we pass to functions
+  getContext() {
+    return {
+      item:this.props.item,
+      parent:this.props.parentNode,
+      schema:this.props.schema,
+      mode:this.props.mode
+    }
+  }
+
   render() {
+    const toolbarChildren = this.props.getChildren ? 
+      this.props.getChildren(this.getContext()) : 
+      null
+
     const newProps = Object.assign({}, this.props, {
       leftbuttons:this.getLeftButtons()
     })
 
     return (
-      <Toolbar {...newProps} />
+      <Toolbar {...newProps}>
+        {toolbarChildren}
+      </Toolbar>
     )
   }
 }

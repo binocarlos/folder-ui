@@ -101,12 +101,7 @@ export default class ChildrenToolbar extends Component {
     }
 
     actions = this.props.filterActions ? 
-      actions = this.props.filterActions({
-        parent:this.props.node,
-        selected:this.props.selected,
-        clipboard:this.props.clipboard,
-        clipboardMode:this.props.clipboardMode
-      }, actions) :
+      actions = this.props.filterActions(this.getContext(), actions) :
       actions
 
     if(actions.length>0){
@@ -121,7 +116,21 @@ export default class ChildrenToolbar extends Component {
     return leftbuttons
   }
 
+  // the info we pass to functions
+  getContext() {
+    return {
+      parent:this.props.node,
+      selected:this.props.selected,
+      clipboard:this.props.clipboard,
+      clipboardMode:this.props.clipboardMode
+    }
+  }
+
   render() {
+
+    const toolbarChildren = this.props.getChildren ? 
+      this.props.getChildren(this.getContext()) : 
+      null
 
     const newProps = Object.assign({}, this.props, {
       leftbuttons:this.getLeftButtons()
@@ -131,7 +140,9 @@ export default class ChildrenToolbar extends Component {
 
     return (
       <div>
-        <Toolbar {...newProps} />
+        <Toolbar {...newProps}>
+          {toolbarChildren}
+        </Toolbar>
         {
           this.props.deleting ? 
             (
