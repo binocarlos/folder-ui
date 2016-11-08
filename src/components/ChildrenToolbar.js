@@ -122,7 +122,10 @@ export default class ChildrenToolbar extends Component {
       parent:this.props.node,
       selected:this.props.selected,
       clipboard:this.props.clipboard,
-      clipboardMode:this.props.clipboardMode
+      clipboardMode:this.props.clipboardMode,
+      getState:this.props.getState,
+      dispatch:this.props.dispatch,
+      actions:this.props.actions
     }
   }
 

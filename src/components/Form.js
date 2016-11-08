@@ -19,9 +19,27 @@ function getStyles(){
 
 class FormViewer extends Component {
 
+  // the info we pass to functions
+  getContext() {
+    return {
+      id:this.props.id,
+      mode:this.props.mode,
+      descriptor:this.props.descriptor,
+      schema:this.props.schema,
+      parent:this.props.parentNode,
+      getState:this.props.getState,
+      dispatch:this.props.dispatch,
+      actions:this.props.actions
+    }
+  }
+
   render() {
 
-    let library = Object.assign({}, muiLibrary, this.props.library)
+    const customLibary = this.props.getLibrary ?
+      this.props.getLibrary(this.getContext(), this.props.item) :
+      {}
+
+    let library = Object.assign({}, muiLibrary, customLibary)
     let styles = getStyles()
 
     return (

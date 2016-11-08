@@ -54,7 +54,7 @@ const templateFactory = (opts = {}) => {
       getChildren:opts.childrenToolbarChildren
     }),
     childrenTable:factory(ChildrenTable, {
-      fields:schema.getTableFields(),
+      getFields:schema.getTableFields,
       showCheckboxes:true,
       showHeader:false,
       multiSelectable:true

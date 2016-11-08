@@ -2,6 +2,7 @@ import React, { PropTypes, Component } from 'react'
 import { List, ListItem } from 'material-ui/List'
 import Subheader from 'material-ui/Subheader'
 import Folder from 'material-ui/svg-icons/file/folder'
+import muiThemeable from 'material-ui/styles/muiThemeable'
 import { mergeStyles } from 'kettle-ui/lib/tools'
 
 const DEFAULT_STYLES = {
@@ -22,7 +23,7 @@ class Tree extends Component {
   
   getIcon(data) {
     return this.props.getIcon ? 
-      this.props.getIcon(data) :
+      this.props.getIcon(data, 'tree', this.props.muiTheme) :
       <Folder />
   }
 
@@ -93,4 +94,4 @@ class Tree extends Component {
 
 }
 
-export default Tree
+export default muiThemeable()(Tree)

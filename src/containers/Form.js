@@ -47,6 +47,7 @@ function mapStateToProps(s, ownProps) {
   const type = formInfo.mode == 'edit' ? data.type : formInfo.type
   const schema = ownProps.getSchema(type) || {}
   const parentNode = state.tree.db ? state.tree.db.data[formInfo.parent] : null
+  const item = state.tree.db ? state.tree.db.data[formInfo.id] : null
 
   let schemaFields = schema.fields || []
 
@@ -67,10 +68,11 @@ function mapStateToProps(s, ownProps) {
     mode:formInfo.mode,
     data,
     meta,
+    item,
     schema:schemaFields,
     descriptor:schema,
-    parentNode
-    
+    parentNode,
+    getState:() => s
   }
 }
 
@@ -78,6 +80,7 @@ function mapDispatchToProps(dispatch, ownProps) {
   const actions = ownProps.actions
   const context = getDatabaseContext(ownProps)
   return {
+    dispatch,
     onUpdate:(data, meta) => {
       dispatch(actions.updateEditNode(data, meta))
     },

@@ -21,16 +21,20 @@ const factory = (opts = {}) => {
 
   opts = Object.assign({}, DEFAULT_OPTS, opts)
 
-  const getTableFields = () => {
-    return opts.tableFields
+  const getTableFields = (parent, data) => {
+    return opts.getTableFields ?
+      opts.getTableFields(parent, data) :
+      opts.tableFields || []
   }
 
   const getSchema = (type = opts.defaultType) => {
     return opts.types[type]
   }
 
-  const getLibrary = (type = opts.defaultType) => {
-    return opts.library
+  const getLibrary = (context, item) => {
+    return opts.getLibrary ?
+      opts.getLibrary(context, item) :
+      opts.library || {}
   }
 
   /*
