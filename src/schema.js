@@ -5,10 +5,16 @@ const DEFAULT_OPTS = {
   defaultType:'folder'
 }
 
+// buttons that appear for read only items
 const READONLY_BUTTONS = {
   edit:true,
   open:true,
   copy:true,
+}
+
+// buttons that only appear for non things that can have children
+const NONLEAF_BUTTONS = {
+  open:true
 }
 
 const READONLY_BUTTON_PROPS = {
@@ -68,6 +74,14 @@ const factory = (opts = {}) => {
       true
   }
 
+  // tells you if an item is a leaf node or not
+  const isLeaf = (item) => {
+    if(!item) return false
+    return opts.isLeaf ?
+      opts.isLeaf(item) :
+      false
+  }  
+
   const filterActions = (context, actions) => {
     if(!context.parent) return []
 
@@ -76,6 +90,7 @@ const factory = (opts = {}) => {
       [context.parent]
 
     const isItemEditable = focusItems.filter(item => isEditable(item) ? true : false).length > 0
+    const isItemLeaf = focusItems.filter(item => isLeaf(item) ? true : false).length > 0
 
     // the parent is not editable
     if(!isItemEditable){
@@ -86,6 +101,12 @@ const factory = (opts = {}) => {
         // inject properties from READONLY_BUTTON_PROPS
         .map(action => Object.assign({}, action, READONLY_BUTTON_PROPS[action.id]))
 
+    }
+
+    if(isItemLeaf){
+      actions = actions
+        // filter out any leaf-only actons
+        .filter(action => !NONLEAF_BUTTONS[action.id])
     }
 
     // allow the user to mess with the buttons
@@ -101,6 +122,7 @@ const factory = (opts = {}) => {
     getDescriptors,
     filterActions,
     getNewItem,
+    isLeaf,
     isEditable
   }
 

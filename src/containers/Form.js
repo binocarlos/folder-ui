@@ -47,14 +47,12 @@ function mapStateToProps(s, ownProps) {
   const type = formInfo.mode == 'edit' ? data.type : formInfo.type
   const schema = ownProps.getSchema(type) || {}
   const parentNode = state.tree.db ? state.tree.db.data[formInfo.parent] : null
-  const item = state.tree.db ? state.tree.db.data[formInfo.id] : null
 
   let schemaFields = schema.fields || []
 
   // turn the schema into read-only if the item is not editable
   if(formInfo.mode == 'edit' && ownProps.isEditable){
-    const item = state.tree.db ? state.tree.db.data[formInfo.id] : null
-    if(!ownProps.isEditable(item)){
+    if(!ownProps.isEditable(data)){
       schemaFields = schemaFields.map(field => {
         return Object.assign({}, field, {
           readonly:true
@@ -68,7 +66,6 @@ function mapStateToProps(s, ownProps) {
     mode:formInfo.mode,
     data,
     meta,
-    item,
     schema:schemaFields,
     descriptor:schema,
     parentNode,

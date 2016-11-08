@@ -20,8 +20,8 @@ const itemUrl = (base, id) => {
   return getUrl(base, '/item', id)
 }
 const DEFAULT_URLS = {
-  loadTree:(base) => {
-    return getUrl(base, '/tree')
+  loadTree:(base, search) => {
+    return getUrl(base, '/tree' + (search ? '?query=' + search : ''))
   },
   loadChildren:(base, id) => {
     return getUrl(base, '/children', id)
@@ -70,7 +70,7 @@ export default function ajaxdb(opts = {}){
   return {
     loadTree:(context, done) => {
       superagent
-        .get(urls.loadTree(getBaseUrl(context)))
+        .get(urls.loadTree(getBaseUrl(context), context.search))
         .set('Accept', 'application/json')
         .end((err, res) => {
           if(res.status>=400){

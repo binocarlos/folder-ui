@@ -47,7 +47,7 @@ class FormToolbar extends Component {
   // the info we pass to functions
   getContext() {
     return {
-      item:this.props.item,
+      item:this.props.data,
       parent:this.props.parentNode,
       schema:this.props.schema,
       mode:this.props.mode,
@@ -63,8 +63,8 @@ class FormToolbar extends Component {
       this.props.getChildren(this.getContext()) : 
       null
 
-    const icon = this.props.getIcon && this.props.item ?
-      this.props.getIcon(this.props.item, 'toolbar', this.props.muiTheme) :
+    const icon = this.props.getIcon && this.props.data ?
+      this.props.getIcon(this.props.data, 'toolbar', this.props.muiTheme) :
       null
 
     const newProps = Object.assign({}, this.props, {

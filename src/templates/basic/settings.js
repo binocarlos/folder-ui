@@ -12,6 +12,7 @@ const DEFAULT_TYPES = {
   item:{
     id:'item',
     title:'Item',
+    leaf:true,
     fields:[{
       name:'name'
     },{
