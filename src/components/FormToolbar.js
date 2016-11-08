@@ -1,7 +1,8 @@
 import React, { Component, PropTypes } from 'react'
+import muiThemeable from 'material-ui/styles/muiThemeable'
 import Toolbar from 'kettle-ui/lib/Toolbar'
 
-export default class FormToolbar extends Component {
+class FormToolbar extends Component {
 
   getLeftButtons() {
 
@@ -62,8 +63,13 @@ export default class FormToolbar extends Component {
       this.props.getChildren(this.getContext()) : 
       null
 
+    const icon = this.props.getIcon && this.props.item ?
+      this.props.getIcon(this.props.item, 'toolbar', this.props.muiTheme) :
+      null
+
     const newProps = Object.assign({}, this.props, {
-      leftbuttons:this.getLeftButtons()
+      leftbuttons:this.getLeftButtons(),
+      icon
     })
 
     return (
@@ -73,3 +79,5 @@ export default class FormToolbar extends Component {
     )
   }
 }
+
+export default muiThemeable()(FormToolbar)

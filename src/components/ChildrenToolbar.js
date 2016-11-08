@@ -1,11 +1,12 @@
 import React, { Component, PropTypes } from 'react'
 import Toolbar from 'kettle-ui/lib/Toolbar'
 import ConfirmDialog from 'kettle-ui/lib/ConfirmDialog'
+import muiThemeable from 'material-ui/styles/muiThemeable'
 import Snackbar from 'material-ui/Snackbar'
 
 const SNACKBAR_AUTOHIDE = 5000
 
-export default class ChildrenToolbar extends Component {
+class ChildrenToolbar extends Component {
 
   getAddButton(parent) {
 
@@ -136,8 +137,13 @@ export default class ChildrenToolbar extends Component {
       this.props.getChildren(this.getContext()) : 
       null
 
+    const icon = this.props.getIcon && this.props.node?
+      this.props.getIcon(this.props.node, 'toolbar', this.props.muiTheme) :
+      null
+
     const newProps = Object.assign({}, this.props, {
-      leftbuttons:this.getLeftButtons()
+      leftbuttons:this.getLeftButtons(),
+      icon
     })
 
     const selected = this.props.selected || []
@@ -178,3 +184,5 @@ export default class ChildrenToolbar extends Component {
   }
 
 }
+
+export default muiThemeable()(ChildrenToolbar)

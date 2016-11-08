@@ -51,7 +51,8 @@ const templateFactory = (opts = {}) => {
       getDescriptors:schema.getDescriptors,
       filterActions:schema.filterActions,
       isEditable:schema.isEditable,
-      getChildren:opts.childrenToolbarChildren
+      getChildren:opts.childrenToolbarChildren,
+      getIcon:opts.getIcon
     }),
     childrenTable:factory(ChildrenTable, {
       getFields:schema.getTableFields,
@@ -62,7 +63,8 @@ const templateFactory = (opts = {}) => {
     formToolbar:factory(FormToolbar, {
       getSchema:schema.getSchema,
       isEditable:schema.isEditable,
-      getChildren:opts.formToolbarChildren
+      getChildren:opts.formToolbarChildren,
+      getIcon:opts.getIcon
     }),
     form:factory(Form, {
       getSchema:schema.getSchema,
