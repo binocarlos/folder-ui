@@ -63,11 +63,13 @@ class ChildrenTable extends Component {
           enableSelectAll={false}
         >
           <TableRow>
-            {fields.map( (field, index) => (
-              <TableHeaderColumn key={index} style={field.style}>
-                {getFieldTitle(field)}
-              </TableHeaderColumn>
-            ))}
+            {fields.map( (field, index) => {
+              return (
+                <TableHeaderColumn key={index} style={field.style}>
+                  {getFieldTitle(field)}
+                </TableHeaderColumn>
+              )
+            })}
           </TableRow>
         </TableHeader>
       ) : null}
@@ -80,8 +82,20 @@ class ChildrenTable extends Component {
               {fields.map( (field, index) => {
                 const render = renderfns[index]
                 const content = render(row)
+
+                const wrappedContent = field.preventRowSelection ?
+                  (
+                    <div onClick={e => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                    }}>
+                      {content}
+                    </div>
+                  ) :
+                  content
+
                 return (
-                  <TableRowColumn key={index} style={field.style}>{content}</TableRowColumn>
+                  <TableRowColumn key={index} style={field.style}>{wrappedContent}</TableRowColumn>
                 )
               })}
             </TableRow>
