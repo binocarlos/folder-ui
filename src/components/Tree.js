@@ -42,7 +42,6 @@ class Tree extends Component {
     const children = data.children || []
     const open = this.props.open || {}
     const name = data.name || 'no title'
-    const use_icon = this.getIcon(data)
 
     let handleClick = () => {
       this.props.selectNode(data)

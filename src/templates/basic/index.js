@@ -15,59 +15,11 @@ import Schema from '../../schema'
 import FolderActions from '../../actions'
 
 import RouteHandlers from './routehandlers'
-
-const DEFAULT_TYPES = {
-  folder:{
-    id:'folder',
-    title:'Folder',
-    fields:[{
-      name:'name'
-    }],
-    initialData:{
-      type:'folder'
-    }
-  },
-  item:{
-    id:'item',
-    title:'Item',
-    fields:[{
-      name:'name'
-    },{
-      name:'comment'
-    }],
-    initialData:{
-      type:'item'
-    }
-  }
-}
-
-const DEFAULT_TABLE_FIELDS = [{
-  title:'name',
-  render:data => data.name
-}]
-
-const DEFAULT_LIBRARY = {}
-
-const REQUIRED_OPTIONS = [
-  'name',
-  'path',
-  'db'
-]
+import Settings from './settings'
 
 const templateFactory = (opts = {}) => {
 
-  opts = Object.assign({}, {
-    width:250,
-    types:DEFAULT_TYPES,
-    tableFields:DEFAULT_TABLE_FIELDS,
-    library:DEFAULT_LIBRARY,
-    childrenToolbar:{},
-    formToolbar:{}
-  }, opts)
-
-  REQUIRED_OPTIONS.forEach((name) => {
-    if(!opts[name]) throw new Error(name + ' option required')
-  })
+  opts = Settings(opts)
 
   // Wrap the left hand sidebar wrapper with a wider width
   const NavWrapper = ContainerFactory({

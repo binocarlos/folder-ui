@@ -40,18 +40,12 @@ const factory = (opts = {}) => {
   */
   const getDescriptors = (parent) => {
     if(!parent) return []
-    const descriptors = opts.getDescriptors ?
-      opts.getDescriptors(parent) :
-      Object.keys(opts.types || {}).map(key => opts.types[key])
 
-    return opts.filterDescriptor ?
-      descriptors.filter(descriptor => {
-        return opts.filterDescriptor(parent, descriptor)
-      }) :
-      descriptors
+    const allDescriptors = Object.keys(opts.types || {}).map(key => opts.types[key])
+    return opts.getDescriptors ?
+      opts.getDescriptors(parent, allDescriptors) :
+      allDescriptors
   }
-
-  
 
   // return the data for a new item based on the descriptor
   // and the parent
