@@ -23,6 +23,7 @@ class FormViewer extends Component {
   getContext() {
     return {
       id:this.props.id,
+      item:this.props.data,
       mode:this.props.mode,
       descriptor:this.props.descriptor,
       schema:this.props.schema,
@@ -37,7 +38,7 @@ class FormViewer extends Component {
   render() {
 
     const customLibary = this.props.getLibrary ?
-      this.props.getLibrary(this.getContext(), this.props.item) :
+      this.props.getLibrary(this.getContext(), this.props.data) :
       {}
 
     let library = Object.assign({}, muiLibrary, customLibary)

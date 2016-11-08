@@ -144,17 +144,18 @@ const sortByName = (a = {}, b = {}) => {
   return a.name>b.name ? 1 : -1
 }
 
-const ActionFactory = (opts = {}, db, routeHandlers) => {
+const ActionFactory = (opts = {}) => {
 
   if(typeof(opts)==='string') opts = {
     name:opts
   }
 
   if(!opts.name) throw new Error('ActionFactory requires a name')
-  if(!db) throw new Error('ActionFactory requires a db')
-  if(!routeHandlers) throw new Error('ActionFactory requires routeHandlers')
+  if(!opts.db) throw new Error('ActionFactory requires a db')
+  if(!opts.routes) throw new Error('ActionFactory requires routeHandlers')
 
-  db = DBFactory(db)
+  const db = DBFactory(opts.db)
+  const routeHandlers = opts.routes.routeHandlers
 
   // a flag that decides if we are actually interested in loading any tree data
   const enableTree = typeof(opts.enableTree) == 'boolean' ? opts.enableTree : true
@@ -182,10 +183,10 @@ const ActionFactory = (opts = {}, db, routeHandlers) => {
   }
 
   // inject the state into the database context so it can see the user
-  const getDatabaseContext = (context, getState) => {
+  const getDatabaseContext = (context, getState, extra = {}) => {
     return Object.assign({}, context, {
       state:getState()
-    })
+    }, extra)
   }
 
   // used to refresh the view once the database is changed
@@ -209,7 +210,10 @@ const ActionFactory = (opts = {}, db, routeHandlers) => {
 
   const requestTreeData = (context, done) => {
     return (dispatch, getState) => {
-      db.loadTree(getDatabaseContext(context, getState), (err, data) => {
+      db.loadTree(getDatabaseContext(context, getState, {
+        // this filters what is loaded from the tree
+        search:opts.treeQuery
+      }), (err, data) => {
         if(err){
           console.error('requestTreeData')
           console.error(err)
