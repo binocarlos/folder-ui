@@ -60,7 +60,9 @@ const templateFactory = (opts = {}) => {
     width:250,
     types:DEFAULT_TYPES,
     tableFields:DEFAULT_TABLE_FIELDS,
-    library:DEFAULT_LIBRARY
+    library:DEFAULT_LIBRARY,
+    childrenToolbar:{},
+    formToolbar:{}
   }, opts)
 
   REQUIRED_OPTIONS.forEach((name) => {
@@ -94,7 +96,8 @@ const templateFactory = (opts = {}) => {
     childrenToolbar:factory(ChildrenToolbar, {
       getDescriptors:schema.getDescriptors,
       filterActions:schema.filterActions,
-      isEditable:schema.isEditable
+      isEditable:schema.isEditable,
+      getChildren:opts.childrenToolbarChildren
     }),
     childrenTable:factory(ChildrenTable, {
       fields:schema.getTableFields(),
@@ -104,7 +107,8 @@ const templateFactory = (opts = {}) => {
     }),
     formToolbar:factory(FormToolbar, {
       getSchema:schema.getSchema,
-      isEditable:schema.isEditable
+      isEditable:schema.isEditable,
+      getChildren:opts.formToolbarChildren
     }),
     form:factory(Form, {
       getSchema:schema.getSchema,
