@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
-import { push } from 'react-router-redux'
 
 import Toolbar from '../components/FormToolbar'
 import { getDatabaseContext } from '../tools'
@@ -74,23 +73,20 @@ function mapDispatchToProps(dispatch, ownProps) {
       }
       if(formInfo.mode=='add'){
         dispatch(actions.requestAddItem(context, parentNode, data, (err) => {
-          if(!routeHandlers.open && !parentNode) return
           const schema = ownProps.getSchema(formInfo.type) || {}
           dispatch(actions.showChildrenMessage(schema.title + ' added'))
-          dispatch(push(routeHandlers.open(parentNode, params)))
+          dispatch(actions.routeOpen(parentNode, params))
         }))
       }
       else if(formInfo.mode=='edit'){
         dispatch(actions.requestSaveItem(context, parentNode, data, (err) => {
-          if(!routeHandlers.open && !parentNode) return
           dispatch(actions.showChildrenMessage(data.name + ' saved'))
-          dispatch(push(routeHandlers.open(parentNode, params)))
+          dispatch(actions.routeOpen(parentNode, params))
         }))
       }
     },
     cancel:(parentNode) => {
-      if(!routeHandlers.open && !parentNode) return
-      dispatch(push(routeHandlers.open(parentNode, params)))
+      dispatch(actions.routeOpen(parentNode, params))
     },
     revert:() => {
       dispatch(actions.revertEditNode())

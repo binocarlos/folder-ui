@@ -52,7 +52,8 @@ export default class FormToolbar extends Component {
       mode:this.props.mode,
       getState:this.props.getState,
       dispatch:this.props.dispatch,
-      actions:this.props.actions
+      actions:this.props.actions,
+      params:this.props.params
     }
   }
 

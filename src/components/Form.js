@@ -29,7 +29,8 @@ class FormViewer extends Component {
       parent:this.props.parentNode,
       getState:this.props.getState,
       dispatch:this.props.dispatch,
-      actions:this.props.actions
+      actions:this.props.actions,
+      params:this.props.params
     }
   }
 
