@@ -18,6 +18,7 @@ import RouteHandlers from './routehandlers'
 
 const DEFAULT_TYPES = {
   folder:{
+    id:'folder',
     title:'Folder',
     fields:[{
       name:'name'
@@ -27,6 +28,7 @@ const DEFAULT_TYPES = {
     }
   },
   item:{
+    id:'item',
     title:'Item',
     fields:[{
       name:'name'
@@ -79,11 +81,7 @@ const templateFactory = (opts = {}) => {
     sort:opts.sort
   }, opts.db)
 
-  const schema = Schema({
-    types:opts.types,
-    tableFields:opts.tableFields,
-    library:opts.library
-  })
+  const schema = Schema(opts)
 
   const factory = ContainerFactory({
     actions:actions,
@@ -94,7 +92,9 @@ const templateFactory = (opts = {}) => {
   const containers = {
     tree:factory(Tree),
     childrenToolbar:factory(ChildrenToolbar, {
-      getChildTypes:schema.getChildTypes
+      getDescriptors:schema.getDescriptors,
+      filterActions:schema.filterActions,
+      isEditable:schema.isEditable
     }),
     childrenTable:factory(ChildrenTable, {
       fields:schema.getTableFields(),
@@ -103,11 +103,14 @@ const templateFactory = (opts = {}) => {
       multiSelectable:true
     }),
     formToolbar:factory(FormToolbar, {
-      getSchema:schema.getSchema
+      getSchema:schema.getSchema,
+      isEditable:schema.isEditable
     }),
     form:factory(Form, {
       getSchema:schema.getSchema,
-      getLibrary:schema.getLibrary
+      getLibrary:schema.getLibrary,
+      getNewItem:schema.getNewItem,
+      isEditable:schema.isEditable
     })
   }
   const views = {

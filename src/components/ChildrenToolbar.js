@@ -8,18 +8,24 @@ const SNACKBAR_AUTOHIDE = 5000
 export default class ChildrenToolbar extends Component {
 
   getAddButton(parent) {
-    return {
-      id:'add',
-      type:'dropdown',
-      title:'Add',
-      items:this.props.getChildTypes(parent).map((item) => {
+
+    if(this.props.isEditable && !this.props.isEditable(parent)) return null
+
+    const items = this.props.getDescriptors ?
+      this.props.getDescriptors(parent).map((item) => {
         return Object.assign({}, item, {
           handler:() => {
             this.props.onAdd(this.props.node, item)
           }
         })
-      })
-        
+      }) :
+      []
+
+    return {
+      id:'add',
+      type:'dropdown',
+      title:'Add',
+      items
     }
   }
 
@@ -31,7 +37,7 @@ export default class ChildrenToolbar extends Component {
 
     if(selected.length==0){
       let addButton = this.getAddButton(this.props.node)
-      leftbuttons.push(addButton)
+      if(addButton) leftbuttons.push(addButton)
       actions.push({
         id:'edit',
         title:'Edit',
@@ -93,6 +99,15 @@ export default class ChildrenToolbar extends Component {
         }
       })
     }
+
+    actions = this.props.filterActions ? 
+      actions = this.props.filterActions({
+        parent:this.props.node,
+        selected:this.props.selected,
+        clipboard:this.props.clipboard,
+        clipboardMode:this.props.clipboardMode
+      }, actions) :
+      actions
 
     if(actions.length>0){
       leftbuttons.push({

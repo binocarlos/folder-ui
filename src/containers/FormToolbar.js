@@ -32,9 +32,18 @@ function mapStateToProps(s, ownProps) {
 
   const parentNode = state.tree.db ? state.tree.db.data[formInfo.parent] : null
 
+  let readonly = false
+
+  // hide the save/revert buttons if the item is not editable
+  if(formInfo.mode == 'edit' && ownProps.isEditable){
+    const item = state.tree.db ? state.tree.db.data[formInfo.id] : null
+    readonly = ownProps.isEditable(item) ? false : true
+  }
+
   return {
     title,
     parentNode,
+    readonly,
     data,
     meta,
     saveTitle:formInfo.mode == 'edit' ? 'Save' : 'Add'
