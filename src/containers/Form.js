@@ -98,7 +98,7 @@ function mapDispatchToProps(dispatch, ownProps) {
         ownProps.getNewItem(parent, descriptor) :
         descriptor.initialData
 
-      dispatch(actions.setEditData(JSON.stringify(JSON.parse(newItem || {}))))
+      dispatch(actions.setEditData(JSON.parse(JSON.stringify(newItem || {}))))
     }
   }
 }
