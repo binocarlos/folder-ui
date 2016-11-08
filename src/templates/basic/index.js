@@ -33,7 +33,7 @@ const templateFactory = (opts = {}) => {
   const actions = FolderActions({
     name:opts.name,
     sort:opts.sort
-  }, opts.db)
+  }, opts.db, routes.routeHandlers)
 
   const schema = Schema(opts)
 

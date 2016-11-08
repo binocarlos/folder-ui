@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
-import { push } from 'react-router-redux'
 import Tree from '../components/Tree'
 import { dumpTreeData, getAncestors, getDatabaseContext } from '../tools'
 
@@ -67,7 +66,6 @@ function mapStateToProps(s, ownProps) {
 
 function mapDispatchToProps(dispatch, ownProps) {
   const actions = ownProps.actions
-  const routeHandlers = ownProps.handlers
   const context = getDatabaseContext(ownProps)
   const params = ownProps.params
   const route = ownProps.route || {}
@@ -86,8 +84,7 @@ function mapDispatchToProps(dispatch, ownProps) {
       })
     },
     selectNode:(node) => {
-      if(!routeHandlers.open || !node) return
-      dispatch(push(routeHandlers.open(node, params)))
+      dispatch(actions.routeOpen(node, params))
     },
     toggleNode:(node) => {
       dispatch(actions.toggleTreeNode(node.id))

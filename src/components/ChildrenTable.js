@@ -26,7 +26,8 @@ class ChildrenTable extends Component {
       getState:this.props.getState,
       dispatch:this.props.dispatch,
       actions:this.props.actions,
-      theme:this.props.muiTheme
+      theme:this.props.muiTheme,
+      params:this.props.params
     }
   }
 

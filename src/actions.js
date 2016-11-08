@@ -1,5 +1,6 @@
 import series from 'async/series'
 import parallel from 'async/parallel'
+import { push } from 'react-router-redux'
 import { processTreeData, processListData, getChildren, getAncestors } from './tools'
 import DBFactory from './db'
 
@@ -143,13 +144,15 @@ const sortByName = (a = {}, b = {}) => {
   return a.name>b.name ? 1 : -1
 }
 
-const ActionFactory = (opts = {}, db) => {
+const ActionFactory = (opts = {}, db, routeHandlers) => {
 
   if(typeof(opts)==='string') opts = {
     name:opts
   }
 
-  if(!opts.name || !db) throw new Error('ActionFactory requires a name and db options')
+  if(!opts.name) throw new Error('ActionFactory requires a name')
+  if(!db) throw new Error('ActionFactory requires a db')
+  if(!routeHandlers) throw new Error('ActionFactory requires routeHandlers')
 
   db = DBFactory(db)
 
@@ -381,6 +384,7 @@ const ActionFactory = (opts = {}, db) => {
 
   return {
     name:opts.name,
+    db:db,
     // return the correct part of the state tree based on the 'name'
     getState:(state) => {
       return state[opts.name]
@@ -413,6 +417,27 @@ const ActionFactory = (opts = {}, db) => {
     // paste the clipboard
     requestPasteItems,
 
+
+    /*
+    
+      routing methods
+      
+    */
+
+    routeAdd:(parent, descriptor, params) => {
+      if(!routeHandlers.add || !parent || !descriptor) return
+      return push(routeHandlers.add(parent, descriptor, params))
+    },
+
+    routeEdit:(parent, node, params) => {
+      if(!routeHandlers.edit || !parent) return
+      return push(routeHandlers.edit(parent, node, params))
+    },
+
+    routeOpen:(node, params) => {
+      if(!routeHandlers.open || !node) return
+      return push(routeHandlers.open(node, params))
+    },
 
     /*
     
