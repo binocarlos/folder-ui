@@ -33,6 +33,7 @@ const CODEC_KEY = '_folderui_dbname'
 const CODEC_DELIMITER = '_'
 
 const extractCodecFromId = (id) => {
+  if(!id) return
   let idParts = id.split(CODEC_DELIMITER)
   return idParts.shift()
 }
@@ -40,12 +41,14 @@ const extractCodecFromId = (id) => {
 // we either have an object with a [CODEC_KEY]
 // or we have a string from the route
 export const getItemCodecId = (item) => {
+  if(!item) return
   return typeof(item) == 'string' ?
     extractCodecFromId(item) :
     item[CODEC_KEY]
 }
 
 export const decodeID = (id) => {
+  if(!id) return
   let idParts = id.split(CODEC_DELIMITER)
   idParts.shift()
   return idParts.join(CODEC_DELIMITER)
