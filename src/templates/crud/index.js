@@ -88,6 +88,7 @@ const templateFactory = (opts = {}) => {
       isEditable:schema.isEditable,
       getChildren:opts.formToolbarChildren,
       getIcon:opts.getIcon,
+      crudParent:opts.crudParent,
       getTitle:schema.getTitle
     }),
     form:factory(Form, {

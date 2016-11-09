@@ -37,9 +37,10 @@ function mapStateToProps(s, ownProps) {
   }
 
   const getItemTitle = (item = {}) => {
-    return ownProps.getTitle ?
+    const name = item ? item.name : ''
+    return ownProps.getTitle && item ?
       ownProps.getTitle(item) :
-      item.name
+      name
   }
 
   let title = ''
