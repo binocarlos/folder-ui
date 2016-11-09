@@ -97,6 +97,11 @@ const codecFactory = (database) => {
       id:database.id
     }, extra)
   }
+
+  const getRootNode = (extra = {}) => {
+    return encode(rootNodeFactory(extra))
+  }
+
   // this is loadTree but we return a single node that
   // the async.parallel maps onto the root data array
   const loadTree = (context, done) => {
@@ -177,7 +182,8 @@ const codecFactory = (database) => {
     saveItem,
     addItem,
     deleteItem,
-    filterPaste
+    filterPaste,
+    getRootNode
   }
 }
 
@@ -197,6 +203,12 @@ const compositedb = (databases = []) => {
   }
 
   return {
+    getRootNode:(name, extra = {}) => {
+      const codec = codecs[name]
+      return codec ?
+        codec.getRootNode(extra) :
+        null
+    },
     loadTree:(context, done) => {
       // load each of the databases answers
       // then filter each node with a tag for that db

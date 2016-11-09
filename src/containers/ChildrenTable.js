@@ -37,12 +37,26 @@ function mapStateToProps(s, ownProps) {
 
   const formInfo = info.tree ? info.tree(ownProps.params) : {}
 
-  const id = ownProps.params.id
+  let id = ownProps.params.id
 
   const data = state.children.data || []
   const selected = state.children.selected || {}
-  const parent = state.tree.db ? state.tree.db.data[formInfo.id] : null
+  let parent = state.tree.db ? state.tree.db.data[formInfo.id] : null
 
+  /*
+  
+    this means there is a static parent we are loading from
+
+    (used in crud scenarios where there is no tree just a list)
+
+    TODO: this is a sign the code smells a bit
+    
+  */
+  if(ownProps.crudParent){
+    parent = ownProps.crudParent
+    id = parent.id
+  }
+  
   return {
     id,
     data,
