@@ -12,6 +12,12 @@ const READONLY_BUTTONS = {
   copy:true,
 }
 
+const CLIPBOARD_BUTTONS = {
+  cut:true,
+  copy:true,
+  paste:true,
+}
+
 // buttons that only appear for non things that can have children
 const NONLEAF_BUTTONS = {
   open:true
@@ -80,7 +86,14 @@ const factory = (opts = {}) => {
     return opts.isLeaf ?
       opts.isLeaf(item) :
       false
-  }  
+  }
+
+  const getTitle = (item) => {
+    if(!item) return false
+    return opts.getTitle ?
+      opts.getTitle(item) :
+      ''
+  }
 
   const filterActions = (context, actions) => {
     if(!context.parent) return []
@@ -96,7 +109,7 @@ const factory = (opts = {}) => {
     if(!isItemEditable){
 
       actions = actions
-        // filter out any non read-only actons
+        // filter out any non read-only buttons
         .filter(action => READONLY_BUTTONS[action.id])
         // inject properties from READONLY_BUTTON_PROPS
         .map(action => Object.assign({}, action, READONLY_BUTTON_PROPS[action.id]))
@@ -105,8 +118,14 @@ const factory = (opts = {}) => {
 
     if(isItemLeaf){
       actions = actions
-        // filter out any leaf-only actons
+        // filter out any leaf-only buttons
         .filter(action => !NONLEAF_BUTTONS[action.id])
+    }
+
+    if(typeof(opts.enableClipboard) == 'boolean' && !opts.enableClipboard){
+      actions = actions
+        // filter out any clipboard buttons
+        .filter(action => !CLIPBOARD_BUTTONS[action.id])
     }
 
     // allow the user to mess with the buttons
@@ -123,7 +142,8 @@ const factory = (opts = {}) => {
     filterActions,
     getNewItem,
     isLeaf,
-    isEditable
+    isEditable,
+    getTitle
   }
 
 }

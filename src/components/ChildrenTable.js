@@ -13,7 +13,7 @@ const getFieldTitle = (field = {}) => {
   if(field.title) return field.title
   return field.name ?
     field.name.replace(/^\w/, (s) => s.toUpperCase()) :
-    null
+    ''
 }
 
 class ChildrenTable extends Component {
@@ -67,7 +67,9 @@ class ChildrenTable extends Component {
             {fields.map( (field, index) => {
               return (
                 <TableHeaderColumn key={index} style={field.style}>
-                  {getFieldTitle(field)}
+                  <div>
+                    {getFieldTitle(field)}
+                  </div>
                 </TableHeaderColumn>
               )
             })}

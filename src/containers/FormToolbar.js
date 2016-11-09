@@ -27,9 +27,13 @@ function mapStateToProps(s, ownProps) {
 
   const type = formInfo.mode == 'edit' ? data.type : formInfo.type
   const schema = ownProps.getSchema(type) || {}
-  const title = formInfo.mode == 'edit' ? originalData.name : 'New ' + schema.title
+  
 
-  const parentNode = state.tree.db ? state.tree.db.data[formInfo.parent] : null
+  let parentNode = state.tree.db ? state.tree.db.data[formInfo.parent] : null
+
+  if(ownProps.crudParent){
+    parentNode = ownProps.crudParent
+  }
 
   let readonly = false
 
@@ -37,6 +41,14 @@ function mapStateToProps(s, ownProps) {
   if(formInfo.mode == 'edit' && ownProps.isEditable){
     readonly = ownProps.isEditable(data) ? false : true
   }
+
+  const getItemTitle = (item = {}) => {
+    return ownProps.getTitle ?
+      ownProps.getTitle(item) :
+      item.name
+  }
+
+  const title = formInfo.mode == 'edit' ? getItemTitle(originalData) : 'New ' + schema.title
 
   return {
     title,

@@ -7,54 +7,17 @@
 
 import superagent from 'superagent'
 
-
-/*
-
-  get the BACKEND urls representing each endpoint
-  
-*/
-const getUrl = (base, path, id) => {
-  return base + path + (id ? '/' + id : '')
-}
-const itemUrl = (base, id) => {
-  return getUrl(base, '/item', id)
-}
-const DEFAULT_URLS = {
-  loadTree:(base, search) => {
-    return getUrl(base, '/tree' + (search ? '?query=' + search : ''))
-  },
-  loadChildren:(base, id) => {
-    return getUrl(base, '/children', id)
-  },
-  loadDeepChildren:(base, id) => {
-    return getUrl(base, '/deepchildren', id)
-  },
-  pasteItems:(base, id) => {
-    return getUrl(base, '/paste', id)
-  },
-  loadItem:itemUrl,
-  addItem:itemUrl,
-  saveItem:itemUrl,
-  deleteItem:itemUrl
-}
-
 export default function ajaxdb(opts = {}){
 
   if(!opts.baseurl || (typeof(opts.baseurl) != 'function' && typeof(opts.baseurl) != 'string')){
     throw new Error('ajax db requires a baseurl that is a function or string')
   }
 
-  const urls = Object.assign({}, DEFAULT_URLS, opts.urls)
-  const filters = Object.assign({}, opts.filters)
-
-  /*
-  
-    pre and post filters passed in
-    
-  */
-  const filterData = (type, data) => {
-    return filters[type] ? filters[type](data) : data
+  if(!opts.urls){
+    throw new Error('ajax db requires a urls object')
   }
+
+  const urls = opts.urls
 
   /*
   

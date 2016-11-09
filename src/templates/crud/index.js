@@ -1,10 +1,8 @@
 import React from 'react'
 import { Route, IndexRoute } from 'react-router'
 
-import TreeWrapper from '../../components/TreeWrapper'
 import ToolbarWrapper from '../../components/ToolbarWrapper'
 
-import Tree from '../../containers/Tree'
 import ChildrenToolbar from '../../containers/ChildrenToolbar'
 import ChildrenTable from '../../containers/ChildrenTable'
 import FormToolbar from '../../containers/FormToolbar'
@@ -17,19 +15,44 @@ import FolderActions from '../../actions'
 import Settings from '../settings'
 import RouteHandlers from './routehandlers'
 
+const getUrl = (parts = []) => {
+  return parts
+    .filter(part => part)
+    .join('/')
+}
+
+const childrenURL = (base) => {
+  return getUrl([base])
+}
+
+const itemUrl = (base, id) => {
+  return getUrl([base, id])
+}
+
+const disabledUrl = () => {
+  throw new Error('loadTree is disabled for a crud template')
+}
+
+const CRUD_URLS = {
+  loadTree:disabledUrl,
+  pasteItems:disabledUrl,
+  loadDeepChildren:disabledUrl,
+  loadChildren:childrenURL,
+  loadItem:itemUrl,
+  addItem:itemUrl,
+  saveItem:itemUrl,
+  deleteItem:itemUrl
+}
 
 const templateFactory = (opts = {}) => {
 
   opts = Settings(opts)
 
-  // Wrap the left hand sidebar wrapper with a wider width
-  const NavWrapper = ContainerFactory({
-    width:opts.width
-  })(TreeWrapper)
-
   const routes = RouteHandlers({
     path:opts.path
   })
+
+  if(!opts.crudParent) throw new Error('crud template requires a crud parent')
 
   const actions = FolderActions(Object.assign({}, opts, {
     routes
@@ -44,27 +67,29 @@ const templateFactory = (opts = {}) => {
   })
 
   const containers = {
-    tree:factory(Tree, {
-      getIcon:opts.getIcon
-    }),
     childrenToolbar:factory(ChildrenToolbar, {
       getDescriptors:schema.getDescriptors,
       filterActions:schema.filterActions,
       isEditable:schema.isEditable,
       getChildren:opts.childrenToolbarChildren,
-      getIcon:opts.getIcon
+      getIcon:opts.getIcon,
+      crudParent:opts.crudParent,
+      getTitle:schema.getTitle
     }),
     childrenTable:factory(ChildrenTable, {
       getFields:schema.getTableFields,
+      crudParent:opts.crudParent,
       showCheckboxes:true,
-      showHeader:false,
+      showHeader:true,
       multiSelectable:true
     }),
     formToolbar:factory(FormToolbar, {
       getSchema:schema.getSchema,
       isEditable:schema.isEditable,
       getChildren:opts.formToolbarChildren,
-      getIcon:opts.getIcon
+      getIcon:opts.getIcon,
+      crudParent:opts.crudParent,
+      getTitle:schema.getTitle
     }),
     form:factory(Form, {
       getSchema:schema.getSchema,
@@ -73,11 +98,8 @@ const templateFactory = (opts = {}) => {
       isEditable:schema.isEditable
     })
   }
+  
   const views = {
-    tree:{
-      sidebar: containers.tree,
-      main: ToolbarWrapper
-    },
     view:{
       toolbar: containers.childrenToolbar,
       main: containers.childrenTable
@@ -89,16 +111,10 @@ const templateFactory = (opts = {}) => {
   }
 
   return (
-    <Route component={NavWrapper}>
-      <Route path={opts.path} components={views.tree} onEnter={opts.onEnter}>
-        <IndexRoute components={views.view} />
-        <Route path="view" components={views.view} />
-        <Route path="view/:id" components={views.view} />
-        <Route path="delete/:parent/:ids" components={views.view} />
-        <Route path="edit/:id" components={views.edit} />
-        <Route path="edit/:parent/:id" components={views.edit} />
-        <Route path="add/:parent/:type" components={views.edit} />
-      </Route>
+    <Route path={opts.path} component={ToolbarWrapper}>
+      <IndexRoute components={views.view} />
+      <Route path="edit/:id" components={views.edit} />
+      <Route path="add/:type" components={views.edit} />
     </Route>
   )
 }

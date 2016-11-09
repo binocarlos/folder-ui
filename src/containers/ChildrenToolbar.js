@@ -28,19 +28,37 @@ function mapStateToProps(s, ownProps) {
   const selected = children.filter((node) => {
     return state.children.selected[node.id]
   })
-  const parentNode = state.tree.db ? state.tree.db.data[formInfo.id] : null
-  const title = selected.length == 0 ?
-    (parentNode || {}).name :
-    (
-      selected.length == 1 ? 
-        selected[0].name :
-        selected.length + ' items'
-    )
-  
+  let parentNode = state.tree.db ? state.tree.db.data[formInfo.id] : null
+  let parentId = formInfo.id
+
+  if(ownProps.crudParent){
+    parentNode = ownProps.crudParent
+    parentId = parentNode.id
+  }
+
+  const getItemTitle = (item = {}) => {
+    const name = item ? item.name : ''
+    return ownProps.getTitle && item ?
+      ownProps.getTitle(item) :
+      name
+  }
+
+  let title = ''
+
+  if(selected.length==0){
+    title = getItemTitle(parentNode)
+  }
+  else if(selected.length==1){
+    title = getItemTitle(selected[0])
+  }
+  else{
+    title = selected.length + ' items' 
+  }
+
   return {
     title,
     node:parentNode,
-    parentId:formInfo.id,
+    parentId:parentId,
     data:children,
     selected,
     clipboard,
