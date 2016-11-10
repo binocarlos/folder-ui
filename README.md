@@ -37,18 +37,15 @@ If you already have state in your application that can be used to feed the visua
 
 If you are working with external state and want `folder-ui` to handle redux state, you need to provide a database library.  A folder-ui database library is an object with the following properties - all functions:
 
- * `loadTree(context, done)` - load the tree data
- * `loadChildren(context, id, done)` - load the children for an item
- * `loadDeepChildren(context, id, done)` - load the children and sub-trees for an item
- * `loadItem(context, id, done)` - load a single item
- * `addItem(context, parent, item, done)` - add an item to a parent
- * `saveItem(context, id, data, done)` - save an item
- * `deleteItem(context, id, done)` - delete an item from a parent
- * `filterPaste(mode, item)` - filter item data before it is pasted
+ * `loadTree(done)` - load the tree data
+ * `loadChildren(id, done)` - load the children for an item
+ * `loadItem(id, done)` - load a single item
+ * `addItem(parent, item, done)` - add an item to a parent
+ * `saveItem(item, done)` - save an item
+ * `deleteItem(id, done)` - delete an item from a parent
+ * `pasteItems(mode, parent, items, done)` - paste items, mode is {copy,cut}
 
 In all cases the callback `done` takes the following signature: `done(err, data)` (i.e. standard node callback style)
-
-The `context` object is passed in by the container and will contain the route params amoungst other things.
 
 ## FolderReducer
 
@@ -72,123 +69,25 @@ const reducer = combineReducers({
 
 You create a set of FolderActions for each reducer that you use.
 
-As well as passing a `name` (which points to the correct reducer for these actions), you must also pass an instance of the database library and some route handlers:
+As well as passing a `name` (which points to the correct reducer for these actions), you must also pass an instance of the database library and some routing information:
 
 ```javascript
 import FolderActions from 'folder-ui/lib/actions'
-import RouteHandlers from './routehandlers'
 
 // both of these modules implement the database library interface
 import DB1 from './db1'
 import DB2 from './db2'
 
-const routes = RouteHandlers({
-  path:'mydb'
-})
-
 // we pass a database and some routing info
 // for how we have built the application
-const productActions = FolderActions('products', DB1(), routes.handlers)
-
+const productActions = FolderActions('products', DB1())
 
 // DB2 is a REST api
-const shopsActions = FolderActions({
-  name:'shops',
-  sort:(a,b) => a.price > b.price ? 1 : -1
-}, DB2(), routes.handlers)
+const shopsActions = FolderActions('shops', DB2())
 ```
 
 Here - we have created 2 sets of actions, each hooked up to it's own reducer (using the name) and will consume the database instance we passed to it - one for each service.
 
-The options object has the following fields (if you pass a string it means the name):
-
- * name - a unique name for this group of components
- * sort(a,b) - a function used to sort the results in tree and childrentable
-
-The `RouteHandlers` is a function that knows how to redirect react-router to the routes used in your app:
-
-```javascript
-const factory = (opts = {}) => {
-
-  const basePath = opts.path || ''
-  // the overall 'get a frontend' URL functions
-  // 
-  const getBasePath = (params = {}) => {
-
-    // split by slash
-    // map by replacing ':xxx' with params.xxx
-    // filter empty values
-    // join by slash
-    var ret = basePath.split('/')
-      .map(part => {
-        return part.charAt(0) == ':' ?
-          params[part.substring(1)] :
-          part
-      })
-      .filter(part => part)
-      .join('/')
-
-    return ret
-  }
-
-  const getUrl = (parts = [], params) => {
-    parts = [getBasePath(params)].concat(parts)
-    return '/' + parts.filter(part => '' + part).join('/')
-  }
-
-  // an object that maps action names onto functions
-  // each function will return a URL to redirect the app to
-  const routeHandlers = {
-    // get the route to view an item
-    open:(item = {}, params = {}) => {
-      return getUrl(['view', item.id], params)
-    },
-    // edit is in the context of a parent
-    edit:(parent = {}, item = {}, params = {}) => {
-      return getUrl(['edit', parent.id, item.id], params)
-    },
-    add:(parent = {}, descriptor = {}, params = {}) => {
-      if(!descriptor.id) throw new Error('the passed descriptor has no id')
-      return getUrl(['add', parent.id, descriptor.id], params)
-    }
-  }
-
-  // extract the information from the current route
-  // based on how we have configured react-router
-  const routeInfo = {
-
-    // /view/:id
-    tree:(params = {}) => {
-      return {
-        id:params.id || params.parent
-      }
-    },
-
-    // /edit/:id
-    // /edit/:parent/:id
-    // /add/:parent/:type
-    form:(params = {}) => {
-      return {
-        // where we get the schema from
-        mode:params.type ? 'add' : 'edit',
-        // for add operations
-        type:params.type,
-        // where we return to
-        parent:params.parent || params.id,
-        // the thing we are actually editing
-        id:params.id
-      }
-    }
-  }
-
-  return {
-    routeHandlers,
-    routeInfo
-  }
-}
-
-export default factory
-```
 
 ## Container Components
 
@@ -237,7 +136,7 @@ const productRoutes = RouteInfo({
   path:'products'
 })
 
-const productActions = FolderActions('products', DB(), productRoutes.handlers)
+const productActions = FolderActions('products', DB())
 const productSchema = Schema({
   types:PRODUCT_TYPES,
   tableFields:PRODUCT_TABLE_FIELDS,
@@ -301,76 +200,6 @@ const Routes = (opts = {}) => {
 }
 
 export default Routes
-```
-
-The `routeinfo.js` file contains 2 objects:
-
- * routeHandlers - functions that return react-router paths that match the routes you use
- * routeInfo - functions that extract the required params from the current route
-
-You can provide your own handlers or override any of the existing functions:
-
-```javascript
-const factory = (opts = {}) => {
-
-  // the overall 'get a frontend' URL function
-  // 
-  const getUrl = (parts = []) => {
-    parts = [opts.path].concat(parts)
-    return '/' + parts.filter(part => '' + part).join('/')
-  }
-
-  // an object that maps action names onto functions
-  // each function will return a URL to redirect the app to
-  const routeHandlers = {
-    // get the route to view an item
-    open:(item = {}, params = {}) => {
-      return getUrl(['view', item.id])
-    },
-    // edit is in the context of a parent
-    edit:(parent = {}, item = {}, params = {}) => {
-      return getUrl(['edit', parent.id, item.id])
-    },
-    add:(parent = {}, descriptor = {}, params = {}) => {
-      return getUrl(['add', parent.id, descriptor.type])
-    }
-  }
-
-  // extract the information from the current route
-  // based on how we have configured react-router
-  const routeInfo = {
-
-    // /view/:id
-    tree:(params = {}) => {
-      return {
-        id:params.id || params.parent
-      }
-    },
-
-    // /edit/:id
-    // /edit/:parent/:id
-    // /add/:parent/:type
-    form:(props = {}) => {
-      return {
-        // where we get the schema from
-        mode:params.type ? 'add' : 'edit',
-        // for add operations
-        type:params.type,
-        // where we return to
-        parent:params.parent || params.id,
-        // the thing we are actually editing
-        id:params.id
-      }
-    }
-  }
-
-  return {
-    routeHandlers,
-    routeInfo
-  }
-}
-
-export default factory
 ```
 
 ## Templates

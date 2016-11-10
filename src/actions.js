@@ -144,6 +144,10 @@ const sortByName = (a = {}, b = {}) => {
   return a.name>b.name ? 1 : -1
 }
 
+const DEFAULT_EVENT_LISTENER = () => {
+
+}
+
 const ActionFactory = (opts = {}) => {
 
   if(typeof(opts)==='string') opts = {
@@ -162,6 +166,9 @@ const ActionFactory = (opts = {}) => {
 
   // the default is sort by the 'name' field
   const sort = opts.sort || sortByName
+
+  // this is run on mutating events
+  const eventListener = opts.eventListener || DEFAULT_EVENT_LISTENER
 
   const sortChildren = (data = []) => {
     return data.sort(sort)
@@ -288,6 +295,14 @@ const ActionFactory = (opts = {}) => {
           done && done(err)
           return
         }
+
+        eventListener({
+          action:'delete',
+          context,
+          parentid,
+          ids
+        }, dispatch)
+
         done && done()
       })
     }
@@ -319,6 +334,14 @@ const ActionFactory = (opts = {}) => {
           done && done(err)
           return
         }
+
+        eventListener({
+          action:'add',
+          context,
+          parent,
+          data
+        }, dispatch)
+
         done && done()
       })
 
@@ -352,6 +375,14 @@ const ActionFactory = (opts = {}) => {
           done && done(err)
           return
         }
+
+        eventListener({
+          action:'save',
+          context,
+          parent,
+          item
+        }, dispatch)
+
         done && done()
       })
 
@@ -380,6 +411,15 @@ const ActionFactory = (opts = {}) => {
           done && done(err)
           return
         }
+
+        eventListener({
+          action:'paste',
+          context,
+          parent,
+          mode,
+          nodes
+        }, dispatch)
+
         done && done()
       })
 
