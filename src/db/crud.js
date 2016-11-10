@@ -43,13 +43,13 @@ export default function crudDB(opts = {}){
       done('crud db has no loadDeepChildren')
     },
     loadChildren:(context, id, done) => {
-      db.loadChildren(context, id, (err, data) => {
+      db.loadChildren(context, id, (err, data = []) => {
         if(err) return done(err)
         done(null, data.map(encode))
       })
     },
     loadItem:(context, id, done) => {
-      db.loadItem(context, id, (err, data) => {
+      db.loadItem(context, id, (err, data = {}) => {
         if(err) return done(err)
         done(null, encode(data))
       })
