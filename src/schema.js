@@ -43,6 +43,12 @@ const factory = (opts = {}) => {
     return opts.types[type]
   }
 
+  const getItemType = (item) => {
+    return opts.getItemType ?
+      opts.getItemType(item) :
+      item.type
+  }
+
   const getLibrary = (context, item) => {
     return opts.getLibrary ?
       opts.getLibrary(context, item) :
@@ -141,6 +147,7 @@ const factory = (opts = {}) => {
     getDescriptors,
     filterActions,
     getNewItem,
+    getItemType,
     isLeaf,
     isEditable,
     getTitle

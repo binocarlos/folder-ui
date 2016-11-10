@@ -44,7 +44,8 @@ function mapStateToProps(s, ownProps) {
   const data = state.editing.data || {}
   const meta = state.editing.meta || null
 
-  const type = formInfo.mode == 'edit' ? data.type : formInfo.type
+  const type = formInfo.mode == 'edit' ? ownProps.getItemType(data) : formInfo.type
+
   const schema = ownProps.getSchema(type) || {}
   const parentNode = state.tree.db ? state.tree.db.data[formInfo.parent] : null
 

@@ -93,6 +93,7 @@ const templateFactory = (opts = {}) => {
     }),
     form:factory(Form, {
       getSchema:schema.getSchema,
+      getItemType:schema.getItemType,
       getLibrary:schema.getLibrary,
       getNewItem:schema.getNewItem,
       isEditable:schema.isEditable
