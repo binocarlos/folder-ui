@@ -54,6 +54,7 @@ class FormViewer extends Component {
               meta={this.props.meta}
               schema={this.props.schema}
               update={this.props.onUpdate} 
+              getContext={this.props.getContext}
               library={library}
               layout={muiLayout} />
           </div>

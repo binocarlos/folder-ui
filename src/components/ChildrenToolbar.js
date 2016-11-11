@@ -6,13 +6,19 @@ import Snackbar from 'material-ui/Snackbar'
 
 const SNACKBAR_AUTOHIDE = 5000
 
+const nameSort = (a, b) => {
+  if (a.title < b.title) return -1;
+  if (a.title > b.title) return 1;
+  return 0;
+}
+
 class ChildrenToolbar extends Component {
 
   getAddButton(parent) {
 
     if(this.props.isEditable && !this.props.isEditable(parent)) return null
 
-    const items = this.props.getDescriptors ?
+    let items = this.props.getDescriptors ?
       this.props.getDescriptors(parent).map((item) => {
         return Object.assign({}, item, {
           handler:() => {
@@ -21,6 +27,8 @@ class ChildrenToolbar extends Component {
         })
       }) :
       []
+
+    items = items.sort(nameSort)
 
     return {
       id:'add',

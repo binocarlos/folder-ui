@@ -68,6 +68,7 @@ const templateFactory = (opts = {}) => {
     }),
     form:factory(Form, {
       getSchema:schema.getSchema,
+      getContext:opts.getFormContext,
       getItemType:schema.getItemType,
       getLibrary:schema.getLibrary,
       getNewItem:schema.getNewItem,
