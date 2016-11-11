@@ -1,6 +1,6 @@
 {
   "name": "folder-ui",
-  "version": "4.2.4",
+  "version": "4.2.5",
   "description": "ui components for a folder editor",
   "main": "index.js",
   "scripts": {
