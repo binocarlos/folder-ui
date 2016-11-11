@@ -112,13 +112,22 @@ const templateFactory = (opts = {}) => {
     }
   }
 
-  return (
-    <Route path={opts.path} component={ToolbarWrapper}>
-      <IndexRoute components={views.view} />
-      <Route path="edit/:id" components={views.edit} />
-      <Route path="add/:type" components={views.edit} />
-    </Route>
-  )
+  const getRoutes = () => {
+    return (
+      <Route path={opts.path} component={ToolbarWrapper}>
+        <IndexRoute components={views.view} />
+        <Route path="edit/:id" components={views.edit} />
+        <Route path="add/:type" components={views.edit} />
+      </Route>
+    )
+  }
+
+  return {
+    name:opts.name,
+    db:opts.db,
+    actions,
+    getRoutes
+  }
 }
 
 export default templateFactory

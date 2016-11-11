@@ -90,19 +90,28 @@ const templateFactory = (opts = {}) => {
     }
   }
 
-  return (
-    <Route component={NavWrapper}>
-      <Route path={opts.path} components={views.tree} onEnter={opts.onEnter}>
-        <IndexRoute components={views.view} />
-        <Route path="view" components={views.view} />
-        <Route path="view/:id" components={views.view} />
-        <Route path="delete/:parent/:ids" components={views.view} />
-        <Route path="edit/:id" components={views.edit} />
-        <Route path="edit/:parent/:id" components={views.edit} />
-        <Route path="add/:parent/:type" components={views.edit} />
+  const getRoutes = (onEnter) => {
+    return (
+      <Route component={NavWrapper}>
+        <Route path={opts.path} components={views.tree} onEnter={onEnter}>
+          <IndexRoute components={views.view} />
+          <Route path="view" components={views.view} />
+          <Route path="view/:id" components={views.view} />
+          <Route path="delete/:parent/:ids" components={views.view} />
+          <Route path="edit/:id" components={views.edit} />
+          <Route path="edit/:parent/:id" components={views.edit} />
+          <Route path="add/:parent/:type" components={views.edit} />
+        </Route>
       </Route>
-    </Route>
-  )
+    )
+  }
+
+  return {
+    name:opts.name,
+    db:opts.db,
+    actions,
+    getRoutes
+  }
 }
 
 export default templateFactory
