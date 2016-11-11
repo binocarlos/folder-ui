@@ -137,9 +137,13 @@ class ChildrenToolbar extends Component {
       this.props.getChildren(this.getContext()) : 
       null
 
-    const icon = this.props.getIcon && this.props.node?
+    let icon = this.props.getIcon && this.props.node && this.props.selected.length == 0 ?
       this.props.getIcon(this.props.node, 'toolbar', this.props.muiTheme) :
       null
+
+    if(this.props.selected.length==1){
+      icon = this.props.getIcon(this.props.selected[0], 'toolbar', this.props.muiTheme)
+    }
 
     const newProps = Object.assign({}, this.props, {
       leftbuttons:this.getLeftButtons(),
